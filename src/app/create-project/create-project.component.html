@@ -1,0 +1,351 @@
+
+  <div class="container">
+   
+    <div class="progress mb-4">
+        <div 
+          class="progress-bar progress-bar-striped" 
+          [style.width.%]="getProgress()"
+          role="progressbar"
+          aria-valuenow="25"
+          aria-valuemin="0"
+          aria-valuemax="100">
+          {{ getProgress() }}%
+        </div>
+      </div>
+    
+      <!-- Step Indicators -->
+      <div class="d-flex justify-content-between mb-3">
+        <span [class.text-primary]="currentState === 'project'">1. Project</span>
+        <span [class.text-primary]="currentState === 'package'">2. Package</span>
+        <span [class.text-primary]="currentState === 'addons'">3. Add-ons</span>
+        <span [class.text-primary]="currentState === 'pressureVessel'">4. Pressure Vessel</span>
+        <span [class.text-primary]="currentState === 'controllPanel'">5. Control Panel</span>
+      </div>
+    <!-- Project Form -->
+    <div *ngIf="currentState === 'project'" class="card p-3">
+        <h2>Create Project</h2>
+      <form [formGroup]="projectForm">
+        <div class="row">
+          <div class="col-md-3">
+            <label for="projectName">Project Name:</label>
+            <input id="projectName" formControlName="projectName" type="text" class="form-control" />
+          </div>
+          <div class="col-md-3">
+            <label for="contractor">Contractor:</label>
+            <input id="contractor" formControlName="contractor" type="text" class="form-control" />
+          </div>
+          <div class="col-md-3">
+            <label for="consultant">Consultant:</label>
+            <input id="consultant" formControlName="consultant" type="text" class="form-control" />
+          </div>
+          <div class="col-md-3">
+            <label for="location">Location:</label>
+            <input id="location" formControlName="location" type="text" class="form-control" />
+          </div>
+        </div>
+      </form>
+      <button (click)="saveProject()" class="btn btn-success mt-3">Save Project</button>
+    </div>
+  
+    <!-- Package Form -->
+    <div *ngIf="currentState === 'package'" class="card p-3">
+        <h2>Package Set</h2>
+      <form [formGroup]="packageForm">
+        <div class="row">
+            <div class="col-md-3">
+              <label for="flow">Flow (l/s):</label>
+              <input id="flow" formControlName="flow" type="text" class="form-control" />
+            </div>
+            <div class="col-md-3">
+              <label for="head">Head (m):</label>
+              <input id="head" formControlName="head" type="text" class="form-control" />
+            </div>
+            <div class="col-md-3">
+              <label for="pumpSeries">Pump Series:</label>
+              <select id="pumpSeries" formControlName="pumpSeries" class="form-control">
+                <option *ngFor="let series of pumpSeriesOptions" [value]="series">{{ series }}</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <label for="pumpSize">Pump Size:</label>
+              <input id="pumpSize" formControlName="pumpSize" type="text" class="form-control" />
+            </div>
+          </div>
+          <div class="row mt-3">
+            <div class="col-md-3">
+              <label for="application">Application:</label>
+              <select id="application" formControlName="application" class="form-control">
+                <option *ngFor="let app of applicationOptions" [value]="app">{{ app }}</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <label for="configuration">Configuration:</label>
+              <select id="configuration" formControlName="configuration" class="form-control">
+                <option *ngFor="let config of configurationOptions" [value]="config">{{ config }}</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <label for="qty">Qty:</label>
+              <input id="qty" formControlName="qty" type="number" class="form-control" />
+            </div>
+          </div>
+        <!-- Add your package form fields -->
+      </form>
+      <button (click)="savePackage()" class="btn btn-success mt-3">Save Package</button>
+    </div>
+  
+    <!-- Add-ons Form -->
+    <div *ngIf="currentState === 'addons'" class="card p-3">
+        <h2>Add-ons</h2>
+      <form [formGroup]="addonsForm">
+        <div class="row">
+            <div class="col-md-3">
+              <label for="strainer">Strainer:</label>
+              <select id="strainer" formControlName="strainer"  class="form-control">
+              <option *ngFor="let strainer of strainerOptions" [value]="strainer">{{ strainer }}</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <label for="flexibleconnector">Flexible Connector:</label>
+              <select id="flexibleconnector" formControlName="flexibleConnector"  class="form-control">
+              <option *ngFor="let flexible of flexibleOptions" [value]="flexible">{{ flexible }}</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <label for="floatswitch">Float Switch:</label>
+              <select id="floatswitch" formControlName="floatSwitch" class="form-control">
+                <option *ngFor="let float of floatOptions" [value]="float">{{ float }}</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <label for="switchqty">Switch Qty:</label>
+              <input id="switchqty" formControlName="floatQty" type="number" class="form-control" />
+            </div>
+          </div>
+        <!-- Add your add-ons form fields -->
+      </form>
+      <button (click)="saveAddons()" class="btn btn-success mt-3">Save Add-ons</button>
+    </div>
+    <div *ngIf="currentState === 'pressureVessel'" class="card p-3">
+        <h2>Pressure Vessel</h2>
+        <form [formGroup]="pressureVessleForm">
+          <div class="row">
+              <div class="col-md-3">
+                <label for="pressureVessel">Pressure Vessel:</label>
+                <select id="pressureVessel" formControlName="pressureVessel"  class="form-control">
+                <option *ngFor="let strainer of strainerOptions" [value]="strainer">{{ strainer }}</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label for="brand">Brand:</label>
+                <select id="brand" formControlName="brand"  class="form-control">
+                <option *ngFor="let flexible of flexibleOptions" [value]="flexible">{{ flexible }}</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label for="capacity">Capacity:</label>
+                <select id="capacity" formControlName="capacity" class="form-control">
+                  <option *ngFor="let float of floatOptions" [value]="float">{{ float }}</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label for="pressureRating">Pressure Rating:</label>
+                <input id="pressureRating" formControlName="pressureRating" type="number" class="form-control" />
+              </div>
+              <div class="col-md-3">
+                <label for="material">Material:</label>
+                <select id="material" formControlName="material" class="form-control">
+                  <option *ngFor="let float of floatOptions" [value]="float">{{ float }}</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label for="qty">Qty:</label>
+                <input id="qty" formControlName="qty" type="number" class="form-control" />
+              </div>
+            </div>
+          <!-- Add your add-ons form fields -->
+        </form>
+        <button (click)="savePressureVessle()" class="btn btn-success mt-3">Save pressureVessel</button>
+      </div>
+      <div *ngIf="currentState === 'controllPanel'" class="card p-3">
+        <h2>Controll Panel</h2>
+        <form [formGroup]="controllPanelForm">
+          <div class="row">
+              <div class="col-md-3">
+                <label for="type">Type:</label>
+                <select id="type" formControlName="type"  class="form-control">
+                <option *ngFor="let strainer of strainerOptions" [value]="strainer">{{ strainer }}</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label for="power">Power:</label>
+                <select id="power" formControlName="power"  class="form-control">
+                <option *ngFor="let flexible of flexibleOptions" [value]="flexible">{{ flexible }}</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label for="uvr">Phase monitoring relay (UVR):</label>
+                <div id="uvr" class="form-check">
+                  <input
+                    type="radio"
+                    id="uvr-yes"
+                    value="Yes"
+                    formControlName="uvr"
+                    class="form-check-input"
+                  />
+                  <label class="form-check-label" for="uvr-yes">Yes</label>
+                </div>
+                <div class="form-check">
+                  <input
+                    type="radio"
+                    id="uvr-no"
+                    value="No"
+                    formControlName="uvr"
+                    class="form-check-input"
+                  />
+                  <label class="form-check-label" for="uvr-no">No</label>
+                </div>
+              </div>
+              
+              <div class="col-md-3">
+                <label for="addc">Panel Abu Dhabi/Alian project (ADDC):</label>
+                <div id="addc" class="form-check">
+                  <input
+                    type="radio"
+                    id="addc-yes"
+                    value="Yes"
+                    formControlName="addc"
+                    class="form-check-input"
+                  />
+                  <label class="form-check-label" for="addc-yes">Yes</label>
+                </div>
+                <div class="form-check">
+                  <input
+                    type="radio"
+                    id="addc-no"
+                    value="No"
+                    formControlName="addc"
+                    class="form-check-input"
+                  />
+                  <label class="form-check-label" for="addc-no">No</label>
+                </div>
+              </div>
+              
+              <div class="col-md-3">
+                <label for="th">Anti-condensation Heater (TH):</label>
+                <div id="th" class="form-check">
+                  <input
+                    type="radio"
+                    id="th-yes"
+                    value="Yes"
+                    formControlName="th"
+                    class="form-check-input"
+                  />
+                  <label class="form-check-label" for="th-yes">Yes</label>
+                </div>
+                <div class="form-check">
+                  <input
+                    type="radio"
+                    id="th-no"
+                    value="No"
+                    formControlName="th"
+                    class="form-check-input"
+                  />
+                  <label class="form-check-label" for="th-no">No</label>
+                </div>
+              </div>
+              
+              <div class="col-md-3">
+                <label for="ptc">Thermistor Relay (PTC):</label>
+                <div id="ptc" class="form-check">
+                  <input
+                    type="radio"
+                    id="ptc-yes"
+                    value="Yes"
+                    formControlName="ptc"
+                    class="form-check-input"
+                  />
+                  <label class="form-check-label" for="ptc-yes">Yes</label>
+                </div>
+                <div class="form-check">
+                  <input
+                    type="radio"
+                    id="ptc-no"
+                    value="No"
+                    formControlName="ptc"
+                    class="form-check-input"
+                  />
+                  <label class="form-check-label" for="ptc-no">No</label>
+                </div>
+              </div>
+              
+              <div class="col-md-3">
+                <label for="av">Ammeter & Voltmeter:</label>
+                <div id="av" class="form-check">
+                  <input
+                    type="radio"
+                    id="av-yes"
+                    value="Yes"
+                    formControlName="av"
+                    class="form-check-input"
+                  />
+                  <label class="form-check-label" for="av-yes">Yes</label>
+                </div>
+                <div class="form-check">
+                  <input
+                    type="radio"
+                    id="av-no"
+                    value="No"
+                    formControlName="av"
+                    class="form-check-input"
+                  />
+                  <label class="form-check-label" for="av-no">No</label>
+                </div>
+              </div>
+              
+              <div class="col-md-3">
+                <label for="vfd">VFD Bypass (BYP):</label>
+                <div id="vfd" class="form-check">
+                  <input
+                    type="radio"
+                    id="vfd-yes"
+                    value="Yes"
+                    formControlName="vfd"
+                    class="form-check-input"
+                  />
+                  <label class="form-check-label" for="vfd-yes">Yes</label>
+                </div>
+                <div class="form-check">
+                  <input
+                    type="radio"
+                    id="vfd-no"
+                    value="No"
+                    formControlName="vfd"
+                    class="form-check-input"
+                  />
+                  <label class="form-check-label" for="vfd-no">No</label>
+                </div>
+              </div>
+              </div>
+          <!-- Add your add-ons form fields -->
+        </form>
+        <button (click)="saveControllPanel()" class="btn btn-success mt-3">Save Controll Panel</button>
+      </div>
+    <!-- Navigation Buttons -->
+    <div class="text-center mt-3">
+      <button (click)="goBack()" class="btn btn-primary" [disabled]="currentState === 'project'">Back</button>
+    
+      <button  *ngIf="isLastState"  (click)="goNext()" class="btn btn-info">Next</button>
+      
+      <div *ngIf="currentState==='controllPanel'">
+        <div *ngIf="!isLastState">
+          <button (click)="addToProject()" class="btn btn-success">Add to Project</button>
+          <button (click)="finish()" class="btn btn-primary">Finish</button>
+        </div>
+      </div>
+      
+    </div>
+    
+
+  </div>
+  

@@ -1,0 +1,6 @@
+{
+    "/AquaFlowController": {
+    "target": "http://localhost:8080/FJPORTAL_DEV",
+    "secure:": false
+    }
+}
