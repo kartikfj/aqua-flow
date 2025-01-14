@@ -1,0 +1,31 @@
+.accordion-button {
+    font-weight: bold;
+    font-size: 1.1rem;
+  }
+  
+  .accordion-item {
+    margin-bottom: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+  }
+  
+  .accordion-body {
+    background-color: #f9f9f9;
+    padding: 1rem;
+  }
+  
+  ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  ul li {
+    padding: 0.3rem 0;
+  }
+  
+  h6 {
+    margin-top: 1rem;
+    font-size: 1rem;
+    font-weight: bold;
+  }
+  

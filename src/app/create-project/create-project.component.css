@@ -1,0 +1,22 @@
+/* Example styling for buttons */
+.btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+  }
+  
+  .btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+  }
+  
+  .modal-header {
+    background-color: #f8f9fa;
+  }
+  
+  .modal-footer {
+    background-color: #f8f9fa;
+  }
+  #successToast {
+    margin-top: 20px; /* Adds spacing from the top */
+  }
+  
