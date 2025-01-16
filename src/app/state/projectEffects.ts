@@ -48,14 +48,16 @@ export class ProjectEffects {
     )
   );
   saveChildProject$ = createEffect(() =>
+    
     this.actions$.pipe(
       ofType(ProjectActions.saveProjectChildData),
       mergeMap(action =>
-        this.projectService.saveChildProject(action.projectChild).pipe(
+        this.projectService.saveChildProject(action.packageData).pipe(
           map(projectChild => ProjectActions.saveProjectChildDataSuccess({ projectChild })),
           catchError(error => of(ProjectActions.saveProjectChildDataFailure({ error })))
         )
       )
     )
   );
+  
 }

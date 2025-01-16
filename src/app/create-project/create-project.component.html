@@ -25,54 +25,66 @@
     <div *ngIf="currentState === 'project'" class="card p-3">
         <h2>Create Project</h2>
         <div class="row mb-3">
-          <div class="col-md-6">
-            <label for="projectSearch">Select Project:</label>
+          <div class="col-md-6 position-relative">
+            <label for="projectSearch" class="form-label">Select Project:</label>
+        
+            <!-- Search Input -->
             <input
               id="projectSearch"
               type="text"
               class="form-control"
+              (focus)="toggleDropdown(true)"
               (input)="searchProjects($event)"
-              placeholder="Search by project name"
+              (blur)="closeDropdownWithDelay()"
+              placeholder="Search by project name, code..."
             />
+        
+            <!-- Search Results -->
+            <div
+              *ngIf="isDropdownOpen && filteredProjects.length > 0"
+              class="list-group mt-2"
+              
+              style="max-height: 200px; overflow-y: auto; position: absolute; width: 100%;"
+            >
+              <div
+                class="list-group-item list-group-item-action"
+                *ngFor="let project of filteredProjects"
+                (click)="selectProject(project)"
+                style="cursor: pointer;"
+              >
+                <strong>{{ project.projectCode }}</strong> - {{ project.projectName }}
+              </div>
+            </div>
           </div>
         </div>
-      
-        <!-- Search Results -->
-        <div *ngIf="filteredProjects.length > 0" class="list-group mb-3">
-          <div
-            class="list-group-item"
-            *ngFor="let project of filteredProjects"
-            (click)="selectProject(project)"
-            style="cursor: pointer;"
-          >
-            {{ project.projectName }}
-          </div>
-        </div>
+        
+        
       <form [formGroup]="projectForm">
         <div class="row">
           <div class="col-md-3">
-            <label for="projectName">Project Name:</label>
-            <input id="projectName" formControlName="projectName" type="text" class="form-control" />
+            <label for="projectCode">Project Code:</label>
+            <input id="projectCode" formControlName="projectCode" type="text" class="form-control"  readonly/>
           </div>
           <div class="col-md-3">
-            <label for="projectCode">Project Code:</label>
-            <input id="projectCode" formControlName="projectCode" type="text" class="form-control" />
+            <label for="projectName">Project Name:</label>
+            <input id="projectName" formControlName="projectName" type="text" class="form-control" readonly />
           </div>
+         
           <div class="col-md-3">
             <label for="contractor">Contractor:</label>
-            <input id="contractor" formControlName="contractor" type="text" class="form-control" />
+            <input id="contractor" formControlName="contractor" type="text" class="form-control" readonly />
           </div>
           <div class="col-md-3">
             <label for="consultant">Consultant:</label>
-            <input id="consultant" formControlName="consultant" type="text" class="form-control" />
+            <input id="consultant" formControlName="consultant" type="text" class="form-control" readonly />
           </div>
           <div class="col-md-3">
             <label for="location">Location:</label>
-            <input id="location" formControlName="location" type="text" class="form-control" />
+            <input id="location" formControlName="location" type="text" class="form-control" readonly/>
           </div>
         </div>
       </form>
-      <button (click)="saveProject()" class="btn btn-success mt-3">Save Project</button>
+      <button (click)="saveProject()" [disabled]="disabledButton" class="btn btn-success mt-3">Save Project</button>
     </div>
   
     <!-- Package Form -->
@@ -91,17 +103,21 @@
             </div>
             <div class="col-md-3">
               <label for="pumpSeries">Pump Series:</label>
-              <select id="pumpSeries" formControlName="pumpSeries" class="form-control">
+              <select id="pumpSeries" formControlName="pumpSeries" class="form-control" (change)="onSelectedPumpSeries($event)">
                 <option *ngFor="let series of pumpSeriesOptions" [value]="series">{{ series }}</option>
               </select>
             </div>
             <div class="col-md-3">
               <label for="pumpSize">Pump Size:</label>
-              <input id="pumpSize" formControlName="pumpSize" type="text" class="form-control" />
+              <select id="pumpSize" formControlName="pumpSize" class="form-control" (change)="onSelectedModelSeries($event)">
+              <option *ngFor="let size of pumpSizeOptions" [value]="size">{{ size }}</option>
+               </select>
             </div>
             <div class="col-md-3">
-              <label for="pumpModel">Pump Size:</label>
-              <input id="pumpModel" formControlName="pumpModel" type="text" class="form-control" />
+              <label for="pumpModel">Pump Model:</label>
+              <select id="pumpModel" formControlName="pumpModel"  class="form-control" >
+                <option *ngFor="let model of pumpModelOption" [value]="model">{{model}}</option>
+                </select>
             </div>
           </div>
           <div class="row mt-3">
@@ -166,29 +182,31 @@
               <div class="col-md-3">
                 <label for="pressureVessel">Pressure Vessel:</label>
                 <select id="pressureVessel" formControlName="pressureVessel"  class="form-control">
-                <option *ngFor="let strainer of strainerOptions" [value]="strainer">{{ strainer }}</option>
+                <option *ngFor="let strainer of pressureVessel" [value]="strainer">{{ strainer }}</option>
                 </select>
               </div>
               <div class="col-md-3">
                 <label for="pressureVesselBrand">Brand:</label>
                 <select id="pressureVesselBrand" formControlName="pressureVesselBrand"  class="form-control">
-                <option *ngFor="let flexible of flexibleOptions" [value]="flexible">{{ flexible }}</option>
+                <option *ngFor="let flexible of brand" [value]="flexible">{{ flexible }}</option>
                 </select>
               </div>
               <div class="col-md-3">
                 <label for="pressureVesselCapacity">Capacity:</label>
                 <select id="pressureVesselCapacity" formControlName="pressureVesselCapacity" class="form-control">
-                  <option *ngFor="let float of floatOptions" [value]="float">{{ float }}</option>
+                  <option *ngFor="let float of capacity" [value]="float">{{ float }}</option>
                 </select>
               </div>
               <div class="col-md-3">
                 <label for="pressureVesselRating">Pressure Rating:</label>
-                <input id="pressureVesselRating" formControlName="pressureVesselRating" type="number" class="form-control" />
+                <select id="pressureVesselRating" formControlName="pressureVesselRating"  class="form-control" >
+                <option *ngFor="let strainer of pressureRating" [value]="strainer">{{ strainer }}</option>
+              </select>
               </div>
               <div class="col-md-3">
                 <label for="material">Material:</label>
                 <select id="material" formControlName="material" class="form-control">
-                  <option *ngFor="let float of floatOptions" [value]="float">{{ float }}</option>
+                  <option *ngFor="let float of material" [value]="float">{{ float }}</option>
                 </select>
               </div>
               <div class="col-md-3">
@@ -207,13 +225,13 @@
               <div class="col-md-3">
                 <label for="controlPanelType">Type:</label>
                 <select id="controlPanelType" formControlName="controlPanelType"  class="form-control">
-                <option *ngFor="let strainer of strainerOptions" [value]="strainer">{{ strainer }}</option>
+                <option *ngFor="let strainer of type" [value]="strainer">{{ strainer }}</option>
                 </select>
               </div>
               <div class="col-md-3">
                 <label for="controlPanelPower">Power:</label>
                 <select id="controlPanelPower" formControlName="controlPanelPower"  class="form-control">
-                <option *ngFor="let flexible of flexibleOptions" [value]="flexible">{{ flexible }}</option>
+                <option *ngFor="let flexible of power" [value]="flexible">{{ flexible }}</option>
                 </select>
               </div>
               <div class="col-md-3">
@@ -459,7 +477,7 @@ aria-hidden="true"
   </div>
 </div>
 
-<div class="container my-4">
+<!-- <div class="container my-4">
   <h3>Project Details</h3>
   <div class="table-responsive">
     <table class="table table-bordered">
@@ -531,4 +549,76 @@ aria-hidden="true"
 
 <ng-template #noChildData>
   <p class="text-muted">No child data added yet.</p>
-</ng-template>
+</ng-template>  -->
+<table class="table table-bordered table-hover">
+  <thead class="thead-light">
+    <tr>
+      <th ><i class="bi bi-sort-up">Project Name</i></th>
+      <th ><i class="bi bi-sort-up">Project Code</i></th>
+    
+      <th >Contractor</th>
+      <th >Consultant</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let project of projects; let i = index">
+      <td>{{ project.projectName }}</td>
+      <td>{{ project.projectCode }}</td>
+    
+      <td>{{ project.contractor }}</td>
+      <td>{{ project.consultant }}</td>
+      <td>
+        <!-- <button
+          class="btn btn-primary"
+          (click)="navigateToAddChild(project.id)"
+        >
+          Add
+        </button> -->
+        <button
+          class="btn btn-secondary ml-2"
+          (click)="toggleChildData(i)"
+        >
+          {{ expandedRowIndex === i ? 'Hide Details' : 'Show Details' }}
+        </button>
+        <tr *ngIf="expandedRowIndex === i">
+            <td colspan="6">
+              <div *ngIf="project.children?.length">
+                <h5>Child Data:</h5>
+                <table class="table table-sm table-bordered">
+                  <thead>
+                    <tr>
+                      <th >Pump Series</th>
+                      <th>Pump Model</th>
+                      <!-- <th>Flow</th>
+                      <th>Head</th>
+                      <th>Pump Size</th>
+                      <th>Application</th>
+                      <th>Configuration</th>
+                      <th>Quantity</th> -->
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let child of project.children">
+                      <td>{{ child.pumpSeries }}</td>
+                      <td>{{ child.pumpModel }}</td>
+                      <!-- <td>{{ child.flow }}</td>
+                      <td>{{ child.head }}</td>
+                      <td>{{ child.pumpSize }}</td>
+                      <td>{{ child.application }}</td>
+                      <td>{{ child.configuration }}</td>
+                      <td>{{ child.quantity }}</td> -->
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div *ngIf="!project.children?.length">
+                <p>No child data available for this project.</p>
+              </div>
+            </td>
+          </tr>
+      </td>
+    </tr>
+    </tbody>
+    </table>
+    

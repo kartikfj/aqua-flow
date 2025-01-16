@@ -5,7 +5,7 @@ export interface Project {
     contractor: string;
     consultant: string;
     location: string;
-    children?: ProjectChild[]; // Array of child data
+    children: ProjectChild[]; // Array of child data
   }
   
   export interface ProjectChild {
@@ -36,5 +36,23 @@ export interface Project {
   controlPanelPTC: string;
   controlPanelAV: string;
   controlPanelBYP: string;
+  }
+  export interface ProjectData{
+    projectName: string;
+    projectCode: string;
+    contractor: string;
+    consultant: string;
+    location: string;
+    parentsysid: 0,
+    quantity: 0,
+    floatswitchQty: 0,
+    materailQty: 0,
+    price: 0.0,
+    sth: 0,
+    stp: 0,
+    bp: 0,
+    fsw: 0,
+    ctrlprice: 0.0,
+    uvr: 0.0
   }
   

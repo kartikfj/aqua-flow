@@ -7,7 +7,7 @@ import { Project, ProjectChild } from './model/Project';
 @Injectable({ providedIn: 'root' })
 export class ProjectService {
  
-  private apiUrl = '/api/projects'; // Adjust the URL to your backend API
+  private apiUrl = '/AquaFlowController'; // Adjust the URL to your backend API
 
   constructor(private http: HttpClient) {}
 
@@ -24,6 +24,6 @@ export class ProjectService {
   }
 
   saveChildProject(projectChild: ProjectChild): Observable<ProjectChild> {
-    return this.http.post<ProjectChild>(this.apiUrl,projectChild);
+    return this.http.post<ProjectChild>(`${this.apiUrl}?action=saveProduct`,projectChild);
   }
 }

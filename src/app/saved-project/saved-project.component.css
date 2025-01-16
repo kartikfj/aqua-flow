@@ -28,4 +28,11 @@
     font-size: 1rem;
     font-weight: bold;
   }
+  .table th {
+    cursor: pointer;
+  }
+  
+  .table th:hover {
+    background-color: #f1f1f1;
+  }
   

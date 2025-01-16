@@ -1,103 +1,87 @@
 <div class="container mt-4">
     <h2 class="text-center mb-4">Saved Projects</h2>
   
-    <div class="accordion" id="projectAccordion">
-      <!-- Loop through projects -->
-      <div *ngFor="let project of projects; let i = index" class="accordion-item">
-        <button 
-        class="btn btn-primary" 
-        (click)="navigateToAddChild(project.id)">
-        Add
-      </button>
-        <h2 class="accordion-header" id="heading{{ i }}">
-          <button
-            class="accordion-button"
-            type="button"
-            data-bs-toggle="collapse"
-            [attr.data-bs-target]="'#collapse' + i"
-            aria-expanded="false"
-            [attr.aria-controls]="'collapse' + i"
-          >
-            {{ project.projectName }} ({{ project.projectCode }})
-          </button>
-        </h2>
-        <div
-          id="collapse{{ i }}"
-          class="accordion-collapse collapse"
-          [attr.aria-labelledby]="'heading' + i"
-          data-bs-parent="#projectAccordion"
-        >
-          <div class="accordion-body">
-            <p><strong>Location:</strong> {{ project.location }}</p>
-            <p><strong>Contractor:</strong> {{ project.contractor }}</p>
-            <p><strong>Consultant:</strong> {{ project.consultant }}</p>
-  
-            <!-- Child packages accordion -->
-            <div class="accordion" id="childAccordion{{ i }}">
-              <div *ngFor="let child of project.children; let j = index" class="accordion-item">
-                <h2 class="accordion-header" id="childHeading{{ i }}{{ j }}">
-                  <button
-                    class="accordion-button collapsed"
-                    type="button"
-                    data-bs-toggle="collapse"
-                    [attr.data-bs-target]="'#childCollapse' + i + j"
-                    aria-expanded="false"
-                    [attr.aria-controls]="'childCollapse' + i + j"
-                  >
-                    Package {{ j + 1 }} - {{ child.pumpSeries }} ({{ child.pumpModel }})
-                  </button>
-                </h2>
-                <div
-                  id="childCollapse{{ i }}{{ j }}"
-                  class="accordion-collapse collapse"
-                  [attr.aria-labelledby]="'childHeading' + i + j"
-                  [attr.data-bs-parent]="'childAccordion' + i"
-                >
-                  <div class="accordion-body">
-                    <h6>Package Details:</h6>
-                    <ul>
-                      <li><b>Flow:</b> {{ child.flow }}</li>
-                      <li><b>Head:</b> {{ child.head }}</li>
-                      <li><b>Pump Size:</b> {{ child.pumpSize }}</li>
-                      <li><b>Application:</b> {{ child.application }}</li>
-                      <li><b>Configuration:</b> {{ child.configuration }}</li>
-                      <li><b>Quantity:</b> {{ child.quantity }}</li>
-                    </ul>
-                    <h6>Addons:</h6>
-                    <ul>
-                      <li><b>Strainer:</b> {{ child.strainer }}</li>
-                      <li><b>Flexible Connector:</b> {{ child.flexibleConnector }}</li>
-                      <li><b>Float Switch:</b> {{ child.floatSwitch }}</li>
-                      <li><b>Float Switch Qty:</b> {{ child.floatSwitchQty }}</li>
-                    </ul>
-                    <h6>Pressure Vessel:</h6>
-                    <ul>
-                      <li><b>Type:</b> {{ child.pressureVessel }}</li>
-                      <li><b>Brand:</b> {{ child.pressureVesselBrand }}</li>
-                      <li><b>Capacity:</b> {{ child.pressureVesselCapacity }}</li>
-                      <li><b>Rating:</b> {{ child.pressureVesselRating }}</li>
-                      <li><b>Material:</b> {{ child.material }}</li>
-                      <li><b>Material Qty:</b> {{ child.materialQty }}</li>
-                    </ul>
-                    <h6>Control Panel:</h6>
-                    <ul>
-                      <li><b>Type:</b> {{ child.controlPanelType }}</li>
-                      <li><b>Power:</b> {{ child.controlPanelPower }}</li>
-                      <li><b>Relay:</b> {{ child.controlPanelRelay }}</li>
-                      <li><b>ADDC:</b> {{ child.controlPanelADDC }}</li>
-                      <li><b>TH:</b> {{ child.controlPanelTH }}</li>
-                      <li><b>PTC:</b> {{ child.controlPanelPTC }}</li>
-                      <li><b>AV:</b> {{ child.controlPanelAV }}</li>
-                      <li><b>BYP:</b> {{ child.controlPanelBYP }}</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <!-- End of Child Packages -->
-          </div>
-        </div>
-      </div>
+    <!-- Search Input -->
+    <div class="mb-3">
+      <input
+        type="text"
+        [(ngModel)]="searchQuery"
+        class="form-control"
+        placeholder="Search projects..."
+        (input)="filterProjects()"
+      />
     </div>
-  </div>
   
+    <!-- Parent Table -->
+    <table class="table table-bordered table-hover">
+      <thead class="thead-light">
+        <tr>
+          <th (click)="sortData('projectName')"><i class="bi bi-sort-up">Project Name</i></th>
+          <th (click)="sortData('projectCode')"><i class="bi bi-sort-up">Project Code</i></th>
+          <th (click)="sortData('location')">Location</th>
+          <th (click)="sortData('contractor')">Contractor</th>
+          <th (click)="sortData('consultant')">Consultant</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let project of projects; let i = index">
+          <td>{{ project.projectName }}</td>
+          <td>{{ project.projectCode }}</td>
+          <td>{{ project.location }}</td>
+          <td>{{ project.contractor }}</td>
+          <td>{{ project.consultant }}</td>
+          <td>
+            <button
+              class="btn btn-primary"
+              (click)="navigateToAddChild(project.id)"
+            >
+              Add
+            </button>
+            <button
+              class="btn btn-secondary ml-2"
+              (click)="toggleChildData(i)"
+            >
+              {{ expandedRowIndex === i ? 'Hide Details' : 'Show Details' }}
+            </button>
+            <tr *ngIf="expandedRowIndex === i">
+                <td colspan="6">
+                  <div *ngIf="project.children?.length">
+                    <h5>Child Data:</h5>
+                    <table class="table table-sm table-bordered">
+                      <thead>
+                        <tr>
+                          <th >Pump Series</th>
+                          <th>Pump Model</th>
+                          <!-- <th>Flow</th>
+                          <th>Head</th>
+                          <th>Pump Size</th>
+                          <th>Application</th>
+                          <th>Configuration</th>
+                          <th>Quantity</th> -->
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let child of project.children">
+                          <td>{{ child.pumpSeries }}</td>
+                          <td>{{ child.pumpModel }}</td>
+                          <!-- <td>{{ child.flow }}</td>
+                          <td>{{ child.head }}</td>
+                          <td>{{ child.pumpSize }}</td>
+                          <td>{{ child.application }}</td>
+                          <td>{{ child.configuration }}</td>
+                          <td>{{ child.quantity }}</td> -->
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <div *ngIf="!project.children?.length">
+                    <p>No child data available for this project.</p>
+                  </div>
+                </td>
+              </tr>
+          </td>
+        </tr>
+  
+        <!-- Collapsible Child Rows -->
+       

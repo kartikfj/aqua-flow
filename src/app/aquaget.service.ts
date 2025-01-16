@@ -7,7 +7,8 @@ import { Observable } from 'rxjs';
 })
 export class AquagetService {
 
- private baseUrl = 'http//localhost:8080/api';
+// private baseUrl = 'http//localhost:8080/api';
+ apiUrl="/AquaFlowController";
   constructor(private http: HttpClient) {}
 
   /**
@@ -16,7 +17,7 @@ export class AquagetService {
    * @returns Observable with the server response.
    */
   getContractor(): Observable<any> {
-    return this.http.get(`${this.baseUrl}/projects`);
+    return this.http.get(`${this.apiUrl}/projects`);
   }
 
   /**
@@ -24,22 +25,36 @@ export class AquagetService {
    * @param packageData Object containing package details.
    * @returns Observable with the server response.
    */
-  getPumpSeries(): Observable<any> {
-    return this.http.get(`${this.baseUrl}/packages`);
+ // http://localhost:8080/FJPORTAL_DEV/AquaFlowController?def
+  getPumpSeries(): Observable<string[]> {
+  
+    return this.http.get<string[]>(`${this.apiUrl}?def`);
   }
-  getPumpSize(pumpSeries:string):Observable<any>{
-    return this.http.get(`${this.baseUrl}/pumpSeries?${pumpSeries}`);
+  getPumpSize(pumpSeries:string):Observable<string[]>{
+    console.log("data 2 come");
+    return this.http.get<string[]>(`${this.apiUrl}?action=pumpSize&pumpSeries=${pumpSeries}`);
   }
   getPumpModel(pumpSize:string):Observable<any>{
-    return this.http.get(`${this.baseUrl}/pumpModel?${pumpSize}`);
+    return this.http.get<string[]>(`${this.apiUrl}?action=pumpModel&pumpSize=${pumpSize}`);
   }
- 
+  getProjectModelData():Observable<any>{
+    return this.http.get(`${this.apiUrl}?action=retrieveProject`);
+  }
+  getProjectContractor():Observable<any>{
+    return this.http.get(`${this.apiUrl}?action=getProjectDetails`);
+  }
+  getProjectData():Observable<any>{
+    return this.http.get(`${this.apiUrl}?action=retrieveProjectAllData`);
+  }
+  getProjectById(projectId:number):Observable<any>{
+    return this.http.get(`${this.apiUrl}?action=retrieveProjectById&&projectId=${projectId}`);
+  }
   /**
    * Save add-ons details associated with a project.
    * @param getAddonsData Object containing add-ons details.
    * @returns Observable with the server response.
    */
-  saveAddons(addonsData: any): Observable<any> {
-    return this.http.post(`${this.baseUrl}/addons`, addonsData);
-  }
+  // saveAddons(addonsData: any): Observable<any> {
+  //   return this.http.post(`${this.baseUrl}/addons`, addonsData);
+  // }
 }

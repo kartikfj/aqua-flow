@@ -26,7 +26,8 @@ export class AquapostService {
    * @returns Observable with the server response.
    */
   savePackage(packageData: any): Observable<any> {
-    return this.http.post(`${this.baseUrl}/packages`, packageData);
+    const apiUrl = '/AquaFlowController?action=saveProduct';
+    return this.http.post(apiUrl,packageData);
   }
 
   /**

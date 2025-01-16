@@ -6,128 +6,201 @@ import { selectAllProjects } from '../state/selector';
 import * as ProjectActions from '../state/action';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { AquagetService } from '../aquaget.service';
 @Component({
   selector: 'app-saved-project',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule,FormsModule],
   templateUrl: './saved-project.component.html',
   styleUrl: './saved-project.component.css'
 })
 export class SavedProjectComponent {
-  constructor(private router:Router){}
-  projects: Project[] = [
-    {
-      id: 1,
-      projectName: 'High-Rise Water Pump System',
-      projectCode: 'HRWPS001',
-      contractor: 'Skyline Builders',
-      consultant: 'Elite Consultants',
-      location: 'Downtown City',
-      children: [
-        {
-          projectId: 1,
-          flow: '600 L/min',
-          head: '60m',
-          pumpSeries: 'HSX',
-          pumpModel: 'HSX100',
-          pumpSize: '6 inch',
-          application: 'Building Supply',
-          configuration: 'Vertical',
-          quantity: 3,
-          strainer: 'Metal',
-          flexibleConnector: 'Rubber',
-          floatSwitch: 'Automatic',
-          floatSwitchQty: 3,
-          pressureVessel: 'PV300',
-          pressureVesselBrand: 'HydroFlow',
-          pressureVesselCapacity: '300L',
-          pressureVesselRating: '12 bar',
-          material: 'Steel',
-          materialQty: 2,
-          controlPanelType: 'Digital',
-          controlPanelPower: '7kW',
-          controlPanelRelay: 'Relay300',
-          controlPanelADDC: '24V',
-          controlPanelTH: '75°C',
-          controlPanelPTC: 'Enabled',
-          controlPanelAV: '230V',
-          controlPanelBYP: 'Enabled',
-        },
-        {
-          projectId: 1,
-          flow: '800 L/min',
-          head: '80m',
-          pumpSeries: 'HSY',
-          pumpModel: 'HSY200',
-          pumpSize: '8 inch',
-          application: 'Commercial Use',
-          configuration: 'Horizontal',
-          quantity: 2,
-          strainer: 'Plastic',
-          flexibleConnector: 'Steel',
-          floatSwitch: 'Manual',
-          floatSwitchQty: 2,
-          pressureVessel: 'PV500',
-          pressureVesselBrand: 'AquaTech',
-          pressureVesselCapacity: '500L',
-          pressureVesselRating: '16 bar',
-          material: 'Aluminum',
-          materialQty: 4,
-          controlPanelType: 'Analog',
-          controlPanelPower: '10kW',
-          controlPanelRelay: 'Relay500',
-          controlPanelADDC: '12V',
-          controlPanelTH: '80°C',
-          controlPanelPTC: 'Disabled',
-          controlPanelAV: '220V',
-          controlPanelBYP: 'Disabled',
-        },
-      ],
-    },
-    {
-      id: 2,
-      projectName: 'Agriculture Pump System',
-      projectCode: 'AGPS002',
-      contractor: 'Farmers Group',
-      consultant: 'AgriConsult',
-      location: 'Green Valley',
-      children: [
-        {
-          projectId: 2,
-          flow: '1000 L/min',
-          head: '40m',
-          pumpSeries: 'AgriFlow',
-          pumpModel: 'AF100',
-          pumpSize: '10 inch',
-          application: 'Irrigation',
-          configuration: 'Vertical',
-          quantity: 5,
-          strainer: 'Steel',
-          flexibleConnector: 'Rubber',
-          floatSwitch: 'Automatic',
-          floatSwitchQty: 5,
-          pressureVessel: 'PV800',
-          pressureVesselBrand: 'FarmTech',
-          pressureVesselCapacity: '800L',
-          pressureVesselRating: '20 bar',
-          material: 'Steel',
-          materialQty: 3,
-          controlPanelType: 'Digital',
-          controlPanelPower: '15kW',
-          controlPanelRelay: 'Relay800',
-          controlPanelADDC: '48V',
-          controlPanelTH: '85°C',
-          controlPanelPTC: 'Enabled',
-          controlPanelAV: '240V',
-          controlPanelBYP: 'Enabled',
-        },
-      ],
-    },
-  ];
- 
+  constructor(private router: Router,private aquaGetService:AquagetService) {}
+  ngOnInit(): void {
+    // Initialize all forms
+    // this.route.params.subscribe((params)=>{
+    //   this.projectId =+params['projectId'];
+    //  // this.fetchProjectDetails();
+    //  this.getPumSeries();
+    // })
+    this.getAllProject();
 
+  }
+  projects:Project[]=[];
+  // projects = [
+  //   {
+  //     id: 1,
+  //     projectName: 'Project A',
+  //     projectCode: 'PA001',
+  //     location: 'Location A',
+  //     contractor: 'Contractor A',
+  //     consultant: 'Consultant A',
+  //     children: [
+  //       {
+  //         pumpSeries: 'Series 1',
+  //         pumpModel: 'Model A1',
+  //         flow: '100 LPM',
+  //         head: '50 m',
+  //         pumpSize: '2 inch',
+  //         application: 'Industrial',
+  //         configuration: 'Vertical',
+  //         quantity: 2,
+  //       },
+  //       {
+  //         pumpSeries: 'Series 2',
+  //         pumpModel: 'Model A1',
+  //         flow: '100 LPM',
+  //         head: '50 m',
+  //         pumpSize: '2 inch',
+  //         application: 'Industrial',
+  //         configuration: 'Vertical',
+  //         quantity: 2,
+  //       },
+  //       {
+  //         pumpSeries: 'Series 3',
+  //         pumpModel: 'Model A1',
+  //         flow: '100 LPM',
+  //         head: '50 m',
+  //         pumpSize: '2 inch',
+  //         application: 'Industrial',
+  //         configuration: 'Vertical',
+  //         quantity: 2,
+  //       },
+  //     ],
+  //   },
+  //   {
+  //     id: 3,
+  //     projectName: 'Project c',
+  //     projectCode: 'PA001',
+  //     location: 'Location c',
+  //     contractor: 'Contractor c',
+  //     consultant: 'Consultant c',
+  //     children: [
+  //       {
+  //         pumpSeries: 'Series 1',
+  //         pumpModel: 'Model A1',
+  //         flow: '100 LPM',
+  //         head: '50 m',
+  //         pumpSize: '2 inch',
+  //         application: 'Industrial',
+  //         configuration: 'Vertical',
+  //         quantity: 2,
+  //       },
+  //       {
+  //         pumpSeries: 'Series 2',
+  //         pumpModel: 'Model A1',
+  //         flow: '100 LPM',
+  //         head: '50 m',
+  //         pumpSize: '2 inch',
+  //         application: 'Industrial',
+  //         configuration: 'Vertical',
+  //         quantity: 2,
+  //       },
+  //       {
+  //         pumpSeries: 'Series 3',
+  //         pumpModel: 'Model A1',
+  //         flow: '100 LPM',
+  //         head: '50 m',
+  //         pumpSize: '2 inch',
+  //         application: 'Industrial',
+  //         configuration: 'Vertical',
+  //         quantity: 2,
+  //       },
+  //     ],
+  //   },
+  //   {
+  //     id: 2,
+  //     projectName: 'Project B',
+  //     projectCode: 'PB002',
+  //     location: 'Location B',
+  //     contractor: 'Contractor B',
+  //     consultant: 'Consultant B',
+  //     children: [
+  //       {
+  //         pumpSeries: 'Series B',
+  //         pumpModel: 'Model B1',
+  //         flow: '200 LPM',
+  //         head: '30 m',
+  //         pumpSize: '2 inches',
+  //         application: 'Industrial',
+  //         configuration: 'Vertical',
+  //         quantity: 2,
+  //       },
+  //       {
+  //         pumpSeries: 'Series B1',
+  //         pumpModel: 'Model B1',
+  //         flow: '200 LPM',
+  //         head: '30 m',
+  //         pumpSize: '2 inches',
+  //         application: 'Industrial',
+  //         configuration: 'Vertical',
+  //         quantity: 2,
+  //       },
+  //       {
+  //         pumpSeries: 'Series B2',
+  //         pumpModel: 'Model B1',
+  //         flow: '200 LPM',
+  //         head: '30 m',
+  //         pumpSize: '2 inches',
+  //         application: 'Industrial',
+  //         configuration: 'Vertical',
+  //         quantity: 2,
+  //       },
+  //     ],
+  //   },
+  // ];
+
+  filteredProjects = [...this.projects];
+  searchQuery = '';
+  expandedRowIndex: number | null = null;
+
+  // Filter projects based on search query
+  filterProjects() {
+    this.filteredProjects = this.projects.filter((project) =>
+      project.projectName.toLowerCase().includes(this.searchQuery.toLowerCase())
+    );
+  }
+
+  // Sort projects based on column
+  sortData(column: keyof Project) {
+    this.filteredProjects.sort((a, b) => {
+      const valueA = (a[column] ?? '').toString().toLowerCase();
+      const valueB = (b[column] ?? '').toString().toLowerCase();
+      if (valueA < valueB) return -1;
+      if (valueA > valueB) return 1;
+      return 0;
+    });
+  }
+  sortChildData(column: keyof Project) {
+    this.filteredProjects.sort((a, b) => {
+      const valueA = (a[column] ?? '').toString().toLowerCase();
+      const valueB = (b[column] ?? '').toString().toLowerCase();
+      if (valueA < valueB) return -1;
+      if (valueA > valueB) return 1;
+      return 0;
+    });
+  }
+  
+
+  // Toggle child row visibility
+  toggleChildData(index: number) {
+    this.expandedRowIndex = this.expandedRowIndex === index ? null : index;
+  }
+
+  // Navigate to add child
   navigateToAddChild(projectId: number) {
     this.router.navigate(['/add-child', projectId]);
+  }
+
+  getAllProject(){
+    this.aquaGetService.getProjectData().subscribe(
+      (data)=>{
+         this.projects=data;
+       // this.projects.push(data);
+        console.log(data);
+      }
+    )
   }
 
   // projects$: Observable<Project[]>;

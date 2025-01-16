@@ -1,5 +1,5 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
-import { ProjectState } from './reducer';
+import { ProjectChildState, ProjectState } from './reducer';
 
 export const selectProjectState = createFeatureSelector<ProjectState>('projects');
 
@@ -7,3 +7,9 @@ export const selectAllProjects = createSelector(selectProjectState, state => sta
 
 export const selectProjectById = (projectId: number) =>
   createSelector(selectAllProjects, projects => projects.find(project => project.id === projectId));
+
+
+
+export const selectProjectChildState = createFeatureSelector<ProjectChildState>('projects');
+
+export const selectAllChildProjects = createSelector(selectProjectChildState, state => state.childProjects);

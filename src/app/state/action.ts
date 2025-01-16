@@ -30,7 +30,7 @@ export const fetchProjectChildDataFailure=createAction(
 
 
 
-export const saveProjectChildData = createAction('[Project Save Project',props<{projectChild:ProjectChild}>());
+export const saveProjectChildData = createAction('[Project Save Project',props<{packageData:ProjectChild}>());
 export const saveProjectChildDataSuccess = createAction('[Project] Save Project Success',props<{projectChild:ProjectChild}>());
 export const saveProjectChildDataFailure = createAction('[Project] Save Project Failure',props<{error:any}>());
 
