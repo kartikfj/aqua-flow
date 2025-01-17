@@ -49,6 +49,11 @@ export class AquagetService {
   getProjectById(projectId:number):Observable<any>{
     return this.http.get(`${this.apiUrl}?action=retrieveProjectById&&projectId=${projectId}`);
   }
+  getSavedProjectById(projectId:number):Observable<any>{
+    return this.http.get(`${this.apiUrl}?action=getSavedProjectDetails&&project=${projectId}`);
+    console.log
+  }
+  //http://localhost:8080/FJPORTAL_DEV/AquaFlowController?action=getSavedProjectDetails&&project=41
   /**
    * Save add-ons details associated with a project.
    * @param getAddonsData Object containing add-ons details.

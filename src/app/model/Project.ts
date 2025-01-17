@@ -39,6 +39,7 @@ export interface Project {
   }
   export interface ProjectData{
     projectName: string;
+    generatedCode:string;
     projectCode: string;
     contractor: string;
     consultant: string;

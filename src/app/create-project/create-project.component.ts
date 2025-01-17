@@ -1,6 +1,6 @@
 import { NgFor, NgIf } from '@angular/common';
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { AquapostService } from '../aquapost.service';
 import { AquagetService } from '../aquaget.service';
@@ -58,6 +58,7 @@ export class CreateProjectComponent {
     this.projects$ = this.store.select(selectAllChildProjects);
   }
   projects:Project[]=[];
+  projectSavedData!:ProjectData;
   //projects : any[]=[];
  // Will store the filtered and limited list of projects
  filteredProjects = [...this.project];
@@ -75,6 +76,7 @@ closeDropdownWithDelay(): void {
 // Handles project selection
 ngAfterOnInit(){
   this.getAllProjectById()
+  this.getSavedProjectById();
 if(this.projectId){
   this.disabledButton=true;
 }
@@ -88,11 +90,13 @@ if(this.projectId){
      this.getPumSeries();
      if(this.project){
       this.getAllProjectById();
+      this.getSavedProjectById();
      }
     })
     if(this.projectId){
       this.currentStep = 2;
       this.currentState='package'
+      this.disabledButton=true;
     }
     this.projectForm = this.fb.group({
 
@@ -104,41 +108,41 @@ if(this.projectId){
     });
 
     this.packageForm = this.fb.group({
-      flow: [''],
-      head: [''],
-      pumpSeries: [''],
-      pumpModel:[''],
-      pumpSize: [''],
-      application: [''],
-      configuration: [''],
-      quantity: [0],
+      flow: ['', [Validators.required]], // Min 1, Max 5000, Numbers only
+      head: ['', [Validators.required]], // Min 1, Max 500, Numbers only
+      pumpSeries: ['', Validators.required], // Required field
+      pumpModel: ['', Validators.required], // Required field
+      pumpSize: ['', Validators.required], // Required field
+      application: ['', Validators.required], // Required field
+      configuration: ['', Validators.required], // Required field
+      quantity: [1, [Validators.required, Validators.min(1), Validators.max(100), Validators.pattern('^[0-9]*$')]], // Min 1, Max 100, Numbers only
     //});
 
     //this.addonsForm = this.fb.group({
-      strainer: [''],
-      flexibleConnector: [''],
-      floatSwitch: [''],
-      floatSwitchQty: [''],
+      strainer:  ['', [Validators.required]],
+      flexibleConnector:  ['', [Validators.required]],
+      floatSwitch: ['', [Validators.required]],
+      floatSwitchQty: [1, [Validators.required, Validators.min(1), Validators.max(100), Validators.pattern('^[0-9]*$')]],
     //});
 
    // this.pressureVessleForm = this.fb.group({
-      pressureVessel: [''],
-      pressureVesselBrand:[''],
-      pressureVesselCapacity:[''],
-      pressureVesselRating:[''],
-      material:[''],
-      materialQty:[''],
+      pressureVessel: ['', [Validators.required]],
+      pressureVesselBrand:['', [Validators.required]],
+      pressureVesselCapacity:['', [Validators.required]],
+      pressureVesselRating:['', [Validators.required]],
+      material:['', [Validators.required]],
+      materialQty:[1, [Validators.required, Validators.min(1), Validators.max(100), Validators.pattern('^[0-9]*$')]],
     //});
 
    // this.controllPanelForm=this.fb.group({
-    controlPanelType:[''],
-    controlPanelPower:[''],
-    controlPanelRelay:[''],
-    controlPanelADDC:[''],
-    controlPanelTH:[''],
-    controlPanelPTC:[''],
-    controlPanelAV:[''],
-    controlPanelBYP:['']
+    controlPanelType:['', [Validators.required]],
+    controlPanelPower:['', [Validators.required]],
+    controlPanelRelay:['', [Validators.required]],
+    controlPanelADDC:['', [Validators.required]],
+    controlPanelTH:['', [Validators.required]],
+    controlPanelPTC:['', [Validators.required]],
+    controlPanelAV:['', [Validators.required]],
+    controlPanelBYP:['', [Validators.required]],
     });
   }
 
@@ -167,15 +171,19 @@ if(this.projectId){
     this.isDropdownOpen = false;
     this.filteredProjects = []; 
   }
-  saveProject() {
+  async saveProject() {
     if (this.currentState === 'project') {
       const projectData = this.projectForm.value;
       //this.projectId = "1";
       console.log(projectData);
-      this.aquaPost.createProject(projectData).subscribe(
+     await this.aquaPost.createProject(projectData).subscribe(
         (response:any)=>{ console.log(response);
           this.projectId=response.updateStatus;
           this.disabledButton=true;
+          this.aquaGet.getSavedProjectById(this.projectId).subscribe(data=>{
+            this.projectSavedData=data;
+            console.log(this.projectSavedData);
+          });
           alert(`Project Saved Successfully!,${this.projectId}`);
 
         },
@@ -202,6 +210,13 @@ if(this.projectId){
   // this.projectId=33;
     if (!this.projectId) {
       alert('Please create a project first!');
+      return;
+    }
+    if (this.packageForm.invalid) {
+      this.packageForm.markAllAsTouched(); // Mark all fields as touched to show validation messages
+    
+      document.getElementById('openValidationModal')?.click();
+     
       return;
     }
 
@@ -563,6 +578,14 @@ console.log(data);
     this.aquaGet.getProjectById(this.projectId).subscribe(data=>{
       this.projects=data;
       console.log(this.projects);
+      
+console.log(data);
+    })
+  }
+  getSavedProjectById(){
+    this.aquaGet.getSavedProjectById(this.projectId).subscribe(data=>{
+      this.projectSavedData=data;
+     // console.log(this.projects);
       
 console.log(data);
     })

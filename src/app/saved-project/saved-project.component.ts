@@ -160,6 +160,7 @@ export class SavedProjectComponent {
     this.filteredProjects = this.projects.filter((project) =>
       project.projectName.toLowerCase().includes(this.searchQuery.toLowerCase())
     );
+    console.log(this.filterProjects);
   }
 
   // Sort projects based on column
@@ -197,6 +198,7 @@ export class SavedProjectComponent {
     this.aquaGetService.getProjectData().subscribe(
       (data)=>{
          this.projects=data;
+         this.filterProjects();
        // this.projects.push(data);
         console.log(data);
       }

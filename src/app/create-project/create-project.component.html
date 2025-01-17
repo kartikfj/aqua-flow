@@ -1,451 +1,1038 @@
+<div>
+  <div *ngIf="projectSavedData" class="container mt-4">
+    <!-- Top Heading for Generated Code -->
+    <h2 class="text-start text-primary fw-bold">
+      Generated Code: {{ projectSavedData.generatedCode }}
+    </h2>
 
-  <div class="container">
-   
-    <div class="progress mb-4">
-        <div 
-          class="progress-bar progress-bar-striped" 
-          [style.width.%]="getProgress()"
-          role="progressbar"
-          aria-valuenow="25"
-          aria-valuemin="0"
-          aria-valuemax="100">
-          {{ getProgress() }}%
-        </div>
-      </div>
-    
-      <!-- Step Indicators -->
-      <div class="d-flex justify-content-between mb-3">
-        <span [class.text-primary]="currentState === 'project'">1. Project</span>
-        <span [class.text-primary]="currentState === 'package'">2. Package</span>
-        <span [class.text-primary]="currentState === 'addons'">3. Add-ons</span>
-        <span [class.text-primary]="currentState === 'pressureVessel'">4. Pressure Vessel</span>
-        <span [class.text-primary]="currentState === 'controllPanel'">5. Control Panel</span>
-      </div>
-    <!-- Project Form -->
-    <div *ngIf="currentState === 'project'" class="card p-3">
-        <h2>Create Project</h2>
-        <div class="row mb-3">
-          <div class="col-md-6 position-relative">
-            <label for="projectSearch" class="form-label">Select Project:</label>
-        
-            <!-- Search Input -->
-            <input
-              id="projectSearch"
-              type="text"
-              class="form-control"
-              (focus)="toggleDropdown(true)"
-              (input)="searchProjects($event)"
-              (blur)="closeDropdownWithDelay()"
-              placeholder="Search by project name, code..."
-            />
-        
-            <!-- Search Results -->
-            <div
-              *ngIf="isDropdownOpen && filteredProjects.length > 0"
-              class="list-group mt-2"
-              
-              style="max-height: 200px; overflow-y: auto; position: absolute; width: 100%;"
-            >
-              <div
-                class="list-group-item list-group-item-action"
-                *ngFor="let project of filteredProjects"
-                (click)="selectProject(project)"
-                style="cursor: pointer;"
-              >
-                <strong>{{ project.projectCode }}</strong> - {{ project.projectName }}
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        
-      <form [formGroup]="projectForm">
-        <div class="row">
-          <div class="col-md-3">
-            <label for="projectCode">Project Code:</label>
-            <input id="projectCode" formControlName="projectCode" type="text" class="form-control"  readonly/>
-          </div>
-          <div class="col-md-3">
-            <label for="projectName">Project Name:</label>
-            <input id="projectName" formControlName="projectName" type="text" class="form-control" readonly />
-          </div>
-         
-          <div class="col-md-3">
-            <label for="contractor">Contractor:</label>
-            <input id="contractor" formControlName="contractor" type="text" class="form-control" readonly />
-          </div>
-          <div class="col-md-3">
-            <label for="consultant">Consultant:</label>
-            <input id="consultant" formControlName="consultant" type="text" class="form-control" readonly />
-          </div>
-          <div class="col-md-3">
-            <label for="location">Location:</label>
-            <input id="location" formControlName="location" type="text" class="form-control" readonly/>
-          </div>
-        </div>
-      </form>
-      <button (click)="saveProject()" [disabled]="disabledButton" class="btn btn-success mt-3">Save Project</button>
+    <!-- Styled Table -->
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover shadow-lg mt-3">
+        <thead class="table-dark text-white">
+          <tr>
+            <th>Project Code</th>
+            <th>Project Name</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{ projectSavedData.projectCode }}</td>
+            <td>{{ projectSavedData.projectName }}</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-  
-    <!-- Package Form -->
-    <form [formGroup]="packageForm">
+  </div>
+</div>
+<div class="container">
+  <div class="progress mb-4">
+    <div
+      class="progress-bar progress-bar-striped"
+      [style.width.%]="getProgress()"
+      role="progressbar"
+      aria-valuenow="25"
+      aria-valuemin="0"
+      aria-valuemax="100"
+    >
+      {{ getProgress() }}%
+    </div>
+  </div>
+
+  <!-- Step Indicators -->
+  <div class="d-flex justify-content-between mb-3">
+    <span [class.text-primary]="currentState === 'project'">1. Project</span>
+    <span [class.text-primary]="currentState === 'package'">2. Package</span>
+    <span [class.text-primary]="currentState === 'addons'">3. Add-ons</span>
+    <span [class.text-primary]="currentState === 'pressureVessel'"
+      >4. Pressure Vessel</span
+    >
+    <span [class.text-primary]="currentState === 'controllPanel'"
+      >5. Control Panel</span
+    >
+  </div>
+
+  <!-- Project Form -->
+
+  <div *ngIf="currentState === 'project'" class="card p-3">
+    <h2>Create Project</h2>
+
+    <div class="row mb-3">
+      <div class="col-md-6 position-relative">
+        <label for="projectSearch" class="form-label">Select Project:</label>
+
+        <!-- Search Input -->
+        <input
+          id="projectSearch"
+          type="text"
+          class="form-control"
+          (focus)="toggleDropdown(true)"
+          (input)="searchProjects($event)"
+          (blur)="closeDropdownWithDelay()"
+          placeholder="Search by project name, code..."
+        />
+
+        <!-- Search Results -->
+        <div
+          *ngIf="isDropdownOpen && filteredProjects.length > 0"
+          class="list-group mt-2"
+          style="
+            max-height: 200px;
+            overflow-y: auto;
+            position: absolute;
+            width: 100%;
+          "
+        >
+          <div
+            class="list-group-item list-group-item-action"
+            *ngFor="let project of filteredProjects"
+            (click)="selectProject(project)"
+            style="cursor: pointer"
+          >
+            <strong>{{ project.projectCode }}</strong> -
+            {{ project.projectName }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <form [formGroup]="projectForm">
+      <div class="row">
+        <div class="col-md-3">
+          <label for="projectCode">Project Code:</label>
+          <input
+            id="projectCode"
+            formControlName="projectCode"
+            type="text"
+            class="form-control"
+            readonly
+          />
+        </div>
+        <div class="col-md-3">
+          <label for="projectName">Project Name:</label>
+          <input
+            id="projectName"
+            formControlName="projectName"
+            type="text"
+            class="form-control"
+            readonly
+          />
+        </div>
+
+        <div class="col-md-3">
+          <label for="contractor">Contractor:</label>
+          <input
+            id="contractor"
+            formControlName="contractor"
+            type="text"
+            class="form-control"
+            readonly
+          />
+        </div>
+        <div class="col-md-3">
+          <label for="consultant">Consultant:</label>
+          <input
+            id="consultant"
+            formControlName="consultant"
+            type="text"
+            class="form-control"
+            readonly
+          />
+        </div>
+        <div class="col-md-3">
+          <label for="location">Location:</label>
+          <input
+            id="location"
+            formControlName="location"
+            type="text"
+            class="form-control"
+            readonly
+          />
+        </div>
+      </div>
+    </form>
+    <button
+      (click)="saveProject()"
+      [disabled]="disabledButton"
+      class="btn btn-success mt-3"
+    >
+      Save Project
+    </button>
+  </div>
+
+  <!-- Package Form -->
+  <form [formGroup]="packageForm">
     <div *ngIf="currentState === 'package'" class="card p-3">
-        <h2>Package Set</h2>
-      
-        <div class="row">
-            <div class="col-md-3">
-              <label for="flow">Flow (l/s):</label>
-              <input id="flow" formControlName="flow" type="text" class="form-control" />
-            </div>
-            <div class="col-md-3">
-              <label for="head">Head (m):</label>
-              <input id="head" formControlName="head" type="text" class="form-control" />
-            </div>
-            <div class="col-md-3">
-              <label for="pumpSeries">Pump Series:</label>
-              <select id="pumpSeries" formControlName="pumpSeries" class="form-control" (change)="onSelectedPumpSeries($event)">
-                <option *ngFor="let series of pumpSeriesOptions" [value]="series">{{ series }}</option>
-              </select>
-            </div>
-            <div class="col-md-3">
-              <label for="pumpSize">Pump Size:</label>
-              <select id="pumpSize" formControlName="pumpSize" class="form-control" (change)="onSelectedModelSeries($event)">
-              <option *ngFor="let size of pumpSizeOptions" [value]="size">{{ size }}</option>
-               </select>
-            </div>
-            <div class="col-md-3">
-              <label for="pumpModel">Pump Model:</label>
-              <select id="pumpModel" formControlName="pumpModel"  class="form-control" >
-                <option *ngFor="let model of pumpModelOption" [value]="model">{{model}}</option>
-                </select>
-            </div>
+      <h2>Package Set</h2>
+      <div class="row">
+        <div class="col-md-3">
+          <label for="flow">Flow (l/s):</label>
+          <input
+            id="flow"
+            formControlName="flow"
+            type="text"
+            class="form-control"
+          />
+          <div
+            *ngIf="
+              packageForm.controls['flow'].invalid &&
+              packageForm.controls['flow'].touched
+            "
+          >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['flow'].errors?.['required']"
+              >Flow is required.</small
+            >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['flow'].errors?.['min']"
+              >Flow must be at least 1.</small
+            >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['flow'].errors?.['max']"
+              >Flow cannot exceed 50.</small
+            >
           </div>
-          <div class="row mt-3">
-            <div class="col-md-3">
-              <label for="application">Application:</label>
-              <select id="application" formControlName="application" class="form-control">
-                <option *ngFor="let app of applicationOptions" [value]="app">{{ app }}</option>
-              </select>
-            </div>
-            <div class="col-md-3">
-              <label for="configuration">Configuration:</label>
-              <select id="configuration" formControlName="configuration" class="form-control">
-                <option *ngFor="let config of configurationOptions" [value]="config">{{ config }}</option>
-              </select>
-            </div>
-            <div class="col-md-3">
-              <label for="quantity">Qty:</label>
-              <input id="quantity" formControlName="quantity" type="number" class="form-control" />
-            </div>
+        </div>
+
+        <div class="col-md-3">
+          <label for="head">Head (m):</label>
+          <input
+            id="head"
+            formControlName="head"
+            type="text"
+            class="form-control"
+          />
+          <div
+            *ngIf="
+              packageForm.controls['head'].invalid &&
+              packageForm.controls['head'].touched
+            "
+          >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['head'].errors?.['required']"
+              >Head is required.</small
+            >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['head'].errors?.['min']"
+              >Head must be at least 1.</small
+            >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['head'].errors?.['max']"
+              >Head cannot exceed 50.</small
+            >
           </div>
-        <!-- Add your package form fields -->
-      <!-- </form>
-      <button (click)="savePackage()" class="btn btn-success mt-3">Save Package</button> -->
+        </div>
+
+        <div class="col-md-3">
+          <label for="pumpSeries">Pump Series:</label>
+          <div class="input-group">
+            <select
+              id="pumpSeries"
+              formControlName="pumpSeries"
+              class="form-select"
+              (change)="onSelectedPumpSeries($event)"
+            >
+              <option *ngFor="let series of pumpSeriesOptions" [value]="series">
+                {{ series }}
+              </option>
+            </select>
+          </div>
+          <div
+            *ngIf="
+              packageForm.controls['pumpSeries'].invalid &&
+              packageForm.controls['pumpSeries'].touched
+            "
+          >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['pumpSeries'].errors?.['required']"
+              >Pump Series is required.</small
+            >
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <label for="pumpSize">Pump Size:</label>
+          <div class="input-group">
+            <select
+              id="pumpSize"
+              formControlName="pumpSize"
+              class="form-select"
+              (change)="onSelectedModelSeries($event)"
+            >
+              <option *ngIf="pumpSizeOptions.length === 0" disabled>
+                Please select Pump Series first
+              </option>
+              <option *ngFor="let size of pumpSizeOptions" [value]="size">
+                {{ size }}
+              </option>
+            </select>
+          </div>
+          <div
+            *ngIf="
+              packageForm.controls['pumpSize'].invalid &&
+              packageForm.controls['pumpSize'].touched
+            "
+          >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['pumpSize'].errors?.['required']"
+              >Pump Size is required.</small
+            >
+          </div>
+        </div>
+      </div>
+
+      <div class="row mt-3">
+        <div class="col-md-3">
+          <label for="pumpModel">Pump Model:</label>
+          <div class="input-group">
+            <select
+              id="pumpModel"
+              formControlName="pumpModel"
+              class="form-select"
+            >
+              <option *ngIf="pumpModelOption.length === 0" disabled>
+                Please select Pump Size first
+              </option>
+              <option *ngFor="let model of pumpModelOption" [value]="model">
+                {{ model }}
+              </option>
+            </select>
+          </div>
+          <div
+            *ngIf="
+              packageForm.controls['pumpModel'].invalid &&
+              packageForm.controls['pumpModel'].touched
+            "
+          >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['pumpModel'].errors?.['required']"
+              >Pump Modal is required.</small
+            >
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <label for="application">Application:</label>
+          <div class="input-group">
+            <select
+              id="application"
+              formControlName="application"
+              class="form-select"
+            >
+              <option *ngFor="let app of applicationOptions" [value]="app">
+                {{ app }}
+              </option>
+            </select>
+          </div>
+          <div
+            *ngIf="
+              packageForm.controls['application'].invalid &&
+              packageForm.controls['application'].touched
+            "
+          >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['application'].errors?.['required']"
+              >application is required.</small
+            >
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <label for="configuration">Configuration:</label>
+          <div class="input-group">
+            <select
+              id="configuration"
+              formControlName="configuration"
+              class="form-select"
+            >
+              <option
+                *ngFor="let config of configurationOptions"
+                [value]="config"
+              >
+                {{ config }}
+              </option>
+            </select>
+          </div>
+          <div
+            *ngIf="
+              packageForm.controls['configuration'].invalid &&
+              packageForm.controls['configuration'].touched
+            "
+          >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['configuration'].errors?.['required']"
+              >configuration is required.</small
+            >
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <label for="quantity">Qty:</label>
+          <input
+            id="quantity"
+            formControlName="quantity"
+            type="number"
+            class="form-control"
+          />
+          <div
+            *ngIf="
+              packageForm.controls['quantity'].invalid &&
+              packageForm.controls['quantity'].touched
+            "
+          >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['quantity'].errors?.['required']"
+              >Quantity is required.</small
+            >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['quantity'].errors?.['min']"
+              >Quantity must be at least 1.</small
+            >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['quantity'].errors?.['max']"
+              >Quantity cannot exceed 100.</small
+            >
+          </div>
+        </div>
+      </div>
     </div>
-  
+    <!-- Add your package form fields -->
+    <!-- </form>
+      <button (click)="savePackage()" class="btn btn-success mt-3">Save Package</button> -->
+
     <!-- Add-ons Form -->
     <div *ngIf="currentState === 'addons'" class="card p-3">
-        <h2>Add-ons</h2>
+      <h2>Add-ons</h2>
       <!-- <form [formGroup]="addonsForm"> -->
-        <div class="row">
-            <div class="col-md-3">
-              <label for="strainer">Strainer:</label>
-              <select id="strainer" formControlName="strainer"  class="form-control">
-              <option *ngFor="let strainer of strainerOptions" [value]="strainer">{{ strainer }}</option>
-              </select>
-            </div>
-            <div class="col-md-3">
-              <label for="flexibleconnector">Flexible Connector:</label>
-              <select id="flexibleconnector" formControlName="flexibleConnector"  class="form-control">
-              <option *ngFor="let flexible of flexibleOptions" [value]="flexible">{{ flexible }}</option>
-              </select>
-            </div>
-            <div class="col-md-3">
-              <label for="floatswitch">Float Switch:</label>
-              <select id="floatswitch" formControlName="floatSwitch" class="form-control">
-                <option *ngFor="let float of floatOptions" [value]="float">{{ float }}</option>
-              </select>
-            </div>
-            <div class="col-md-3">
-              <label for="floatSwitchQty">Switch Qty:</label>
-              <input id="floatSwitchQty" formControlName="floatSwitchQty" type="number" class="form-control" />
-            </div>
+      <div class="row">
+        <div class="col-md-3">
+          <label for="strainer">Strainer:</label>
+          <div class="input-group">
+            <select
+              id="strainer"
+              formControlName="strainer"
+              class="form-select"
+            >
+              <option
+                *ngFor="let strainer of strainerOptions"
+                [value]="strainer"
+              >
+                {{ strainer }}
+              </option>
+            </select>
           </div>
-        <!-- Add your add-ons form fields -->
+          <div
+            *ngIf="
+              packageForm.controls['strainer'].invalid &&
+              packageForm.controls['strainer'].touched
+            "
+          >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['strainer'].errors?.['required']"
+              >Strainer is required.</small
+            >
+          </div>
+        </div>
+        <div class="col-md-3">
+          <label for="flexibleconnector">Flexible Connector:</label>
+          <div class="input-group">
+            <select
+              id="flexibleconnector"
+              formControlName="flexibleConnector"
+              class="form-select"
+            >
+              <option
+                *ngFor="let flexible of flexibleOptions"
+                [value]="flexible"
+              >
+                {{ flexible }}
+              </option>
+            </select>
+          </div>
+          <div
+            *ngIf="
+              packageForm.controls['flexibleConnector'].invalid &&
+              packageForm.controls['flexibleConnector'].touched
+            "
+          >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['flexibleConnector'].errors?.['required']"
+              >flexibleConnector is required.</small
+            >
+          </div>
+        </div>
+        <div class="col-md-3">
+          <label for="floatswitch">Float Switch:</label>
+          <div class="input-group">
+            <select
+              id="floatswitch"
+              formControlName="floatSwitch"
+              class="form-select"
+            >
+              <option *ngFor="let float of floatOptions" [value]="float">
+                {{ float }}
+              </option>
+            </select>
+          </div>
+          <div
+            *ngIf="
+              packageForm.controls['floatSwitch'].invalid &&
+              packageForm.controls['floatSwitch'].touched
+            "
+          >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['floatSwitch'].errors?.['required']"
+              >floatSwitch is required.</small
+            >
+          </div>
+        </div>
+        <div class="col-md-3">
+          <label for="floatSwitchQty">Switch Qty:</label>
+          <input
+            id="floatSwitchQty"
+            formControlName="floatSwitchQty"
+            type="number"
+            class="form-control"
+          />
+          <div
+            *ngIf="
+              packageForm.controls['floatSwitchQty'].invalid &&
+              packageForm.controls['floatSwitchQty'].touched
+            "
+          >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['floatSwitchQty'].errors?.['required']"
+              >Quantity is required.</small
+            >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['floatSwitchQty'].errors?.['min']"
+              >Quantity must be at least 1.</small
+            >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['floatSwitchQty'].errors?.['max']"
+              >FloatSwitchQty cannot exceed 100.</small
+            >
+          </div>
+        </div>
+      </div>
+      <!-- Add your add-ons form fields -->
       <!-- </form>
       <button (click)="saveAddons()" class="btn btn-success mt-3">Save Add-ons</button> -->
     </div>
     <div *ngIf="currentState === 'pressureVessel'" class="card p-3">
-        <h2>Pressure Vessel</h2>
-        <!-- <form [formGroup]="pressureVessleForm"> -->
-          <div class="row">
-              <div class="col-md-3">
-                <label for="pressureVessel">Pressure Vessel:</label>
-                <select id="pressureVessel" formControlName="pressureVessel"  class="form-control">
-                <option *ngFor="let strainer of pressureVessel" [value]="strainer">{{ strainer }}</option>
-                </select>
-              </div>
-              <div class="col-md-3">
-                <label for="pressureVesselBrand">Brand:</label>
-                <select id="pressureVesselBrand" formControlName="pressureVesselBrand"  class="form-control">
-                <option *ngFor="let flexible of brand" [value]="flexible">{{ flexible }}</option>
-                </select>
-              </div>
-              <div class="col-md-3">
-                <label for="pressureVesselCapacity">Capacity:</label>
-                <select id="pressureVesselCapacity" formControlName="pressureVesselCapacity" class="form-control">
-                  <option *ngFor="let float of capacity" [value]="float">{{ float }}</option>
-                </select>
-              </div>
-              <div class="col-md-3">
-                <label for="pressureVesselRating">Pressure Rating:</label>
-                <select id="pressureVesselRating" formControlName="pressureVesselRating"  class="form-control" >
-                <option *ngFor="let strainer of pressureRating" [value]="strainer">{{ strainer }}</option>
-              </select>
-              </div>
-              <div class="col-md-3">
-                <label for="material">Material:</label>
-                <select id="material" formControlName="material" class="form-control">
-                  <option *ngFor="let float of material" [value]="float">{{ float }}</option>
-                </select>
-              </div>
-              <div class="col-md-3">
-                <label for="materialQty">Qty:</label>
-                <input id="materialQty" formControlName="materialQty" type="number" class="form-control" />
-              </div>
-            </div>
-          <!-- Add your add-ons form fields -->
-        <!-- </form>
+      <h2>Pressure Vessel</h2>
+      <!-- <form [formGroup]="pressureVessleForm"> -->
+      <div class="row">
+        <div class="col-md-3">
+          <label for="pressureVessel">Pressure Vessel:</label>
+          <select
+            id="pressureVessel"
+            formControlName="pressureVessel"
+            class="form-select"
+          >
+            <option *ngFor="let strainer of pressureVessel" [value]="strainer">
+              {{ strainer }}
+            </option>
+          </select>
+          <div
+            *ngIf="
+              packageForm.controls['pressureVessel'].invalid &&
+              packageForm.controls['pressureVessel'].touched
+            "
+          >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['pressureVessel'].errors?.['required']"
+              >Pressure Vessel is required.</small
+            >
+          </div>
+        </div>
+        <div class="col-md-3">
+          <label for="pressureVesselBrand">Brand:</label>
+          <select
+            id="pressureVesselBrand"
+            formControlName="pressureVesselBrand"
+            class="form-select"
+          >
+            <option *ngFor="let flexible of brand" [value]="flexible">
+              {{ flexible }}
+            </option>
+          </select>
+          <div
+            *ngIf="
+              packageForm.controls['pressureVesselBrand'].invalid &&
+              packageForm.controls['pressureVesselBrand'].touched
+            "
+          >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['pressureVesselBrand'].errors?.['required']"
+              >PressureVesselBrand is required.</small
+            >
+          </div>
+        </div>
+        <div class="col-md-3">
+          <label for="pressureVesselCapacity">Capacity:</label>
+          <select
+            id="pressureVesselCapacity"
+            formControlName="pressureVesselCapacity"
+            class="form-select"
+          >
+            <option *ngFor="let float of capacity" [value]="float">
+              {{ float }}
+            </option>
+          </select>
+          <div
+            *ngIf="
+              packageForm.controls['pressureVesselCapacity'].invalid &&
+              packageForm.controls['pressureVesselCapacity'].touched
+            "
+          >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['pressureVesselCapacity'].errors?.['required']"
+              >PressureVesselCapacity is required.</small
+            >
+          </div>
+        </div>
+        <div class="col-md-3">
+          <label for="pressureVesselRating">Pressure Rating:</label>
+          <select
+            id="pressureVesselRating"
+            formControlName="pressureVesselRating"
+            class="form-select"
+          >
+            <option *ngFor="let strainer of pressureRating" [value]="strainer">
+              {{ strainer }}
+            </option>
+          </select>
+          <div
+            *ngIf="
+              packageForm.controls['pressureVesselRating'].invalid &&
+              packageForm.controls['pressureVesselRating'].touched
+            "
+          >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['pressureVesselRating'].errors?.['required']"
+              >PressureVesselRating is required.</small
+            >
+          </div>
+        </div>
+        <div class="col-md-3">
+          <label for="material">Material:</label>
+          <select id="material" formControlName="material" class="form-select">
+            <option *ngFor="let float of material" [value]="float">
+              {{ float }}
+            </option>
+          </select>
+          <div
+            *ngIf="
+              packageForm.controls['material'].invalid &&
+              packageForm.controls['material'].touched
+            "
+          >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['material'].errors?.['required']"
+              >Material is required.</small
+            >
+          </div>
+        </div>
+        <div class="col-md-3">
+          <label for="materialQty">Qty:</label>
+          <input
+            id="materialQty"
+            formControlName="materialQty"
+            class="form-control"
+            type="number"
+          />
+          <div
+            *ngIf="
+              packageForm.controls['materialQty'].invalid &&
+              packageForm.controls['materialQty'].touched
+            "
+          >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['materialQty'].errors?.['required']"
+              >Quantity is required.</small
+            >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['materialQty'].errors?.['min']"
+              >Quantity must be at least 1.</small
+            >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['materialQty'].errors?.['max']"
+              >MaterialQty cannot exceed 100.</small
+            >
+          </div>
+        </div>
+      </div>
+      <!-- Add your add-ons form fields -->
+      <!-- </form>
         <button (click)="savePressureVessle()" class="btn btn-success mt-3">Save pressureVessel</button> -->
+    </div>
+    <div *ngIf="currentState === 'controllPanel'" class="card p-3">
+      <h2>Controll Panel</h2>
+      <!-- <form [formGroup]="controllPanelForm"> -->
+      <div class="row">
+        <div class="col-md-3">
+          <label for="controlPanelType">Type:</label>
+          <select
+            id="controlPanelType"
+            formControlName="controlPanelType"
+            class="form-select"
+          >
+            <option *ngFor="let strainer of type" [value]="strainer">
+              {{ strainer }}
+            </option>
+          </select>
+          <div
+            *ngIf="
+              packageForm.controls['controlPanelType'].invalid &&
+              packageForm.controls['controlPanelType'].touched
+            "
+          >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['controlPanelType'].errors?.['required']"
+              >controlPanelType is required.</small
+            >
+          </div>
+        </div>
+        <div class="col-md-3">
+          <label for="controlPanelPower">Power:</label>
+          <select
+            id="controlPanelPower"
+            formControlName="controlPanelPower"
+            class="form-select"
+          >
+            <option *ngFor="let flexible of power" [value]="flexible">
+              {{ flexible }}
+            </option>
+          </select>
+          <div
+            *ngIf="
+              packageForm.controls['controlPanelPower'].invalid &&
+              packageForm.controls['controlPanelPower'].touched
+            "
+          >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['controlPanelPower'].errors?.['required']"
+              >controlPanelPower is required.</small
+            >
+          </div>
+        </div>
+        <div class="col-md-3">
+          <label for="controlPanelRelay">Phase monitoring relay (UVR):</label>
+          <div id="controlPanelRelay" class="form-check">
+            <input
+              type="radio"
+              id="controlPanelRelay-yes"
+              value="Yes"
+              formControlName="controlPanelRelay"
+              class="form-check-input"
+            />
+            <label class="form-check-label" for="controlPanelRelay-yes"
+              >Yes</label
+            >
+          </div>
+          <div class="form-check">
+            <input
+              type="radio"
+              id="controlPanelRelay-no"
+              value="No"
+              formControlName="controlPanelRelay"
+              class="form-check-input"
+            />
+            <label class="form-check-label" for="controlPanelRelay-no"
+              >No</label
+            >
+          </div>
+          <div
+            *ngIf="
+              packageForm.controls['controlPanelRelay'].invalid &&
+              packageForm.controls['controlPanelRelay'].touched
+            "
+          >
+            <small class="text-danger">Please select an option.</small>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <label for="controlPanelADDC"
+            >Panel Abu Dhabi/Alian project (ADDC):</label
+          >
+          <div id="controlPanelADDC" class="form-check">
+            <input
+              type="radio"
+              id="controlPanelADDC-yes"
+              value="Yes"
+              formControlName="controlPanelADDC"
+              class="form-check-input"
+            />
+            <label class="form-check-label" for="controlPanelADDC-yes"
+              >Yes</label
+            >
+          </div>
+          <div class="form-check">
+            <input
+              type="radio"
+              id="controlPanelADDC-no"
+              value="No"
+              formControlName="controlPanelADDC"
+              class="form-check-input"
+            />
+            <label class="form-check-label" for="controlPanelADDC-no">No</label>
+          </div>
+          <div
+            *ngIf="
+              packageForm.controls['controlPanelADDC'].invalid &&
+              packageForm.controls['controlPanelADDC'].touched
+            "
+          >
+            <small class="text-danger">Please select an option.</small>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <label for="controlPanelTH">Anti-condensation Heater (TH):</label>
+          <div id="controlPanelTH" class="form-check">
+            <input
+              type="radio"
+              id="controlPanelTH-yes"
+              value="Yes"
+              formControlName="controlPanelTH"
+              class="form-check-input"
+            />
+            <label class="form-check-label" for="controlPanelTH-yes">Yes</label>
+          </div>
+          <div class="form-check">
+            <input
+              type="radio"
+              id="controlPanelTH-no"
+              value="No"
+              formControlName="controlPanelTH"
+              class="form-check-input"
+            />
+            <label class="form-check-label" for="controlPanelTH-no">No</label>
+          </div>
+          <div
+            *ngIf="
+              packageForm.controls['controlPanelTH'].invalid &&
+              packageForm.controls['controlPanelTH'].touched
+            "
+          >
+            <small class="text-danger">Please select an option.</small>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <label for="controlPanelPTC">Thermistor Relay (PTC):</label>
+          <div id="controlPanelPTC" class="form-check">
+            <input
+              type="radio"
+              id="controlPanelPTC-yes"
+              value="Yes"
+              formControlName="controlPanelPTC"
+              class="form-check-input"
+            />
+            <label class="form-check-label" for="controlPanelPTC-yes"
+              >Yes</label
+            >
+          </div>
+          <div class="form-check">
+            <input
+              type="radio"
+              id="controlPanelPTC-no"
+              value="No"
+              formControlName="controlPanelPTC"
+              class="form-check-input"
+            />
+            <label class="form-check-label" for="controlPanelPTC-no">No</label>
+          </div>
+          <div
+            *ngIf="
+              packageForm.controls['controlPanelPTC'].invalid &&
+              packageForm.controls['controlPanelPTC'].touched
+            "
+          >
+            <small class="text-danger">Please select an option.</small>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <label for="controlPanelAV">Ammeter & Voltmeter:</label>
+          <div id="controlPanelAV" class="form-check">
+            <input
+              type="radio"
+              id="controlPanelAV-yes"
+              value="Yes"
+              formControlName="controlPanelAV"
+              class="form-check-input"
+            />
+            <label class="form-check-label" for="controlPanelAV-yes">Yes</label>
+          </div>
+          <div class="form-check">
+            <input
+              type="radio"
+              id="controlPanelAV-no"
+              value="No"
+              formControlName="controlPanelAV"
+              class="form-check-input"
+            />
+            <label class="form-check-label" for="controlPanelAV-no">No</label>
+          </div>
+          <div
+            *ngIf="
+              packageForm.controls['controlPanelAV'].invalid &&
+              packageForm.controls['controlPanelAV'].touched
+            "
+          >
+            <small class="text-danger">Please select an option.</small>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <label for="controlPanelBYP">VFD Bypass (BYP):</label>
+          <div id="controlPanelBYP" class="form-check">
+            <input
+              type="radio"
+              id="controlPanelBYP-yes"
+              value="Yes"
+              formControlName="controlPanelBYP"
+              class="form-check-input"
+            />
+            <label class="form-check-label" for="controlPanelBYP-yes"
+              >Yes</label
+            >
+          </div>
+          <div class="form-check">
+            <input
+              type="radio"
+              id="controlPanelBYP-no"
+              value="No"
+              formControlName="controlPanelBYP"
+              class="form-check-input"
+            />
+            <label class="form-check-label" for="controlPanelBYP-no">No</label>
+          </div>
+          <div
+            *ngIf="
+              packageForm.controls['controlPanelBYP'].invalid &&
+              packageForm.controls['controlPanelBYP'].touched
+            "
+          >
+            <small class="text-danger">Please select an option.</small>
+          </div>
+        </div>
       </div>
-      <div *ngIf="currentState === 'controllPanel'" class="card p-3">
-        <h2>Controll Panel</h2>
-        <!-- <form [formGroup]="controllPanelForm"> -->
-          <div class="row">
-              <div class="col-md-3">
-                <label for="controlPanelType">Type:</label>
-                <select id="controlPanelType" formControlName="controlPanelType"  class="form-control">
-                <option *ngFor="let strainer of type" [value]="strainer">{{ strainer }}</option>
-                </select>
-              </div>
-              <div class="col-md-3">
-                <label for="controlPanelPower">Power:</label>
-                <select id="controlPanelPower" formControlName="controlPanelPower"  class="form-control">
-                <option *ngFor="let flexible of power" [value]="flexible">{{ flexible }}</option>
-                </select>
-              </div>
-              <div class="col-md-3">
-                <label for="controlPanelRelay">Phase monitoring relay (UVR):</label>
-                <div id="controlPanelRelay" class="form-check">
-                  <input
-                    type="radio"
-                    id="controlPanelRelay-yes"
-                    value="Yes"
-                    formControlName="controlPanelRelay"
-                    class="form-check-input"
-                  />
-                  <label class="form-check-label" for="controlPanelRelay-yes">Yes</label>
-                </div>
-                <div class="form-check">
-                  <input
-                    type="radio"
-                    id="controlPanelRelay-no"
-                    value="No"
-                    formControlName="controlPanelRelay"
-                    class="form-check-input"
-                  />
-                  <label class="form-check-label" for="controlPanelRelay-no">No</label>
-                </div>
-              </div>
-              
-              <div class="col-md-3">
-                <label for="controlPanelADDC">Panel Abu Dhabi/Alian project (ADDC):</label>
-                <div id="controlPanelADDC" class="form-check">
-                  <input
-                    type="radio"
-                    id="controlPanelADDC-yes"
-                    value="Yes"
-                    formControlName="controlPanelADDC"
-                    class="form-check-input"
-                  />
-                  <label class="form-check-label" for="controlPanelADDC-yes">Yes</label>
-                </div>
-                <div class="form-check">
-                  <input
-                    type="radio"
-                    id="controlPanelADDC-no"
-                    value="No"
-                    formControlName="controlPanelADDC"
-                    class="form-check-input"
-                  />
-                  <label class="form-check-label" for="controlPanelADDC-no">No</label>
-                </div>
-              </div>
-              
-              <div class="col-md-3">
-                <label for="controlPanelTH">Anti-condensation Heater (TH):</label>
-                <div id="controlPanelTH" class="form-check">
-                  <input
-                    type="radio"
-                    id="controlPanelTH-yes"
-                    value="Yes"
-                    formControlName="controlPanelTH"
-                    class="form-check-input"
-                  />
-                  <label class="form-check-label" for="controlPanelTH-yes">Yes</label>
-                </div>
-                <div class="form-check">
-                  <input
-                    type="radio"
-                    id="controlPanelTH-no"
-                    value="No"
-                    formControlName="controlPanelTH"
-                    class="form-check-input"
-                  />
-                  <label class="form-check-label" for="controlPanelTH-no">No</label>
-                </div>
-              </div>
-              
-              <div class="col-md-3">
-                <label for="controlPanelPTC">Thermistor Relay (PTC):</label>
-                <div id="controlPanelPTC" class="form-check">
-                  <input
-                    type="radio"
-                    id="controlPanelPTC-yes"
-                    value="Yes"
-                    formControlName="controlPanelPTC"
-                    class="form-check-input"
-                  />
-                  <label class="form-check-label" for="controlPanelPTC-yes">Yes</label>
-                </div>
-                <div class="form-check">
-                  <input
-                    type="radio"
-                    id="controlPanelPTC-no"
-                    value="No"
-                    formControlName="controlPanelPTC"
-                    class="form-check-input"
-                  />
-                  <label class="form-check-label" for="controlPanelPTC-no">No</label>
-                </div>
-              </div>
-              
-              <div class="col-md-3">
-                <label for="controlPanelAV">Ammeter & Voltmeter:</label>
-                <div id="controlPanelAV" class="form-check">
-                  <input
-                    type="radio"
-                    id="controlPanelAV-yes"
-                    value="Yes"
-                    formControlName="controlPanelAV"
-                    class="form-check-input"
-                  />
-                  <label class="form-check-label" for="controlPanelAV-yes">Yes</label>
-                </div>
-                <div class="form-check">
-                  <input
-                    type="radio"
-                    id="controlPanelAV-no"
-                    value="No"
-                    formControlName="controlPanelAV"
-                    class="form-check-input"
-                  />
-                  <label class="form-check-label" for="controlPanelAV-no">No</label>
-                </div>
-              </div>
-              
-              <div class="col-md-3">
-                <label for="controlPanelBYP">VFD Bypass (BYP):</label>
-                <div id="controlPanelBYP" class="form-check">
-                  <input
-                    type="radio"
-                    id="controlPanelBYP-yes"
-                    value="Yes"
-                    formControlName="controlPanelBYP"
-                    class="form-check-input"
-                  />
-                  <label class="form-check-label" for="controlPanelBYP-yes">Yes</label>
-                </div>
-                <div class="form-check">
-                  <input
-                    type="radio"
-                    id="controlPanelBYP-no"
-                    value="No"
-                    formControlName="controlPanelBYP"
-                    class="form-check-input"
-                  />
-                  <label class="form-check-label" for="controlPanelBYP-no">No</label>
-                </div>
-              </div>
-              </div>
-          <!-- Add your add-ons form fields -->
-        <!-- </form>
+      <!-- Add your add-ons form fields -->
+      <!-- </form>
         <button (click)="saveControllPanel()" class="btn btn-success mt-3">Save Controll Panel</button> -->
-      </div>
-      </form>
-    
-    <!-- Navigation Buttons -->
-    <div class="text-center mt-3 mb-3">
-      <button (click)="goBack()" class="btn btn-primary" style="margin-bottom:20px;" [disabled]="currentState === 'project'">Back</button>
-    
-      <button  *ngIf="isLastState"  (click)="goNext()" style="margin-bottom:20px;" class="btn btn-info">Next</button>
-      
-      <div *ngIf="currentState==='controllPanel'">
-        <!-- <div *ngIf="isLastState"> -->
-          <button (click)="confirmToADD()" class="btn btn-success" data-bs-toggle="modal"
-          data-bs-target="#deleteResortOwner" >Add to Project</button>
-          <button (click)="finish()" class="btn btn-primary">Finish</button>
-        <!-- </div> -->
-      </div>
-      
     </div>
-    
+  </form>
 
-  </div>
+  <!-- Navigation Buttons -->
+  <div class="text-center mt-3 mb-3">
+    <button
+      (click)="goBack()"
+      class="btn btn-primary"
+      style="margin-bottom: 20px"
+      [disabled]="currentState === 'project'"
+    >
+      Back
+    </button>
 
-  <!-- Delete Modal -->
-<div
-class="modal fade"
-id="deleteResortOwner"
-data-bs-backdrop="static"
-data-bs-keyboard="false"
-tabindex="-1"
-aria-labelledby="deleteResortOwnerLabel"
-aria-hidden="true"
->
-<div class="modal-dialog">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h5 class="modal-title" id="deleteResortOwnerLabel">Delete Resort</h5>
+    <button
+      *ngIf="isLastState"
+      (click)="goNext()"
+      style="margin-bottom: 20px"
+      class="btn btn-info"
+    >
+      Next
+    </button>
+
+    <div *ngIf="currentState === 'controllPanel'">
+      <!-- <div *ngIf="isLastState"> -->
       <button
-        type="button"
-        class="btn-close"
-        data-bs-dismiss="modal"
-        aria-label="Close"
-      ></button>
-    </div>
-    <div class="modal-body">
-      <p>Are you sure you want to Save this Project?</p>
-    </div>
-    <div class="modal-footer">
-      <button
-        type="button"
-        class="btn btn-secondary"
-        data-bs-dismiss="modal"
+        (click)="confirmToADD()"
+        class="btn btn-success"
+        data-bs-toggle="modal"
+        data-bs-target="#deleteResortOwner"
       >
-        Not Sure
+        Add to Project
       </button>
-      <button
-        type="button"
-        class="btn btn-primary"
-        data-bs-dismiss="modal"
-        (click)="savePackage()"
-      >
-        Yes
-      </button>
+      <!-- <button (click)="finish()" class="btn btn-primary">Finish</button> -->
+      <!-- </div> -->
     </div>
   </div>
 </div>
+
+<!-- Delete Modal -->
+<div
+  class="modal fade"
+  id="deleteResortOwner"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+  tabindex="-1"
+  aria-labelledby="deleteResortOwnerLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteResortOwnerLabel">
+          SAVE PROJECT-DATA
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to Save this Project?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Not Sure
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          data-bs-dismiss="modal"
+          (click)="savePackage()"
+        >
+          Yes
+        </button>
+      </div>
+    </div>
+  </div>
 </div>
 <!-- second model -->
 
@@ -461,7 +1048,7 @@ aria-hidden="true"
   aria-atomic="true"
   data-bs-autohide="true"
   data-bs-delay="5000"
-  style="z-index: 1050;" 
+  style="z-index: 1050"
 >
   <div class="toast-header">
     <strong class="me-auto">Success</strong>
@@ -472,9 +1059,7 @@ aria-hidden="true"
       aria-label="Close"
     ></button>
   </div>
-  <div class="toast-body">
-    Package set saved successfully!
-  </div>
+  <div class="toast-body">Package set saved successfully!</div>
 </div>
 
 <!-- <div class="container my-4">
@@ -550,22 +1135,24 @@ aria-hidden="true"
 <ng-template #noChildData>
   <p class="text-muted">No child data added yet.</p>
 </ng-template>  -->
+<h4>Project Summary :-</h4>
 <table class="table table-bordered table-hover">
   <thead class="thead-light">
     <tr>
-      <th ><i class="bi bi-sort-up">Project Name</i></th>
-      <th ><i class="bi bi-sort-up">Project Code</i></th>
-    
-      <th >Contractor</th>
-      <th >Consultant</th>
+      <th><i class="bi bi-sort-up">Project Code</i></th>
+
+      <th><i class="bi bi-sort-up">Project Name</i></th>
+
+      <th>Contractor</th>
+      <th>Consultant</th>
       <th>Actions</th>
     </tr>
   </thead>
   <tbody>
     <tr *ngFor="let project of projects; let i = index">
-      <td>{{ project.projectName }}</td>
       <td>{{ project.projectCode }}</td>
-    
+      <td>{{ project.projectName }}</td>
+
       <td>{{ project.contractor }}</td>
       <td>{{ project.consultant }}</td>
       <td>
@@ -575,50 +1162,90 @@ aria-hidden="true"
         >
           Add
         </button> -->
-        <button
-          class="btn btn-secondary ml-2"
-          (click)="toggleChildData(i)"
-        >
-          {{ expandedRowIndex === i ? 'Hide Details' : 'Show Details' }}
+        <button class="btn btn-secondary ml-2" (click)="toggleChildData(i)">
+          {{ expandedRowIndex === i ? "Hide Details" : "Show Details" }}
         </button>
         <tr *ngIf="expandedRowIndex === i">
-            <td colspan="6">
-              <div *ngIf="project.children?.length">
-                <h5>Child Data:</h5>
-                <table class="table table-sm table-bordered">
-                  <thead>
-                    <tr>
-                      <th >Pump Series</th>
-                      <th>Pump Model</th>
-                      <!-- <th>Flow</th>
+          <td colspan="6">
+            <div *ngIf="project.children?.length">
+              <h5>Child Data:</h5>
+              <table class="table table-sm table-bordered">
+                <thead>
+                  <tr>
+                    <th>S.No</th>
+                    <th>Pump Series</th>
+                    <th>Pump Model</th>
+                    <!-- <th>Flow</th>
                       <th>Head</th>
                       <th>Pump Size</th>
                       <th>Application</th>
                       <th>Configuration</th>
                       <th>Quantity</th> -->
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr *ngFor="let child of project.children">
-                      <td>{{ child.pumpSeries }}</td>
-                      <td>{{ child.pumpModel }}</td>
-                      <!-- <td>{{ child.flow }}</td>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let child of project.children; let i = index">
+                    <td>{{ i + 1 }}</td>
+                    <td>{{ child.pumpSeries }}</td>
+                    <td>{{ child.pumpModel }}</td>
+                    <!-- <td>{{ child.flow }}</td>
                       <td>{{ child.head }}</td>
                       <td>{{ child.pumpSize }}</td>
                       <td>{{ child.application }}</td>
                       <td>{{ child.configuration }}</td>
                       <td>{{ child.quantity }}</td> -->
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-              <div *ngIf="!project.children?.length">
-                <p>No child data available for this project.</p>
-              </div>
-            </td>
-          </tr>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div *ngIf="!project.children?.length">
+              <p>No child data available for this project.</p>
+            </div>
+          </td>
+        </tr>
       </td>
     </tr>
-    </tbody>
-    </table>
-    
+  </tbody>
+</table>
+
+<!-- Hidden button to trigger modal -->
+<button
+  id="openValidationModal"
+  type="button"
+  class="d-none"
+  data-bs-toggle="modal"
+  data-bs-target="#validationModal"
+></button>
+
+<!-- Validation Warning Modal -->
+<div
+  class="modal fade"
+  id="validationModal"
+  tabindex="-1"
+  aria-labelledby="validationModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title text-danger" id="validationModalLabel">
+          Warning
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <p class="text-danger">Please fill required fields marked in red.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
+          OK
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
