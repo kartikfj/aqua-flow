@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { HttpClient } from '@angular/common/http';
 import { AquapostService } from '../aquapost.service';
 import { AquagetService } from '../aquaget.service';
-import { Project, ProjectChild, ProjectData } from '../model/Project';
+import { Project, ProjectChild, ProjectData, ProjectSerch } from '../model/Project';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
@@ -61,7 +61,8 @@ export class CreateProjectComponent {
   projectSavedData!:ProjectData;
   //projects : any[]=[];
  // Will store the filtered and limited list of projects
- filteredProjects = [...this.project];
+ filteredProjects: ProjectSerch[] = [];
+
  toggleDropdown(state: boolean): void {
   this.isDropdownOpen = state;
 }
@@ -149,11 +150,25 @@ if(this.projectId){
   searchProjects(event:Event) {
     const query = (event.target as HTMLInputElement).value.toLowerCase();
 
-    if (query) {
-      this.filteredProjects = this.project.filter(project =>
-        project.projectName.toLowerCase().includes(query.toLowerCase())
-      )
-      .slice(0, 4);  // Limit the results to 3 projects
+    if (query.length>2) {
+      // this.filteredProjects = this.project.filter(project =>
+      //   project.projectName.toLowerCase().includes(query.toLowerCase())
+      // )
+      
+      this.aquaGet.getProjectQuery(query)
+  .subscribe(response => {
+    console.log("API Response:", response); // Debugging response
+    if (response ) {
+      this.filteredProjects = response; 
+      console.log(this.filteredProjects);
+      this.isDropdownOpen = true;
+    } else {
+      console.error("No projects found in response:", response);
+      this.filteredProjects = []; // Prevent undefined errors
+    }
+  });
+
+        // Limit the results to 3 projects
     } else {
       this.filteredProjects = [];  // If query is empty, show no suggestions
     }

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Project } from '../model/Project';
+import { Project, ProjectChild } from '../model/Project';
 import { Store } from '@ngrx/store';
 import { selectAllProjects } from '../state/selector';
 import * as ProjectActions from '../state/action';
@@ -8,6 +8,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AquagetService } from '../aquaget.service';
+import * as XLSX from 'xlsx';
 @Component({
   selector: 'app-saved-project',
   standalone: true,
@@ -16,6 +17,8 @@ import { AquagetService } from '../aquaget.service';
   styleUrl: './saved-project.component.css'
 })
 export class SavedProjectComponent {
+
+
   constructor(private router: Router,private aquaGetService:AquagetService) {}
   ngOnInit(): void {
     // Initialize all forms
@@ -28,7 +31,177 @@ export class SavedProjectComponent {
 
   }
   projects:Project[]=[];
-  // projects = [
+  filteredProjects:Project[]=[];
+  projectsChild:ProjectChild[]=[];
+  projectCode:string='';
+  projectName:string='';
+  searchValues = {
+    projectCode: '',
+    portalGneratedCode:'',
+    projectName: '',
+    contractor: '',
+    consultant:'',
+    location:''
+  };
+
+ // filteredProjects = [...this.projects];
+  searchQuery = '';
+  expandedRowIndex: number | null = null;
+  expandNumber: number | null = null;
+  // Filter projects based on search query
+  filterProjects() {
+    this.filteredProjects = this.projects.filter((project) =>
+      project.projectName.toLowerCase().includes(this.searchQuery.toLowerCase())
+    );
+    console.log(this.filterProjects);
+  }
+  applyFilter() {
+    this.filteredProjects = this.projects.filter(user =>
+      user.projectCode.toLowerCase().includes(this.searchValues.projectCode) &&
+      user.generatedCode.toLowerCase().includes(this.searchValues.portalGneratedCode) &&
+     
+      user.projectName.toLowerCase().includes(this.searchValues.projectName.toLowerCase()) &&
+      user.consultant.toLowerCase().includes(this.searchValues.consultant.toLowerCase()) &&
+      user.contractor.toLowerCase().includes(this.searchValues.contractor.toLowerCase()) &&
+      user.location.toLowerCase().includes(this.searchValues.location.toLowerCase())
+    );
+      // 🔥 Reset to full table if all search inputs are empty
+  if (Object.values(this.searchValues).every(value => value.trim() === '')) {
+    this.filteredProjects = [...this.projects];
+  }
+  }
+  // Sort projects based on column
+  sortData(column: keyof Project) {
+    this.filteredProjects.sort((a, b) => {
+      const valueA = (a[column] ?? '').toString().toLowerCase();
+      const valueB = (b[column] ?? '').toString().toLowerCase();
+      if (valueA < valueB) return -1;
+      if (valueA > valueB) return 1;
+      return 0;
+    });
+  }
+  sortChildData(column: keyof Project) {
+    this.filteredProjects.sort((a, b) => {
+      const valueA = (a[column] ?? '').toString().toLowerCase();
+      const valueB = (b[column] ?? '').toString().toLowerCase();
+      if (valueA < valueB) return -1;
+      if (valueA > valueB) return 1;
+      return 0;
+    });
+  }
+  
+  // Toggle child row visibility
+  toggleChildData(index: number) {
+    console.log(index)
+     this.expandNumber=index;
+    this.expandedRowIndex = this.expandedRowIndex === index ? null : index;
+  }
+
+  // Navigate to add child
+  navigateToAddChild(projectId: number) {
+    this.router.navigate(['/add-child', projectId]);
+  }
+
+  getAllProject(){
+    this.aquaGetService.getProjectData().subscribe(
+      (data)=>{
+      
+         this.projects=data;
+         this.filterProjects();
+         console.log(this.projects);
+       // this.projects.push(data);
+        console.log(data);
+      }
+    )
+  }
+  childDataShow(projectId: number):void {
+    console.log(projectId);
+    if(projectId!=null){
+    this.projects.filter(childData=>{
+       if(childData.id==projectId){
+        this.projectCode=childData.projectCode;
+        this.projectName=childData.projectName;
+        document.getElementById('openValidationModal')?.click();
+        this.projectsChild=childData.children;
+       }
+    })
+  }
+  
+    }
+
+    
+
+
+
+
+
+
+
+exportToExcel() {
+  let exportData: any[] = [];
+  this.projects.forEach(project => {
+    exportData.push({
+      "Project Code": project.projectCode,
+      "Generated Code": project.generatedCode,
+      "Project Name": project.projectName,
+      "Contractor": project.contractor,
+      "Consultant": project.consultant,
+      "Location": project.location,
+    });
+    project.children.forEach(child => {
+      exportData.push({
+        "Project Code": '',
+        "Generated Code": '',
+        "Project Name": '',
+        "Contractor": '',
+        "Consultant": '',
+        "Location": '',
+        "Flow": child.flow,
+        "Head": child.head,
+        "Pump Series": child.pumpSeries,
+        "Pump Model": child.pumpModel,
+        "Pump Size": child.pumpSize,
+        "Application": child.application,
+        "Configuration": child.configuration,
+        "Quantity": child.quantity,
+        "Strainer": child.strainer
+      });
+    });
+  });
+  const worksheet = XLSX.utils.json_to_sheet(exportData);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Projects');
+  XLSX.writeFile(workbook, 'ProjectData.xlsx');
+}
+
+
+
+
+
+
+
+  // projects$: Observable<Project[]>;
+
+  // constructor(private store: Store) {
+  //   this.projects$ = this.store.select(selectAllProjects);
+  // }
+
+  // ngOnInit() {
+  //   this.store.dispatch(ProjectActions.fetchProject());
+  // }
+
+  // saveProject(project: Project) {
+  //   this.store.dispatch(ProjectActions.saveProject({ project }));
+  // }
+
+  // fetchChildData(projectId: number) {
+  //   this.store.dispatch(ProjectActions.fetchProjectChildData({ projectId }));
+  // }
+}
+
+
+
+// projects = [
   //   {
   //     id: 1,
   //     projectName: 'Project A',
@@ -150,76 +323,3 @@ export class SavedProjectComponent {
   //     ],
   //   },
   // ];
-
-  filteredProjects = [...this.projects];
-  searchQuery = '';
-  expandedRowIndex: number | null = null;
-
-  // Filter projects based on search query
-  filterProjects() {
-    this.filteredProjects = this.projects.filter((project) =>
-      project.projectName.toLowerCase().includes(this.searchQuery.toLowerCase())
-    );
-    console.log(this.filterProjects);
-  }
-
-  // Sort projects based on column
-  sortData(column: keyof Project) {
-    this.filteredProjects.sort((a, b) => {
-      const valueA = (a[column] ?? '').toString().toLowerCase();
-      const valueB = (b[column] ?? '').toString().toLowerCase();
-      if (valueA < valueB) return -1;
-      if (valueA > valueB) return 1;
-      return 0;
-    });
-  }
-  sortChildData(column: keyof Project) {
-    this.filteredProjects.sort((a, b) => {
-      const valueA = (a[column] ?? '').toString().toLowerCase();
-      const valueB = (b[column] ?? '').toString().toLowerCase();
-      if (valueA < valueB) return -1;
-      if (valueA > valueB) return 1;
-      return 0;
-    });
-  }
-  
-
-  // Toggle child row visibility
-  toggleChildData(index: number) {
-    this.expandedRowIndex = this.expandedRowIndex === index ? null : index;
-  }
-
-  // Navigate to add child
-  navigateToAddChild(projectId: number) {
-    this.router.navigate(['/add-child', projectId]);
-  }
-
-  getAllProject(){
-    this.aquaGetService.getProjectData().subscribe(
-      (data)=>{
-         this.projects=data;
-         this.filterProjects();
-       // this.projects.push(data);
-        console.log(data);
-      }
-    )
-  }
-
-  // projects$: Observable<Project[]>;
-
-  // constructor(private store: Store) {
-  //   this.projects$ = this.store.select(selectAllProjects);
-  // }
-
-  // ngOnInit() {
-  //   this.store.dispatch(ProjectActions.fetchProject());
-  // }
-
-  // saveProject(project: Project) {
-  //   this.store.dispatch(ProjectActions.saveProject({ project }));
-  // }
-
-  // fetchChildData(projectId: number) {
-  //   this.store.dispatch(ProjectActions.fetchProjectChildData({ projectId }));
-  // }
-}
