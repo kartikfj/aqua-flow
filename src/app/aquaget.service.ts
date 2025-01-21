@@ -46,6 +46,13 @@ export class AquagetService {
   getProjectQuery(query:string):Observable<any>{
     return this.http.get<any>(`${this.apiUrl}?action=searchProjects&query=${query}`);
   }
+  getProjectQueryName(query:string):Observable<any>{
+    return this.http.get<any>(`${this.apiUrl}?action=searchProjectsName&query=${query}`);
+  }
+  getProjectQueryConstructor(query:string):Observable<any>{
+    return this.http.get<any>(`${this.apiUrl}?action=searchProjectsConstructor&query=${query}`);
+  }
+  
   getProjectData():Observable<any>{
     return this.http.get(`${this.apiUrl}?action=retrieveProjectAllData`);
   }

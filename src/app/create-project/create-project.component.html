@@ -55,13 +55,13 @@
 
   <div *ngIf="currentState === 'project'" class="card p-3">
     <h2>Create Project</h2>
-
+    <!-- 
     <div class="row mb-3">
       <div class="col-md-6 position-relative">
-        <label for="projectSearch" class="form-label">Select Project:</label>
+        <label for="projectSearch" class="form-label">Select Project:</label> -->
 
-        <!-- Search Input -->
-        <input
+    <!-- Search Input -->
+    <!-- <input
           id="projectSearch"
           type="text"
           class="form-control"
@@ -69,10 +69,10 @@
           (input)="searchProjects($event)"
           (blur)="closeDropdownWithDelay()"
           placeholder="Search by project name, code..."
-        />
+        /> -->
 
-        <!-- Search Results -->
-        <div
+    <!-- Search Results -->
+    <!-- <div
           *ngIf="isDropdownOpen && filteredProjects.length > 0"
           class="list-group mt-2"
           style="
@@ -93,7 +93,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
 
     <form [formGroup]="projectForm">
       <div class="row">
@@ -103,9 +103,44 @@
             id="projectCode"
             formControlName="projectCode"
             type="text"
+            (focus)="toggleDropdown(true)"
+            (input)="searchProjects($event)"
+            (blur)="closeDropdownWithDelay()"
             class="form-control"
-            readonly
+            placeholder="Enter project Code"
           />
+          <div
+            *ngIf="isDropdownOpen && filteredProjects.length > 0"
+            class="list-group mt-2"
+            style="
+              max-height: 200px;
+              overflow-y: auto;
+              position: absolute;
+              width: 100%;
+            "
+          >
+            <div
+              class="list-group-item list-group-item-action"
+              *ngFor="let project of filteredProjects"
+              (click)="selectProject(project)"
+              style="cursor: pointer"
+            >
+              <strong>{{ project.projectCode }}</strong> -
+              {{ project.projectName }}
+            </div>
+          </div>
+          <div
+            *ngIf="
+              projectForm.controls['projectCode'].invalid &&
+              projectForm.controls['projectCode'].touched
+            "
+          >
+            <small
+              class="text-danger"
+              *ngIf="projectForm.controls['projectCode'].errors?.['required']"
+              >Project Code is required.</small
+            >
+          </div>
         </div>
         <div class="col-md-3">
           <label for="projectName">Project Name:</label>
@@ -113,9 +148,43 @@
             id="projectName"
             formControlName="projectName"
             type="text"
+            (focus)="toggleDropdownName(true)"
+            (input)="searchProjectsName($event)"
+            (blur)="closeDropdownWithDelay()"
             class="form-control"
-            readonly
+            placeholder="Enter Project Name"
           />
+          <div
+            *ngIf="isDropdownOpenName && filteredProjectsName.length > 0"
+            class="list-group mt-2"
+            style="
+              max-height: 200px;
+              overflow-y: auto;
+              position: absolute;
+              width: 100%;
+            "
+          >
+            <div
+              class="list-group-item list-group-item-action"
+              *ngFor="let project of filteredProjectsName"
+              (click)="selectProject(project)"
+              style="cursor: pointer"
+            >
+              <strong>{{ project.projectName }}</strong> -
+            </div>
+          </div>
+          <div
+            *ngIf="
+              projectForm.controls['projectName'].invalid &&
+              projectForm.controls['projectName'].touched
+            "
+          >
+            <small
+              class="text-danger"
+              *ngIf="projectForm.controls['projectName'].errors?.['required']"
+              >Project Name is required.</small
+            >
+          </div>
         </div>
 
         <div class="col-md-3">
@@ -124,9 +193,45 @@
             id="contractor"
             formControlName="contractor"
             type="text"
+            (focus)="toggleDropdownContractor(true)"
+            (input)="searchProjectsContractor($event)"
+            (blur)="closeDropdownWithDelay()"
             class="form-control"
-            readonly
+            placeholder="Enter Contractor"
           />
+          <div
+            *ngIf="
+              isDropdownOpenConstructor && filteredProjectsContractor.length > 0
+            "
+            class="list-group mt-2"
+            style="
+              max-height: 200px;
+              overflow-y: auto;
+              position: absolute;
+              width: 100%;
+            "
+          >
+            <div
+              class="list-group-item list-group-item-action"
+              *ngFor="let project of filteredProjectsContractor"
+              (click)="selectProject(project)"
+              style="cursor: pointer"
+            >
+              <strong>{{ project.contractor }}</strong> -
+            </div>
+          </div>
+          <div
+            *ngIf="
+              projectForm.controls['contractor'].invalid &&
+              projectForm.controls['contractor'].touched
+            "
+          >
+            <small
+              class="text-danger"
+              *ngIf="projectForm.controls['contractor'].errors?.['required']"
+              >Project Contractor is required.</small
+            >
+          </div>
         </div>
         <div class="col-md-3">
           <label for="consultant">Consultant:</label>
@@ -135,8 +240,20 @@
             formControlName="consultant"
             type="text"
             class="form-control"
-            readonly
+            placeholder="Enter Consultant"
           />
+          <div
+            *ngIf="
+              projectForm.controls['consultant'].invalid &&
+              projectForm.controls['consultant'].touched
+            "
+          >
+            <small
+              class="text-danger"
+              *ngIf="projectForm.controls['consultant'].errors?.['required']"
+              >Project Consultant is required.</small
+            >
+          </div>
         </div>
         <div class="col-md-3">
           <label for="location">Location:</label>
@@ -145,8 +262,20 @@
             formControlName="location"
             type="text"
             class="form-control"
-            readonly
+            placeholder="Enter Location"
           />
+          <div
+            *ngIf="
+              projectForm.controls['location'].invalid &&
+              projectForm.controls['location'].touched
+            "
+          >
+            <small
+              class="text-danger"
+              *ngIf="projectForm.controls['location'].errors?.['required']"
+              >Project Location is required.</small
+            >
+          </div>
         </div>
       </div>
     </form>
@@ -157,6 +286,11 @@
     >
       Save Project
     </button>
+    <div *ngIf="disabledButton">
+      <h3>
+        Project Already Created You can add Packages in this project only!
+      </h3>
+    </div>
   </div>
 
   <!-- Package Form -->
@@ -171,6 +305,7 @@
             formControlName="flow"
             type="text"
             class="form-control"
+            placeholder="Enter Flow"
           />
           <div
             *ngIf="
@@ -203,6 +338,7 @@
             formControlName="head"
             type="text"
             class="form-control"
+            placeholder="Enter head"
           />
           <div
             *ngIf="
@@ -968,10 +1104,10 @@
     </button>
 
     <button
-      *ngIf="isLastState"
       (click)="goNext()"
       style="margin-bottom: 20px"
       class="btn btn-info"
+      [disabled]="currentState === 'controllPanel'"
     >
       Next
     </button>
@@ -1135,80 +1271,43 @@
 <ng-template #noChildData>
   <p class="text-muted">No child data added yet.</p>
 </ng-template>  -->
-<h4>Project Summary :-</h4>
-<table class="table table-bordered table-hover">
-  <thead class="thead-light">
-    <tr>
-      <th><i class="bi bi-sort-up">Project Code</i></th>
-
-      <th><i class="bi bi-sort-up">Project Name</i></th>
-
-      <th>Contractor</th>
-      <th>Consultant</th>
-      <th>Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let project of projects; let i = index">
-      <td>{{ project.projectCode }}</td>
-      <td>{{ project.projectName }}</td>
-
-      <td>{{ project.contractor }}</td>
-      <td>{{ project.consultant }}</td>
-      <td>
-        <!-- <button
-          class="btn btn-primary"
-          (click)="navigateToAddChild(project.id)"
-        >
-          Add
-        </button> -->
-        <button class="btn btn-secondary ml-2" (click)="toggleChildData(i)">
-          {{ expandedRowIndex === i ? "Hide Details" : "Show Details" }}
-        </button>
-        <tr *ngIf="expandedRowIndex === i">
-          <td colspan="6">
-            <div *ngIf="project.children?.length">
-              <h5>Child Data:</h5>
-              <table class="table table-sm table-bordered">
-                <thead>
-                  <tr>
-                    <th>S.No</th>
-                    <th>Pump Series</th>
-                    <th>Pump Model</th>
-                    <!-- <th>Flow</th>
-                      <th>Head</th>
-                      <th>Pump Size</th>
-                      <th>Application</th>
-                      <th>Configuration</th>
-                      <th>Quantity</th> -->
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let child of project.children; let i = index">
-                    <td>{{ i + 1 }}</td>
-                    <td>{{ child.pumpSeries }}</td>
-                    <td>{{ child.pumpModel }}</td>
-                    <!-- <td>{{ child.flow }}</td>
-                      <td>{{ child.head }}</td>
-                      <td>{{ child.pumpSize }}</td>
-                      <td>{{ child.application }}</td>
-                      <td>{{ child.configuration }}</td>
-                      <td>{{ child.quantity }}</td> -->
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <div *ngIf="!project.children?.length">
-              <p>No child data available for this project.</p>
-            </div>
-          </td>
-        </tr>
-      </td>
-    </tr>
-  </tbody>
-</table>
 
 <!-- Hidden button to trigger modal -->
+
+<div *ngIf="projectSavedData" class="container mt-4">
+  <h5>Project Details:</h5>
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover shadow-lg mt-3">
+      <thead class="table-dark text-white">
+        <tr>
+          <th>S.No</th>
+          <th>Pump Series</th>
+          <th>Pump Model</th>
+          <!-- <th>Flow</th>
+            <th>Head</th>
+            <th>Pump Size</th>
+            <th>Application</th>
+            <th>Configuration</th>
+            <th>Quantity</th> -->
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let child of projectsChild; let i = index">
+          <td>{{ i + 1 }}</td>
+          <td>{{ child.pumpSeries }}</td>
+          <td>{{ child.pumpModel }}</td>
+          <!-- <td>{{ child.flow }}</td>
+            <td>{{ child.head }}</td>
+            <td>{{ child.pumpSize }}</td>
+            <td>{{ child.application }}</td>
+            <td>{{ child.configuration }}</td>
+            <td>{{ child.quantity }}</td> -->
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
 <button
   id="openValidationModal"
   type="button"
@@ -1239,7 +1338,9 @@
         ></button>
       </div>
       <div class="modal-body">
-        <p class="text-danger">Please fill required fields marked in red.</p>
+        <p class="text-danger">
+          Please fill all required fields marked in red.
+        </p>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" data-bs-dismiss="modal">

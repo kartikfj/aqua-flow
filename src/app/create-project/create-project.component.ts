@@ -46,7 +46,8 @@ export class CreateProjectComponent {
   projects$: Observable<ProjectChild[]>;
   //projectId: string | null = null; // Stores the project ID from the backend
   projectId!: number;
-  project:ProjectData[]=[]
+  project:ProjectData[]=[];
+  projectsChild:ProjectChild[]=[];
   isLastState = true;
   disabledButton=false;
   currentStep = 1;
@@ -54,6 +55,8 @@ export class CreateProjectComponent {
   currentState: 'project' | 'package' | 'addons' | 'pressureVessel' | 'controllPanel' = 'project';
   isModalOpen = false;
   isDropdownOpen = false;
+  isDropdownOpenName = false;
+  isDropdownOpenConstructor = false;
   constructor(private store: Store,private fb: FormBuilder, private http: HttpClient,private aquaPost:AquapostService,private aquaGet:AquagetService,private route: ActivatedRoute) {
     this.projects$ = this.store.select(selectAllChildProjects);
   }
@@ -62,15 +65,24 @@ export class CreateProjectComponent {
   //projects : any[]=[];
  // Will store the filtered and limited list of projects
  filteredProjects: ProjectSerch[] = [];
-
+ filteredProjectsName:ProjectSerch[]=[];
+ filteredProjectsContractor:ProjectSerch[]=[];
  toggleDropdown(state: boolean): void {
   this.isDropdownOpen = state;
+}
+toggleDropdownName(state: boolean): void {
+  this.isDropdownOpenName = state;
+}
+toggleDropdownContractor(state: boolean): void {
+  this.isDropdownOpenConstructor = state;
 }
 
 // Closes the dropdown with a slight delay to allow selection
 closeDropdownWithDelay(): void {
   setTimeout(() => {
     this.isDropdownOpen = false;
+    this.isDropdownOpenName=false;
+    this.isDropdownOpenConstructor=false;
   }, 200); // Adjust delay as needed
 }
 
@@ -80,6 +92,7 @@ ngAfterOnInit(){
   this.getSavedProjectById();
 if(this.projectId){
   this.disabledButton=true;
+ // this.childDataShow(this.projectId);
 }
 }
   ngOnInit(): void {
@@ -92,6 +105,7 @@ if(this.projectId){
      if(this.project){
       this.getAllProjectById();
       this.getSavedProjectById();
+     // this.childDataShow(this.projectId)
      }
     })
     if(this.projectId){
@@ -101,11 +115,11 @@ if(this.projectId){
     }
     this.projectForm = this.fb.group({
 
-      projectName: [''],
-      projectCode:[''],
-      contractor: [''],
-      consultant: [''],
-      location: [''],
+      projectName: ['',[Validators.required]],
+      projectCode:['',[Validators.required]],
+      contractor: ['',[Validators.required]],
+      consultant: ['',[Validators.required]],
+      location: ['',[Validators.required]],
     });
 
     this.packageForm = this.fb.group({
@@ -150,7 +164,7 @@ if(this.projectId){
   searchProjects(event:Event) {
     const query = (event.target as HTMLInputElement).value.toLowerCase();
 
-    if (query.length>2) {
+    if (query.length>0) {
       // this.filteredProjects = this.project.filter(project =>
       //   project.projectName.toLowerCase().includes(query.toLowerCase())
       // )
@@ -173,7 +187,58 @@ if(this.projectId){
       this.filteredProjects = [];  // If query is empty, show no suggestions
     }
   }
+  searchProjectsName(event:Event) {
+    const query = (event.target as HTMLInputElement).value.toLowerCase();
 
+    if (query.length>0) {
+      // this.filteredProjects = this.project.filter(project =>
+      //   project.projectName.toLowerCase().includes(query.toLowerCase())
+      // )
+      
+      this.aquaGet.getProjectQueryName(query)
+  .subscribe(response => {
+    console.log("API Response:", response); // Debugging response
+    if (response ) {
+      this.filteredProjectsName = response; 
+      console.log(this.filteredProjectsName);
+      this.isDropdownOpenName = true;
+    } else {
+      console.error("No projects found in response:", response);
+      this.filteredProjectsName = []; // Prevent undefined errors
+    }
+  });
+
+        // Limit the results to 3 projects
+    } else {
+      this.filteredProjects = [];  // If query is empty, show no suggestions
+    }
+  }
+  searchProjectsContractor(event:Event) {
+    const query = (event.target as HTMLInputElement).value.toLowerCase();
+
+    if (query.length>0) {
+      // this.filteredProjects = this.project.filter(project =>
+      //   project.projectName.toLowerCase().includes(query.toLowerCase())
+      // )
+      
+      this.aquaGet.getProjectQueryConstructor(query)
+  .subscribe(response => {
+    console.log("API Response:", response); // Debugging response
+    if (response ) {
+      this.filteredProjectsContractor = response; 
+      console.log(this.filteredProjectsContractor);
+      this.isDropdownOpenConstructor = true;
+    } else {
+      console.error("No projects found in response:", response);
+      this.filteredProjectsContractor = []; // Prevent undefined errors
+    }
+  });
+
+        // Limit the results to 3 projects
+    } else {
+      this.filteredProjects = [];  // If query is empty, show no suggestions
+    }
+  }
   // Function to set project details in the form when a project is selected
   selectProject(project: any) {
     this.projectForm.patchValue({
@@ -185,11 +250,22 @@ if(this.projectId){
     });
     this.isDropdownOpen = false;
     this.filteredProjects = []; 
+    this.isDropdownOpenName = false;
+    this.filteredProjectsName = []; 
+    this.isDropdownOpenConstructor = false;
+    this.filteredProjectsContractor = []; 
   }
   async saveProject() {
     if (this.currentState === 'project') {
       const projectData = this.projectForm.value;
       //this.projectId = "1";
+      if (this.projectForm.invalid) {
+        this.projectForm.markAllAsTouched(); // Mark all fields as touched to show validation messages
+      
+        document.getElementById('openValidationModal')?.click();
+       
+        return;
+      }
       console.log(projectData);
      await this.aquaPost.createProject(projectData).subscribe(
         (response:any)=>{ console.log(response);
@@ -288,71 +364,7 @@ if(this.projectId){
       return;
     }
 
-  //   const addonsData = {
-  //     ...this.addonsForm.value,
-  //     projectId: this.projectId,
-  //   };
-  //  // console.log(addonsData);
-  //    this.aquaPost.saveAddons(addonsData).subscribe(
-  //     (response)=>{
-  //       alert('Add-ons saved successfully');
-  //     },
-  //     (error)=>{
-  //       alert('Error saving add-one. Please try again');
-  //     }
-  //    )
-  //   // this.http.post('/api/addons', addonsData).subscribe(
-  //   //   () => {
-  //   //     alert('Add-ons saved successfully!');
-  //   //   },
-  //   //   (error) => {
-  //   //     alert('Error saving add-ons. Please try again.');
-  //   //     console.error(error);
-  //   //   }
-  //   // );
-  // }
-  // savePressureVessle() {
-  //   this.projectId = "1";
-  //   if (!this.projectId) {
-  //     alert('Please create a project first!');
-  //     return;
-  //   }
-
-  //   const pressureVessleForm = {
-  //     ...this.pressureVessleForm.value,
-  //     projectId: this.projectId,
-  //   };
-  //  console.log(pressureVessleForm);
-  //   //  this.aquaPost.saveAddons(addonsData).subscribe(
-  //   //   (response)=>{
-  //   //     alert('Add-ons saved successfully');
-  //   //   },
-  //   //   (error)=>{
-  //   //     alert('Error saving add-one. Please try again');
-  //   //   }
-  //   //  )
-  //   }
-  //   saveControllPanel() {
-  //     this.projectId = "1";
-  //     if (!this.projectId) {
-  //       alert('Please create a project first!');
-  //       return;
-  //     }
   
-  //     const controllPanel = {
-  //       ...this.controllPanelForm.value,
-  //       projectId: this.projectId,
-  //     };
-  //    console.log(controllPanel);
-  //     //  this.aquaPost.saveAddons(addonsData).subscribe(
-  //     //   (response)=>{
-  //     //     alert('Add-ons saved successfully');
-  //     //   },
-  //     //   (error)=>{
-  //     //     alert('Error saving add-one. Please try again');
-  //     //   }
-  //     //  )
-  //     }
   }
     addToProject() {
       // Logic to add to the project
@@ -385,6 +397,10 @@ if(this.projectId){
       this.currentState='controllPanel';
       this.currentStep++;
       this.isLastState=false;
+    }else{
+      this.currentState="package";
+      this.currentStep--;
+      this.isLastState=true;
     }
   }
 
@@ -464,125 +480,7 @@ if(this.projectId){
      
 }
   }
-// Initialize with all projects
-//  dummyProjects: Project[] = [
-//   {
-//     id: 1,
-//     projectName: 'High-Rise Water Pump System',
-//     projectCode: 'HRWPS001',
-//     contractor: 'Skyline Builders',
-//     consultant: 'Elite Consultants',
-//     location: 'Downtown City',
-//     children: [
-//       {
-//         projectId: 1,
-//         flow: '600 L/min',
-//         head: '60m',
-//         pumpSeries: 'HSX',
-//         pumpModel: 'HSX100',
-//         pumpSize: '6 inch',
-//         application: 'Building Supply',
-//         configuration: 'Vertical',
-//         quantity: 3,
-//         strainer: 'Metal',
-//         flexibleConnector: 'Rubber',
-//         floatSwitch: 'Automatic',
-//         floatSwitchQty: 3,
-//         pressureVessel: 'PV300',
-//         pressureVesselBrand: 'HydroFlow',
-//         pressureVesselCapacity: '300L',
-//         pressureVesselRating: '12 bar',
-//         material: 'Steel',
-//         materialQty: 2,
-//         controlPanelType: 'Digital',
-//         controlPanelPower: '7kW',
-//         controlPanelRelay: 'Relay300',
-//         controlPanelADDC: '24V',
-//         controlPanelTH: '75°C',
-//         controlPanelPTC: 'Enabled',
-//         controlPanelAV: '230V',
-//         controlPanelBYP: 'Enabled',
-//       },
-//       {
-//         projectId: 1,
-//         flow: '800 L/min',
-//         head: '80m',
-//         pumpSeries: 'HSY',
-//         pumpModel: 'HSY200',
-//         pumpSize: '8 inch',
-//         application: 'Commercial Use',
-//         configuration: 'Horizontal',
-//         quantity: 2,
-//         strainer: 'Plastic',
-//         flexibleConnector: 'Steel',
-//         floatSwitch: 'Manual',
-//         floatSwitchQty: 2,
-//         pressureVessel: 'PV500',
-//         pressureVesselBrand: 'AquaTech',
-//         pressureVesselCapacity: '500L',
-//         pressureVesselRating: '16 bar',
-//         material: 'Aluminum',
-//         materialQty: 4,
-//         controlPanelType: 'Analog',
-//         controlPanelPower: '10kW',
-//         controlPanelRelay: 'Relay500',
-//         controlPanelADDC: '12V',
-//         controlPanelTH: '80°C',
-//         controlPanelPTC: 'Disabled',
-//         controlPanelAV: '220V',
-//         controlPanelBYP: 'Disabled',
-//       },
-//     ],
-//   },
-//   {
-//     id: 2,
-//     projectName: 'Agriculture Pump System',
-//     projectCode: 'AGPS002',
-//     contractor: 'Farmers Group',
-//     consultant: 'AgriConsult',
-//     location: 'Green Valley',
-//     children: [
-//       {
-//         projectId: 2,
-//         flow: '1000 L/min',
-//         head: '40m',
-//         pumpSeries: 'AgriFlow',
-//         pumpModel: 'AF100',
-//         pumpSize: '10 inch',
-//         application: 'Irrigation',
-//         configuration: 'Vertical',
-//         quantity: 5,
-//         strainer: 'Steel',
-//         flexibleConnector: 'Rubber',
-//         floatSwitch: 'Automatic',
-//         floatSwitchQty: 5,
-//         pressureVessel: 'PV800',
-//         pressureVesselBrand: 'FarmTech',
-//         pressureVesselCapacity: '800L',
-//         pressureVesselRating: '20 bar',
-//         material: 'Steel',
-//         materialQty: 3,
-//         controlPanelType: 'Digital',
-//         controlPanelPower: '15kW',
-//         controlPanelRelay: 'Relay800',
-//         controlPanelADDC: '48V',
-//         controlPanelTH: '85°C',
-//         controlPanelPTC: 'Enabled',
-//         controlPanelAV: '240V',
-//         controlPanelBYP: 'Enabled',
-//       },
-//     ],
-//   },
-// ];
-  //  fetchProjectDetails(){
-  //   this.project=this.dummyProjects.find(
-  //     (project)=>project.id===this.projectId
-  //   )!;
-   
-      
-    
-  //   console.log(this.project)
-  //  }
+
   getAllProjectContractor(){
     this.aquaGet.getProjectContractor().subscribe(data=>{
       this.project=data;
@@ -593,6 +491,7 @@ console.log(data);
     this.aquaGet.getProjectById(this.projectId).subscribe(data=>{
       this.projects=data;
       console.log(this.projects);
+      this.childDataShow(this.projectId);
       
 console.log(data);
     })
@@ -600,6 +499,7 @@ console.log(data);
   getSavedProjectById(){
     this.aquaGet.getSavedProjectById(this.projectId).subscribe(data=>{
       this.projectSavedData=data;
+      this.childDataShow(this.projectId);
      // console.log(this.projects);
       
 console.log(data);
@@ -610,4 +510,90 @@ console.log(data);
   toggleChildData(index: number) {
     this.expandedRowIndex = this.expandedRowIndex === index ? null : index;
   }
+
+  childDataShow(projectId: number):void {
+    console.log(projectId);
+    if(projectId!=null){
+    this.projects.filter(childData=>{
+       if(childData.id==projectId){
+       // this.projectCode=childData.projectCode;
+       // this.projectName=childData.projectName;
+       // document.getElementById('openValidationModal')?.click();
+        this.projectsChild=childData.children;
+        console.log(this.projectsChild);
+       }
+    })
+  }
 }
+}
+
+
+
+
+
+
+//   const addonsData = {
+  //     ...this.addonsForm.value,
+  //     projectId: this.projectId,
+  //   };
+  //  // console.log(addonsData);
+  //    this.aquaPost.saveAddons(addonsData).subscribe(
+  //     (response)=>{
+  //       alert('Add-ons saved successfully');
+  //     },
+  //     (error)=>{
+  //       alert('Error saving add-one. Please try again');
+  //     }
+  //    )
+  //   // this.http.post('/api/addons', addonsData).subscribe(
+  //   //   () => {
+  //   //     alert('Add-ons saved successfully!');
+  //   //   },
+  //   //   (error) => {
+  //   //     alert('Error saving add-ons. Please try again.');
+  //   //     console.error(error);
+  //   //   }
+  //   // );
+  // }
+  // savePressureVessle() {
+  //   this.projectId = "1";
+  //   if (!this.projectId) {
+  //     alert('Please create a project first!');
+  //     return;
+  //   }
+
+  //   const pressureVessleForm = {
+  //     ...this.pressureVessleForm.value,
+  //     projectId: this.projectId,
+  //   };
+  //  console.log(pressureVessleForm);
+  //   //  this.aquaPost.saveAddons(addonsData).subscribe(
+  //   //   (response)=>{
+  //   //     alert('Add-ons saved successfully');
+  //   //   },
+  //   //   (error)=>{
+  //   //     alert('Error saving add-one. Please try again');
+  //   //   }
+  //   //  )
+  //   }
+  //   saveControllPanel() {
+  //     this.projectId = "1";
+  //     if (!this.projectId) {
+  //       alert('Please create a project first!');
+  //       return;
+  //     }
+  
+  //     const controllPanel = {
+  //       ...this.controllPanelForm.value,
+  //       projectId: this.projectId,
+  //     };
+  //    console.log(controllPanel);
+  //     //  this.aquaPost.saveAddons(addonsData).subscribe(
+  //     //   (response)=>{
+  //     //     alert('Add-ons saved successfully');
+  //     //   },
+  //     //   (error)=>{
+  //     //     alert('Error saving add-one. Please try again');
+  //     //   }
+  //     //  )
+  //     }

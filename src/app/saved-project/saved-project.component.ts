@@ -127,7 +127,7 @@ export class SavedProjectComponent {
     })
   }
   
-    }
+}
 
     
 
@@ -139,6 +139,7 @@ export class SavedProjectComponent {
 
 exportToExcel() {
   let exportData: any[] = [];
+  
   this.projects.forEach(project => {
     exportData.push({
       "Project Code": project.projectCode,
@@ -171,7 +172,7 @@ exportToExcel() {
   const worksheet = XLSX.utils.json_to_sheet(exportData);
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, worksheet, 'Projects');
-  XLSX.writeFile(workbook, 'ProjectData.xlsx');
+  XLSX.writeFile(workbook, 'ProjectReport.xlsx');
 }
 
 
