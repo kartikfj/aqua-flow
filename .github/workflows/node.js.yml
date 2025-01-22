@@ -1,0 +1,47 @@
+# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
+
+name: Node.js CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+         runner: [self-hosted, ubuntu-latest]  # ✅ Defines multiple runners
+         node-version: [18.x, 20.x, 22.x]  # ✅ Runs on multiple Node.js versions
+
+    runs-on: ${{ matrix.runner }}  # ✅ Dynamically selects the runner
+
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install Dependencies (with Legacy Peer Deps)
+      run: npm ci --legacy-peer-deps
+
+    - name: Build Angular App
+      run: npm run build --if-present
+
+    - name: Deploy Application
+      run: |
+        # Ensure Nginx is installed
+        if ! command -v nginx &> /dev/null
+        then
+          echo "Nginx not found! Installing..."
+          sudo apt update && sudo apt install -y nginx
+        fi
+
+        # Remove old files
+        sudo rm -rf /var/www/html/*
+
+        # Copy new build files
+        sudo cp -r dist/aqua-select/* /var/www/html/
+
+        # Restart Nginx to apply changes
+        sudo systemctl restart nginx
