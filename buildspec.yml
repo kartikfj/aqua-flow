@@ -6,14 +6,19 @@ phases:
       nodejs: 18  # Use a compatible Node.js version
     commands:
       - echo "Installing dependencies..."
-      - npm install -g npm@latest   # Upgrade npm to the latest version
-      - npm install js-yaml@latest --save  # Fix js-yaml issue
       - npm install --legacy-peer-deps  # Install dependencies with Angular version compatibility
 
   build:
     commands:
       - echo "Building Angular application..."
       - npm run build --prod  # Build for production
+ post_build:
+    commands:
+      - echo "Zipping build artifacts..."
+      - zip -r artifact.zip dist/
+      - echo "Uploading artifact to S3..."
+      - aws s3 cp artifact.zip s3://aquaflow195/artifacts/  # Upload to S3
+
 
 artifacts:
   files:
