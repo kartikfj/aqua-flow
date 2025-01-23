@@ -119,9 +119,20 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title text-danger" id="validationModalLabel">
-            ProjectName: {{ projectName }}
+            <button
+              (click)="printModalData()"
+              class="btn btn-primary btn-sm float-right"
+            >
+              Print
+            </button>
             <br />
+            GeneratedCode:{{ generatedCode }}
+            <br />
+
             ProjectCode:{{ projectCode }}
+
+            <br />
+            ProjectName: {{ projectName }}
           </h5>
           <button
             type="button"
@@ -131,7 +142,7 @@
             data-bs-focus="false"
           ></button>
         </div>
-        <div class="modal-body">
+        <div id="modalContentToPrint" class="modal-body">
           <div *ngIf="expandedRowIndex === expandNumber">
             <div *ngIf="projectsChild.length">
               <h5>Project Details:</h5>
@@ -141,6 +152,7 @@
                     <th>S.No</th>
                     <th>Pump Series</th>
                     <th>Pump Model</th>
+                    <th>Total Cost</th>
                     <!-- <th>Flow</th>
                           <th>Head</th>
                           <th>Pump Size</th>
@@ -154,6 +166,8 @@
                     <td>{{ i + 1 }}</td>
                     <td>{{ child.pumpSeries }}</td>
                     <td>{{ child.pumpModel }}</td>
+                    <td>{{ child.TOTALCOST | number : "1.0-2" }}</td>
+
                     <!-- <td>{{ child.flow }}</td>
                           <td>{{ child.head }}</td>
                           <td>{{ child.pumpSize }}</td>

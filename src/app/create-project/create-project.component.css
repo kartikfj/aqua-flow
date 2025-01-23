@@ -75,4 +75,15 @@
     overflow-y: auto;
   }
   }
+
+  .btn-container {
+    margin-bottom: 15px;
+  }
+  
+  .btn {
+    margin-right: 10px;
+  }
+  
+
+
 }

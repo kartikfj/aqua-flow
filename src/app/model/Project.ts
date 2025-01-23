@@ -13,6 +13,7 @@ export interface Project {
   projectId: number;
   flow: string;
   head: string;
+  TOTALCOST:number;
   pumpSeries: string;
   pumpModel: string;
   pumpSize: string;

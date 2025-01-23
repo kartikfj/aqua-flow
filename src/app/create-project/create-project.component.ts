@@ -10,11 +10,12 @@ import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { selectAllChildProjects, selectAllProjects } from '../state/selector';
 import * as ProjectActions from '../state/action';
-
+import * as XLSX from 'xlsx';
+import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-create-project',
   standalone: true,
-  imports: [FormsModule, ReactiveFormsModule, NgFor, NgIf],
+  imports: [FormsModule, ReactiveFormsModule, NgFor, NgIf,CommonModule ],
   templateUrl: './create-project.component.html',
   styleUrls: ['./create-project.component.css'], // Fixed typo (styleUrl -> styleUrls)
 })
@@ -28,6 +29,11 @@ export class CreateProjectComponent {
   pumpSeriesOptions:string[] = [];
   selectedPumpSeries: string = '';
   selectedModelSeries: string = '';
+  selectedPressureRating:string='';
+  selectedPressureVessle:string='';
+  selectedPressureBrand:string='';
+  selectedType:string='';
+  disableSelectedPressure:boolean=true;
   pumpSizeOptions:string[]=[];
   pumpModelOption:string[]=[];
   applicationOptions = ['BOOSTER', 'TRANSFER', 'CIRCULATION','PRESSURIZATION'];
@@ -40,14 +46,15 @@ export class CreateProjectComponent {
   capacity=['60L','50L','40L'];
   pressureRating=['PN 10','PN 9','PN 8'];
   material=['Butyl'];
-  type=['DOL','FOL','MOL'];
-  power=['One','Two'];
+  type=['VFD'];
+  power=[1,2];
 
   projects$: Observable<ProjectChild[]>;
   //projectId: string | null = null; // Stores the project ID from the backend
   projectId!: number;
   project:ProjectData[]=[];
   projectsChild:ProjectChild[]=[];
+
   isLastState = true;
   disabledButton=false;
   currentStep = 1;
@@ -123,30 +130,30 @@ if(this.projectId){
     });
 
     this.packageForm = this.fb.group({
-      flow: ['', [Validators.required]], // Min 1, Max 5000, Numbers only
-      head: ['', [Validators.required]], // Min 1, Max 500, Numbers only
+      flow: ['', [Validators.required,Validators.min(1), Validators.max(100), Validators.pattern('^[0-9]*\\.?[0-9]+$')]], // Min 1, Max 5000, Numbers only
+      head: ['', [Validators.required,Validators.min(1), Validators.max(100), Validators.pattern('^[0-9]*\\.?[0-9]+$')]], // Min 1, Max 500, Numbers only
       pumpSeries: ['', Validators.required], // Required field
       pumpModel: ['', Validators.required], // Required field
       pumpSize: ['', Validators.required], // Required field
       application: ['', Validators.required], // Required field
       configuration: ['', Validators.required], // Required field
-      quantity: [1, [Validators.required, Validators.min(1), Validators.max(100), Validators.pattern('^[0-9]*$')]], // Min 1, Max 100, Numbers only
+      quantity: [1, [Validators.required, Validators.min(1), Validators.max(1000), Validators.pattern('^[0-9]*$')]], // Min 1, Max 100, Numbers only
     //});
 
     //this.addonsForm = this.fb.group({
       strainer:  ['', [Validators.required]],
       flexibleConnector:  ['', [Validators.required]],
       floatSwitch: ['', [Validators.required]],
-      floatSwitchQty: [1, [Validators.required, Validators.min(1), Validators.max(100), Validators.pattern('^[0-9]*$')]],
+      floatSwitchQty: [1, [Validators.required, Validators.min(1), Validators.max(1000), Validators.pattern('^[0-9]*$')]],
     //});
 
    // this.pressureVessleForm = this.fb.group({
       pressureVessel: ['', [Validators.required]],
-      pressureVesselBrand:['', [Validators.required]],
-      pressureVesselCapacity:['', [Validators.required]],
-      pressureVesselRating:['', [Validators.required]],
-      material:['', [Validators.required]],
-      materialQty:[1, [Validators.required, Validators.min(1), Validators.max(100), Validators.pattern('^[0-9]*$')]],
+      pressureVesselBrand:[{value:'', disabled:true},[Validators.required]],
+      pressureVesselCapacity:[{value:'',disabled:true}, [Validators.required]],
+      pressureVesselRating:[{value:'',disabled:true}, [Validators.required]],
+      material:[{value:'',disabled:true}, [Validators.required]],
+      materialQty:[{value:1,disabled:true}, [Validators.required, Validators.min(1), Validators.max(1000), Validators.pattern('^[0-9]*$')]],
     //});
 
    // this.controllPanelForm=this.fb.group({
@@ -480,6 +487,56 @@ if(this.projectId){
      
 }
   }
+  onSelectedPressureVessel(event:any){
+    console.log("data came");
+    this.selectedPressureVessle=event.target.value;
+    if(this.selectedPressureVessle=='Yes'){
+      this.packageForm.controls['pressureVesselBrand'].enable();  // Enable
+      this.packageForm.controls['pressureVesselCapacity'].enable(); // Disable
+      this.packageForm.controls['pressureVesselRating'].enable();  // Enable
+      this.packageForm.controls['material'].enable(); // Disable
+      this.packageForm.controls['materialQty'].enable(); // Disable
+    }
+    else{
+      this.packageForm.controls['pressureVesselBrand'].disable();  // Enable
+      this.packageForm.controls['pressureVesselCapacity'].disable(); // Disable
+      this.packageForm.controls['pressureVesselRating'].disable();  // Enable
+      this.packageForm.controls['material'].disable(); // Disable
+      this.packageForm.controls['materialQty'].disable(); // Disable
+    }
+  }
+  onSelectedPressureBrand(event:any){
+    console.log("data came");
+    this.selectedPressureBrand=event.target.value;
+    if(this.selectedPressureBrand){
+      this.aquaGet.getPressureRating(this.selectedPressureBrand).subscribe(data=>{
+        this.pressureRating=data;
+        console.log(this.pressureRating);
+      },(error)=>{
+        console.log('fetching data',error);
+      })
+    }
+  }
+  onSelectedPressureRating(event:any){
+    console.log("data came");
+    this.selectedPressureRating=event.target.value;
+    if(this.selectedPressureRating){
+      this.aquaGet.getPressureCapacity(this.selectedPressureRating).subscribe(data=>{
+        this.capacity=data;
+      })
+    
+    }
+  }
+  onSelectedType(event:any){
+    console.log("data came");
+    this.selectedType=event.target.value;
+    if(this.selectedType){
+      this.aquaGet.getPowerAddOnes(this.selectedType).subscribe(data=>{
+        this.power=data;
+      })
+    
+    }
+  }
 
   getAllProjectContractor(){
     this.aquaGet.getProjectContractor().subscribe(data=>{
@@ -525,6 +582,57 @@ console.log(data);
     })
   }
 }
+
+
+
+exportToExcel() {
+  let exportData: any[] = [];
+  
+  this.projects.forEach(project => {
+    exportData.push({
+      "Project Code": project.projectCode,
+      "Generated Code": this.projectSavedData.generatedCode,
+      "Project Name": project.projectName,
+      "Contractor": project.contractor,
+      "Consultant": project.consultant,
+      "Location": project.location,
+    });
+    project.children.forEach(child => {
+      exportData.push({
+        "Project Code": '',
+        "Generated Code": '',
+        "Project Name": '',
+        "Contractor": '',
+        "Consultant": '',
+        "Location": '',
+        "Flow": child.flow,
+        "Head": child.head,
+        "Pump Series": child.pumpSeries,
+        "Pump Model": child.pumpModel,
+        "Pump Size": child.pumpSize,
+        "Application": child.application,
+        "Configuration": child.configuration,
+        "Quantity": child.quantity,
+        "Strainer": child.strainer
+      });
+    });
+  });
+  const worksheet = XLSX.utils.json_to_sheet(exportData);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Projects');
+  XLSX.writeFile(workbook, 'ProjectReport.xlsx');
+}
+printTable() {
+    const printContent = document.getElementById('tableToPrint');
+    const WindowPrt = window.open('', '', 'width=900,height=700');
+    WindowPrt?.document.write('<html><head><title>Print Report</title></head><body>');
+    WindowPrt?.document.write(printContent?.outerHTML || '');
+    WindowPrt?.document.write('</body></html>');
+    WindowPrt?.document.close();
+    WindowPrt?.focus();
+    WindowPrt?.print();
+    WindowPrt?.close();
+  }
 }
 
 

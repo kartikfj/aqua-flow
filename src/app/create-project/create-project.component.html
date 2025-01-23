@@ -5,6 +5,14 @@
       Generated Code: {{ projectSavedData.generatedCode }}
     </h2>
 
+    <button
+      class="btn btn-success mb-2"
+      style="text-align: right"
+      (click)="exportToExcel()"
+    >
+      Export to Excel
+    </button>
+
     <!-- Styled Table -->
     <div class="table-responsive">
       <table class="table table-bordered table-hover shadow-lg mt-3">
@@ -287,9 +295,7 @@
       Save Project
     </button>
     <div *ngIf="disabledButton">
-      <h3>
-        Project Already Created You can add Packages in this project only!
-      </h3>
+      <h3>add Packages in this project only!</h3>
     </div>
   </div>
 
@@ -328,6 +334,12 @@
               *ngIf="packageForm.controls['flow'].errors?.['max']"
               >Flow cannot exceed 50.</small
             >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['flow'].errors?.['pattern']"
+            >
+              Flow must be a valid number.
+            </small>
           </div>
         </div>
 
@@ -361,6 +373,12 @@
               *ngIf="packageForm.controls['head'].errors?.['max']"
               >Head cannot exceed 50.</small
             >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['flow'].errors?.['pattern']"
+            >
+              Head must be a valid number.
+            </small>
           </div>
         </div>
 
@@ -684,6 +702,7 @@
             id="pressureVessel"
             formControlName="pressureVessel"
             class="form-select"
+            (change)="onSelectedPressureVessel($event)"
           >
             <option *ngFor="let strainer of pressureVessel" [value]="strainer">
               {{ strainer }}
@@ -708,6 +727,7 @@
             id="pressureVesselBrand"
             formControlName="pressureVesselBrand"
             class="form-select"
+            (change)="onSelectedPressureBrand($event)"
           >
             <option *ngFor="let flexible of brand" [value]="flexible">
               {{ flexible }}
@@ -723,6 +743,31 @@
               class="text-danger"
               *ngIf="packageForm.controls['pressureVesselBrand'].errors?.['required']"
               >PressureVesselBrand is required.</small
+            >
+          </div>
+        </div>
+        <div class="col-md-3">
+          <label for="pressureVesselRating">Pressure Rating:</label>
+          <select
+            id="pressureVesselRating"
+            formControlName="pressureVesselRating"
+            class="form-select"
+            (change)="onSelectedPressureRating($event)"
+          >
+            <option *ngFor="let strainer of pressureRating" [value]="strainer">
+              {{ strainer }}
+            </option>
+          </select>
+          <div
+            *ngIf="
+              packageForm.controls['pressureVesselRating'].invalid &&
+              packageForm.controls['pressureVesselRating'].touched
+            "
+          >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['pressureVesselRating'].errors?.['required']"
+              >PressureVesselRating is required.</small
             >
           </div>
         </div>
@@ -750,30 +795,7 @@
             >
           </div>
         </div>
-        <div class="col-md-3">
-          <label for="pressureVesselRating">Pressure Rating:</label>
-          <select
-            id="pressureVesselRating"
-            formControlName="pressureVesselRating"
-            class="form-select"
-          >
-            <option *ngFor="let strainer of pressureRating" [value]="strainer">
-              {{ strainer }}
-            </option>
-          </select>
-          <div
-            *ngIf="
-              packageForm.controls['pressureVesselRating'].invalid &&
-              packageForm.controls['pressureVesselRating'].touched
-            "
-          >
-            <small
-              class="text-danger"
-              *ngIf="packageForm.controls['pressureVesselRating'].errors?.['required']"
-              >PressureVesselRating is required.</small
-            >
-          </div>
-        </div>
+
         <div class="col-md-3">
           <label for="material">Material:</label>
           <select id="material" formControlName="material" class="form-select">
@@ -831,7 +853,7 @@
         <button (click)="savePressureVessle()" class="btn btn-success mt-3">Save pressureVessel</button> -->
     </div>
     <div *ngIf="currentState === 'controllPanel'" class="card p-3">
-      <h2>Controll Panel</h2>
+      <h2>Control Panel</h2>
       <!-- <form [formGroup]="controllPanelForm"> -->
       <div class="row">
         <div class="col-md-3">
@@ -840,6 +862,7 @@
             id="controlPanelType"
             formControlName="controlPanelType"
             class="form-select"
+            (change)="onSelectedType($event)"
           >
             <option *ngFor="let strainer of type" [value]="strainer">
               {{ strainer }}
@@ -1276,13 +1299,18 @@
 
 <div *ngIf="projectSavedData" class="container mt-4">
   <h5>Project Details:</h5>
+  <button (click)="printTable()" class="btn btn-primary">Print</button>
   <div class="table-responsive">
-    <table class="table table-bordered table-hover shadow-lg mt-3">
+    <table
+      id="tableToPrint"
+      class="table table-bordered table-hover shadow-lg mt-3"
+    >
       <thead class="table-dark text-white">
         <tr>
           <th>S.No</th>
           <th>Pump Series</th>
           <th>Pump Model</th>
+          <th>Total Cost</th>
           <!-- <th>Flow</th>
             <th>Head</th>
             <th>Pump Size</th>
@@ -1296,6 +1324,7 @@
           <td>{{ i + 1 }}</td>
           <td>{{ child.pumpSeries }}</td>
           <td>{{ child.pumpModel }}</td>
+          <td>{{ child.TOTALCOST | number : "1.0-2" }}</td>
           <!-- <td>{{ child.flow }}</td>
             <td>{{ child.head }}</td>
             <td>{{ child.pumpSize }}</td>

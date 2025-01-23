@@ -28,13 +28,14 @@ export class SavedProjectComponent {
     //  this.getPumSeries();
     // })
     this.getAllProject();
-
+//this.getProjectModelData();
   }
   projects:Project[]=[];
   filteredProjects:Project[]=[];
   projectsChild:ProjectChild[]=[];
   projectCode:string='';
   projectName:string='';
+  generatedCode:string='';
   searchValues = {
     projectCode: '',
     portalGneratedCode:'',
@@ -102,8 +103,20 @@ export class SavedProjectComponent {
     this.router.navigate(['/add-child', projectId]);
   }
 
+  // getAllProject(){
+  //   this.aquaGetService.getProjectData().subscribe(
+  //     (data)=>{
+      
+  //        this.projects=data;
+  //        this.filterProjects();
+  //        console.log(this.projects);
+  //      // this.projects.push(data);
+  //       console.log(data);
+  //     }
+  //   )
+  // }
   getAllProject(){
-    this.aquaGetService.getProjectData().subscribe(
+    this.aquaGetService.getProjectModelData().subscribe(
       (data)=>{
       
          this.projects=data;
@@ -114,6 +127,7 @@ export class SavedProjectComponent {
       }
     )
   }
+  
   childDataShow(projectId: number):void {
     console.log(projectId);
     if(projectId!=null){
@@ -121,6 +135,7 @@ export class SavedProjectComponent {
        if(childData.id==projectId){
         this.projectCode=childData.projectCode;
         this.projectName=childData.projectName;
+        this.generatedCode=childData.generatedCode;
         document.getElementById('openValidationModal')?.click();
         this.projectsChild=childData.children;
        }
@@ -134,7 +149,21 @@ export class SavedProjectComponent {
 
 
 
+printModalData() {
+  const printContent = document.getElementById('modalContentToPrint');
+  const WindowPrt = window.open('', '', 'width=900,height=700');
+  WindowPrt?.document.write('<html><head><title>Print Project Details</title></head><body>');
+  WindowPrt?.document.write('<h3>Project Code: ' + this.generatedCode + '</h3>');
+  WindowPrt?.document.write('<h3>Project Code: ' + this.projectCode + '</h3>');
+  WindowPrt?.document.write('<h3>Project Name: ' + this.projectName + '</h3>');
 
+  WindowPrt?.document.write(printContent?.outerHTML || '');
+  WindowPrt?.document.write('</body></html>');
+  WindowPrt?.document.close();
+  WindowPrt?.focus();
+  WindowPrt?.print();
+  WindowPrt?.close();
+}
 
 
 exportToExcel() {
@@ -159,6 +188,7 @@ exportToExcel() {
         "Location": '',
         "Flow": child.flow,
         "Head": child.head,
+        "TotalCost":child.TOTALCOST,
         "Pump Series": child.pumpSeries,
         "Pump Model": child.pumpModel,
         "Pump Size": child.pumpSize,

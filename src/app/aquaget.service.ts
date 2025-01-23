@@ -37,6 +37,20 @@ export class AquagetService {
   getPumpModel(pumpSize:string):Observable<any>{
     return this.http.get<string[]>(`${this.apiUrl}?action=pumpModel&pumpSize=${pumpSize}`);
   }
+  getPressureBrand(pumpSeries:string):Observable<string[]>{
+    console.log("data 2 come");
+    return this.http.get<string[]>(`${this.apiUrl}?action=pumpBrand&brand=${pumpSeries}`);
+  }
+  getPressureRating(pumpBrand:string):Observable<string[]>{
+    console.log("data 2 come");
+    return this.http.get<string[]>(`${this.apiUrl}?action=pumpRating&brand=${pumpBrand}`);
+  }
+  getPressureCapacity(pumpRating:string):Observable<any>{
+    return this.http.get<string[]>(`${this.apiUrl}?action=pumpCapacity&rating=${pumpRating}`);
+  }
+  getPowerAddOnes(pumpSize:string):Observable<any>{
+    return this.http.get<string[]>(`${this.apiUrl}?action=pumpPower&power=${pumpSize}`);
+  }
   getProjectModelData():Observable<any>{
     return this.http.get(`${this.apiUrl}?action=retrieveProject`);
   }
