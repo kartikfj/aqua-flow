@@ -12,12 +12,7 @@ phases:
     commands:
       - echo "Building Angular application..."
       - npm run build --prod  # Build for production
- post_build:
-    commands:
-      - echo "Zipping build artifacts..."
-      - zip -r artifact.zip dist/
-      - echo "Uploading artifact to S3..."
-      - aws s3 cp artifact.zip s3://aquaflow195/artifacts/  # Upload to S3
+
 
 
 artifacts:
