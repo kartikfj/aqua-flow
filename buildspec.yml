@@ -13,9 +13,7 @@ phases:
        - echo "Building Angular application..."
        - npm run build --prod  # Build for production
        - echo "Zipping the build output..."
-       - cd dist  # Move to the Angular dist folder
-       - zip -r ../angular-build.zip .  # Create a zip archive of the build output
-       - cd ..  # Go back to the root directory
+       - zip -r angular-build.zip dist/ 
 
  artifacts:
    files:
