@@ -8,31 +8,19 @@ phases:
       - echo "Installing dependencies..."
       - npm install --legacy-peer-deps  # Install dependencies with Angular version compatibility
 
-#   build:
-#     commands:
-#       - echo "Building Angular application..."
-#       - npm run build --prod  # Build for production
-
-
-
-# artifacts:
-#   files:
-#     - '**/*'  # Include all necessary files
-#   base-directory: dist  # Change this if your Angular app outputs to a different folder
-#   discard-paths: no
   build:
-    commands:
-      - echo "Building Angular application..."
-      - npm run build --prod  # Build for production
-      - export BUILD_VERSION=$(date +%Y%m%d%H%M%S)  # Generate a timestamped version
-      - echo "Build Version: $BUILD_VERSION"
-      - mkdir -p build-artifacts
-      - cp -r dist/* build-artifacts/
-      - cd build-artifacts
-      - zip -r "../angular-build-$BUILD_VERSION.zip" .  # Create a ZIP file with a versioned name
-      - cd ..
+     commands:
+       - echo "Building Angular application..."
+       - npm run build --prod  # Build for production
+       - echo "Zipping the build output..."
+       - cd dist  # Move to the Angular dist folder
+       - zip -r ../angular-build.zip .  # Create a zip archive of the build output
+       - cd ..  # Go back to the root directory
 
-artifacts:
-  files:
-    - 'angular-build-*.zip'  # Upload the versioned ZIP file
-  discard-paths: no
+ artifacts:
+   files:
+      - angular-build.zip
+   #  - '**/*'  # Include all necessary files
+   base-directory: .  # Change this if your Angular app outputs to a different folder
+   discard-paths: no
+ 
