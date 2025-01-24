@@ -137,14 +137,14 @@ if(this.projectId){
       pumpSize: ['', Validators.required], // Required field
       application: ['', Validators.required], // Required field
       configuration: ['', Validators.required], // Required field
-      quantity: [1, [Validators.required, Validators.min(1), Validators.max(1000), Validators.pattern('^[0-9]*$')]], // Min 1, Max 100, Numbers only
+      quantity: [1, [Validators.required, Validators.min(1), Validators.max(10000), Validators.pattern('^[0-9]*$')]], // Min 1, Max 100, Numbers only
     //});
 
     //this.addonsForm = this.fb.group({
       strainer:  ['', [Validators.required]],
       flexibleConnector:  ['', [Validators.required]],
       floatSwitch: ['', [Validators.required]],
-      floatSwitchQty: [1, [Validators.required, Validators.min(1), Validators.max(1000), Validators.pattern('^[0-9]*$')]],
+      floatSwitchQty: [1, [Validators.required, Validators.min(1), Validators.max(10000), Validators.pattern('^[0-9]*$')]],
     //});
 
    // this.pressureVessleForm = this.fb.group({
@@ -153,7 +153,7 @@ if(this.projectId){
       pressureVesselCapacity:[{value:'',disabled:true}, [Validators.required]],
       pressureVesselRating:[{value:'',disabled:true}, [Validators.required]],
       material:[{value:'',disabled:true}, [Validators.required]],
-      materialQty:[{value:1,disabled:true}, [Validators.required, Validators.min(1), Validators.max(1000), Validators.pattern('^[0-9]*$')]],
+      materialQty:[{value:1,disabled:true}, [Validators.required, Validators.min(1), Validators.max(10000), Validators.pattern('^[0-9]*$')]],
     //});
 
    // this.controllPanelForm=this.fb.group({
@@ -274,21 +274,27 @@ if(this.projectId){
         return;
       }
       console.log(projectData);
-     await this.aquaPost.createProject(projectData).subscribe(
-        (response:any)=>{ console.log(response);
-          this.projectId=response.updateStatus;
-          this.disabledButton=true;
-          this.aquaGet.getSavedProjectById(this.projectId).subscribe(data=>{
-            this.projectSavedData=data;
+     this.aquaPost.createProject(projectData).subscribe(
+        (response: any) => {
+          console.log(response);
+          this.projectId = response.updateStatus;
+          this.disabledButton = true;
+          this.aquaGet.getSavedProjectById(this.projectId).subscribe(data => {
+            this.projectSavedData = data;
             console.log(this.projectSavedData);
           });
           alert(`Project Saved Successfully!,${this.projectId}`);
 
         },
-        (error)=>{
-          alert('Error Saving Project!');
+        (error: any) => {
+
+          document.getElementById('openValidationModal1')?.click();
+
+
+        //  alert('Error Saving Project!');
+          return;
         }
-      )
+     )
 
     //   this.http.post('/api/projects', projectData).subscribe(
     //     (response: any) => {

@@ -294,9 +294,7 @@
     >
       Save Project
     </button>
-    <div *ngIf="disabledButton">
-      <h3>add Packages in this project only!</h3>
-    </div>
+    <div *ngIf="disabledButton"></div>
   </div>
 
   <!-- Package Form -->
@@ -1165,7 +1163,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="deleteResortOwnerLabel">
-          SAVE PROJECT-DATA
+          SAVE Package-Set
         </h5>
         <button
           type="button"
@@ -1175,7 +1173,7 @@
         ></button>
       </div>
       <div class="modal-body">
-        <p>Are you sure you want to Save this Project?</p>
+        <p>Are you sure to Save this Package-Set</p>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
@@ -1369,6 +1367,49 @@
       <div class="modal-body">
         <p class="text-danger">
           Please fill all required fields marked in red.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
+          OK
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- if user Id is not present -->
+
+<button
+  id="openValidationModal1"
+  type="button"
+  class="d-none"
+  data-bs-toggle="modal"
+  data-bs-target="#validationModal1"
+></button>
+<div
+  class="modal fade"
+  id="validationModal1"
+  tabindex="-1"
+  aria-labelledby="validationModalLabel1"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title text-danger" id="validationModalLabel1">
+          Error
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <p class="text-danger">
+          First Login In The Portal Then You able to perform operations! or may
+          be some technical issue.
         </p>
       </div>
       <div class="modal-footer">

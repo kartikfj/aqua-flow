@@ -77,6 +77,23 @@ export class AquagetService {
     return this.http.get(`${this.apiUrl}?action=getSavedProjectDetails&&project=${projectId}`);
     console.log
   }
+  getUserId(): string | null {
+    const userData = localStorage.getItem('userId');
+  
+    if (userData) {
+      const parsedData = JSON.parse(userData);
+      const now = new Date().getTime();
+  
+      if (parsedData.expiry > now) {
+        return parsedData.id; // ID is valid
+      } else {
+        localStorage.removeItem('userId'); // Expired, remove it
+      }
+    }
+  
+    return null; // No valid ID found
+  }
+  
   //http://localhost:8080/FJPORTAL_DEV/AquaFlowController?action=getSavedProjectDetails&&project=41
   /**
    * Save add-ons details associated with a project.
