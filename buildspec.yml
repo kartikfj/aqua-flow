@@ -13,10 +13,17 @@ phases:
       - echo "Building Angular application..."
       - npm run build --prod  # Build for production
       - echo "Zipping the build output..."
-      - zip -r angular-build.zip dist/
-
+      - zip -r angular-build.zip dist/aqua-select/browser/*
+      
+post_build:
+  commands:
+    - echo "Verifying zip file before upload..."
+    - ls -lh angular-build.zip  # List files to confirm zip exists
+    - aws s3 ls s3://aquaflow195/  # List contents of your S3 bucket
+    
 artifacts:
   files:
     - angular-build.zip
   base-directory: .  # The location where the zip file is created
-  discard-paths: no
+  discard-paths: yes
+  
