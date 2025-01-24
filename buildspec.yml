@@ -13,13 +13,13 @@ phases:
       - echo "Building Angular application..."
       - npm run build --prod  # Build for production
       - echo "Zipping the build output..."
-      - zip -r angular-build.zip 
+      - zip -r angular-build.zip s3://aquaflow195/
       
 post_build:
   commands:
     - echo "Verifying zip file before upload..."
     - ls -lh angular-build.zip  # List files to confirm zip exists
-    - aws s3 cp /codebuild/output/src1701380961/src/dist/aqua-select/angular-build.zip  s3://aquaflow195/dist  # Upload to S3
+    - aws s3 cp angular-build.zip  s3://aquaflow195/ # Upload to S3
     
 artifacts:
   files:
