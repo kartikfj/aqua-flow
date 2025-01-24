@@ -41,4 +41,49 @@
   .list-group::-webkit-scrollbar-track {
     background-color: #f1f1f1; /* Light gray track */
   }
+  .table th {
+    cursor: pointer;
+  }
   
+  .table th:hover {
+    background-color: #f1f1f1;
+  }
+  .table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th {  padding: 3px 5px !important;}.scoreValue{text-align:right;}.reportDtls{text-align:center !important;}
+  .table-responsive {
+    overflow-x: auto;
+  }
+  
+  .table input {
+    width: 100%;
+  }
+  
+  @media (max-width: 568px) {
+    .table-responsive {
+      overflow-x: scroll;
+    }
+
+/* Hide scrollbar on desktop */
+/* @media (min-width: 768px) {
+  .table-container {
+    overflow-y: hidden;
+  }
+} */
+
+/* Enable scrollbar on mobile */
+@media (max-width: 767px) {
+  .table-container {
+    overflow-y: auto;
+  }
+  }
+
+  .btn-container {
+    margin-bottom: 15px;
+  }
+  
+  .btn {
+    margin-right: 10px;
+  }
+  
+
+
+}

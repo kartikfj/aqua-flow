@@ -1,13 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
+import { AquagetService } from './aquaget.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AquapostService {
   private baseUrl = 'http//localhost:8080/FJPORTAL_DEV/AquaFlowController';
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient,private aquaget:AquagetService) {}
 
   /**
    * Create a new project.
@@ -16,8 +17,15 @@ export class AquapostService {
    */
   createProject(projectData: any): Observable<any> {
     console.log('save');
-    const apiUrl = '/AquaFlowController?action=saveProject';
-    return this.http.post(apiUrl, projectData);
+    const empId=this.aquaget.getUserId();
+    if (empId) {
+      const apiUrl = `/AquaFlowController?action=saveProject&empId=${empId}`;
+      return this.http.post(apiUrl, projectData);
+    } else {
+      console.error('Error: Employee ID is missing.');
+      return throwError(() => new Error('Employee ID is required to create a project.'));
+    }
+    
   }
 
   /**
@@ -25,10 +33,10 @@ export class AquapostService {
    * @param packageData Object containing package details.
    * @returns Observable with the server response.
    */
-  savePackage(packageData: any): Observable<any> {
-    const apiUrl = '/AquaFlowController?action=saveProduct';
-    return this.http.post(apiUrl,packageData);
-  }
+  // savePackage(packageData: any): Observable<any> {
+  //   const apiUrl = '/AquaFlowController?action=saveProduct';
+  //   return this.http.post(apiUrl,packageData);
+  // }
 
   /**
    * Save add-ons details associated with a project.
@@ -36,6 +44,7 @@ export class AquapostService {
    * @returns Observable with the server response.
    */
   saveAddons(addonsData: any): Observable<any> {
+
     return this.http.post(`${this.baseUrl}/addons`, addonsData);
   }
 

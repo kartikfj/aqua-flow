@@ -5,6 +5,7 @@ export interface Project {
     contractor: string;
     consultant: string;
     location: string;
+    generatedCode:string;
     children: ProjectChild[]; // Array of child data
   }
   
@@ -12,6 +13,7 @@ export interface Project {
   projectId: number;
   flow: string;
   head: string;
+  TOTALCOST:number;
   pumpSeries: string;
   pumpModel: string;
   pumpSize: string;
@@ -39,6 +41,7 @@ export interface Project {
   }
   export interface ProjectData{
     projectName: string;
+    generatedCode:string;
     projectCode: string;
     contractor: string;
     consultant: string;
@@ -54,5 +57,13 @@ export interface Project {
     fsw: 0,
     ctrlprice: 0.0,
     uvr: 0.0
+  }
+
+  export interface ProjectSerch{
+    projectName: string;
+    projectCode: string;
+    contractor: string;
+    consultant: string;
+    location: string;
   }
   

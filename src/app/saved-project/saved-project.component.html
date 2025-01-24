@@ -1,33 +1,81 @@
 <div class="container mt-4">
-    <h2 class="text-center mb-4">Saved Projects</h2>
-  
-    <!-- Search Input -->
-    <div class="mb-3">
-      <input
-        type="text"
-        [(ngModel)]="searchQuery"
-        class="form-control"
-        placeholder="Search projects..."
-        (input)="filterProjects()"
-      />
-    </div>
-  
-    <!-- Parent Table -->
+  <h2 class="text-center mb-4">Saved Projects</h2>
+
+  <!-- Search Input -->
+
+  <button class="btn btn-success mb-2" (click)="exportToExcel()">
+    Export to Excel
+  </button>
+
+  <!-- Parent Table -->
+  <div class="table-responsive">
     <table class="table table-bordered table-hover">
       <thead class="thead-light">
         <tr>
-          <th (click)="sortData('projectName')"><i class="bi bi-sort-up">Project Name</i></th>
-          <th (click)="sortData('projectCode')"><i class="bi bi-sort-up">Project Code</i></th>
-          <th (click)="sortData('location')">Location</th>
-          <th (click)="sortData('contractor')">Contractor</th>
-          <th (click)="sortData('consultant')">Consultant</th>
+          <th>S.No</th>
+          <th (click)="sortData('projectCode')">
+            <input
+              type="text"
+              [(ngModel)]="searchValues.projectCode"
+              (keyup)="applyFilter()"
+              placeholder="projectCode"
+            />
+            <i class="bi bi-sort-up">Project Code</i>
+          </th>
+          <th (click)="sortData('generatedCode')">
+            <input
+              type="text"
+              [(ngModel)]="searchValues.portalGneratedCode"
+              (keyup)="applyFilter()"
+              placeholder="generatedCode"
+            />
+            <i class="bi bi-sort-up">Generated Code</i>
+          </th>
+          <th (click)="sortData('projectName')">
+            <input
+              type="text"
+              [(ngModel)]="searchValues.projectName"
+              (keyup)="applyFilter()"
+              placeholder="projectName"
+            />
+            <i class="bi bi-sort-up">Project Name</i>
+          </th>
+          <th (click)="sortData('location')">
+            <input
+              type="text"
+              [(ngModel)]="searchValues.location"
+              (keyup)="applyFilter()"
+              placeholder="location"
+            />
+            <i class="bi bi-sort-up"></i>Location
+          </th>
+          <th (click)="sortData('contractor')">
+            <input
+              type="text"
+              [(ngModel)]="searchValues.contractor"
+              (keyup)="applyFilter()"
+              placeholder="contractor"
+            />
+            <i class="bi bi-sort-up"></i>Contractor
+          </th>
+          <th (click)="sortData('consultant')">
+            <input
+              type="text"
+              [(ngModel)]="searchValues.consultant"
+              (keyup)="applyFilter()"
+              placeholder="consultant"
+            />
+            <i class="bi bi-sort-up"></i>Consultant
+          </th>
           <th>Actions</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let project of projects; let i = index">
-          <td>{{ project.projectName }}</td>
+        <tr *ngFor="let project of filteredProjects; let i = index">
+          <td>{{ i + 1 }}</td>
           <td>{{ project.projectCode }}</td>
+          <td>{{ project.generatedCode }}</td>
+          <td>{{ project.projectName }}</td>
           <td>{{ project.location }}</td>
           <td>{{ project.contractor }}</td>
           <td>{{ project.consultant }}</td>
@@ -40,48 +88,112 @@
             </button>
             <button
               class="btn btn-secondary ml-2"
-              (click)="toggleChildData(i)"
+              (click)="toggleChildData(i); childDataShow(project.id)"
             >
-              {{ expandedRowIndex === i ? 'Hide Details' : 'Show Details' }}
+              {{ expandedRowIndex === i ? "Show Details" : "Show Details" }}
             </button>
-            <tr *ngIf="expandedRowIndex === i">
-                <td colspan="6">
-                  <div *ngIf="project.children?.length">
-                    <h5>Child Data:</h5>
-                    <table class="table table-sm table-bordered">
-                      <thead>
-                        <tr>
-                          <th >Pump Series</th>
-                          <th>Pump Model</th>
-                          <!-- <th>Flow</th>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Hidden button to trigger modal -->
+  <button
+    id="openValidationModal"
+    type="button"
+    class="d-none"
+    data-bs-toggle="modal"
+    data-bs-target="#validationModal"
+  ></button>
+
+  <!-- Validation Warning Modal -->
+  <div
+    class="modal fade"
+    id="validationModal"
+    aria-labelledby="validationModalLabel"
+    aria-hidden="true"
+    data-bs-focus="false"
+  >
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title text-danger" id="validationModalLabel">
+            <button
+              (click)="printModalData()"
+              class="btn btn-primary btn-sm float-right"
+            >
+              Print
+            </button>
+            <br />
+            GeneratedCode:{{ generatedCode }}
+            <br />
+
+            ProjectCode:{{ projectCode }}
+
+            <br />
+            ProjectName: {{ projectName }}
+          </h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+            data-bs-focus="false"
+          ></button>
+        </div>
+        <div id="modalContentToPrint" class="modal-body">
+          <div *ngIf="expandedRowIndex === expandNumber">
+            <div *ngIf="projectsChild.length">
+              <h5>Project Details:</h5>
+              <table class="table table-sm table-bordered">
+                <thead>
+                  <tr>
+                    <th>S.No</th>
+                    <th>Pump Series</th>
+                    <th>Pump Model</th>
+                    <th>Total Cost</th>
+                    <!-- <th>Flow</th>
                           <th>Head</th>
                           <th>Pump Size</th>
                           <th>Application</th>
                           <th>Configuration</th>
                           <th>Quantity</th> -->
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr *ngFor="let child of project.children">
-                          <td>{{ child.pumpSeries }}</td>
-                          <td>{{ child.pumpModel }}</td>
-                          <!-- <td>{{ child.flow }}</td>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let child of projectsChild; let i = index">
+                    <td>{{ i + 1 }}</td>
+                    <td>{{ child.pumpSeries }}</td>
+                    <td>{{ child.pumpModel }}</td>
+                    <td>{{ child.TOTALCOST | number : "1.0-2" }}</td>
+
+                    <!-- <td>{{ child.flow }}</td>
                           <td>{{ child.head }}</td>
                           <td>{{ child.pumpSize }}</td>
                           <td>{{ child.application }}</td>
                           <td>{{ child.configuration }}</td>
                           <td>{{ child.quantity }}</td> -->
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                  <div *ngIf="!project.children?.length">
-                    <p>No child data available for this project.</p>
-                  </div>
-                </td>
-              </tr>
-          </td>
-        </tr>
-  
-        <!-- Collapsible Child Rows -->
-       
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div *ngIf="!projectsChild.length">
+            <p>No data available for this project.</p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-primary"
+            data-bs-focus="false"
+            data-bs-dismiss="modal"
+          >
+            OK
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

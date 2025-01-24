@@ -1,8 +1,42 @@
+<div *ngIf="!newPage" class="d-flex justify-content-center">
+  <button class="btn btn-primary me-1" (click)="navigateToCreateProject()">
+    Create New Project
+  </button>
+  <button class="btn btn-secondary me-1" (click)="navigateToSavedProjects()">
+    Retrieve Saved Project
+  </button>
+</div>
 
-
-
-
-  <div *ngIf="!newPage" class="d-flex justify-content-center">
-    <button class="btn btn-primary" (click)="navigateToCreateProject()">Create New Project</button>
-    <button class="btn btn-secondary" (click)="navigateToSavedProjects()">Retrieve Saved Project</button>
+<div
+  class="modal fade"
+  id="validationModal1"
+  tabindex="-1"
+  aria-labelledby="validationModalLabel1"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title text-danger" id="validationModalLabel1">
+          Error
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <p class="text-danger">
+          First Login In The Portal Then You able to perform operations!.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
+          OK
+        </button>
+      </div>
+    </div>
   </div>
+</div>

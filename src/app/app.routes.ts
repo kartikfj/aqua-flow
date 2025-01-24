@@ -11,6 +11,7 @@ export const routes: Routes = [
     { path: 'create-project', component: CreateProjectComponent },
     { path: 'saved-projects', component: SavedProjectComponent },
     { path: 'add-child/:projectId', component: CreateProjectComponent},
-    {path:'home',component:HomeComponent},
+    { path:'home',component:HomeComponent},
+    { path:'home/:empId',component:HomeComponent},
     { path: '', redirectTo: '/home', pathMatch: 'full' },
   ];
