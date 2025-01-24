@@ -13,7 +13,7 @@ phases:
       - echo "Building Angular application..."
       - npm run build --prod  # Build for production
       - echo "Zipping the build output..."
-      - zip -r angular-build.zip dist/aqua-select/browser/*
+      - zip -r angular-build.zip dist/*
       
 post_build:
   commands:
@@ -24,5 +24,5 @@ post_build:
 artifacts:
   files:
     - "**/*"  # Include all files in the working directory
-  base-directory: .  # Base directory to include files from
+  base-directory: dist  # Base directory to include files from
   discard-paths: no  # Keep the original folder structure
