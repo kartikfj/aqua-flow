@@ -36,8 +36,8 @@ phases:
       - ls -lh /codebuild/output/  # List files in the output directory to confirm location
       - echo "Uploading zip file to S3..."
       - aws s3 cp angular-build.zip s3://aquaflow195/
-artifacts:
-  files:
-    - angular-build.zip
-  base-directory: /codebuild/output/*/  # Use wildcard to detect the directory dynamically
-  discard-paths: yes
+  artifacts:
+    files:
+        - '**/*'
+    base-directory: 'dist*'
+    discard-paths: yes
