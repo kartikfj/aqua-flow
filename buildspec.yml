@@ -18,8 +18,7 @@ phases:
       - ls -lh dist/aqua-select/
       - echo "Listing all files to confirm location..."
       - ls -lh  # List all files in the root build directory to help identify the exact path
-
-      
+    
  post_build:
    commands:
      - echo "Verifying zip file before upload..."
