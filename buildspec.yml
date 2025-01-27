@@ -19,9 +19,11 @@ post_build:
   commands:
     - echo "Verifying zip file before upload..."
     - ls -lh angular-build.zip  # List files to confirm zip exists
-    - aws s3 cp angular-build.zip s3://aquaflow195/ # Upload to S3
+    - mv angular-build.zip /codebuild/output/src107010302/src/  # Move to expected directory
+    - aws s3 cp /codebuild/output/src107010302/src/angular-build.zip s3://aquaflow195/
     
 artifacts:
   files:
     - angular-build.zip
+  base-directory: /codebuild/output/src107010302/src/ 
   discard-paths: yes
