@@ -1320,8 +1320,14 @@
       <tbody>
         <tr *ngFor="let child of projectsChild; let i = index">
           <td>{{ i + 1 }}</td>
-          <td>{{ child.pumpSeries }}</td>
-          <td>{{ child.pumpModel }}</td>
+          <td>
+            {{ child.application }}/{{ child.configuration }}/{{
+              child.pumpModel
+            }}/{{ child.strainer }}/{{ child.controlPanelType }}/{{
+              child.controlPanelRelay
+            }}
+          </td>
+          <td>{{ child.quantity }}</td>
           <td>{{ child.TOTALCOST | number : "1.0-2" }}</td>
           <!-- <td>{{ child.flow }}</td>
             <td>{{ child.head }}</td>

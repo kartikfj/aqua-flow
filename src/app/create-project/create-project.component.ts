@@ -25,7 +25,12 @@ export class CreateProjectComponent {
   // addonsForm!: FormGroup;
   // pressureVessleForm!: FormGroup;
   // controllPanelForm!: FormGroup;
-
+  projectCode:string='';
+  projectName:string='';
+  generatedCode:string='';
+  contractor:string='';
+  location:string='';
+  consultant:string='';
   pumpSeriesOptions:string[] = [];
   selectedPumpSeries: string = '';
   selectedModelSeries: string = '';
@@ -36,7 +41,7 @@ export class CreateProjectComponent {
   disableSelectedPressure:boolean=true;
   pumpSizeOptions:string[]=[];
   pumpModelOption:string[]=[];
-  applicationOptions = ['BOOSTER', 'TRANSFER', 'CIRCULATION','PRESSURIZATION'];
+  applicationOptions = ['BOOSTER_ABP', 'TRANSFER_ATP', 'CIRCULATION_ACP','PRESSURIZATION_APU'];
   configurationOptions = ['DUPLEX', 'TRIPLEX'];
   strainerOptions = ['No Strainer', 'Strainer for Header','Strainer for Pump'];
   flexibleOptions = ['No Flexible Connector', 'Flexible Connector on Header (FCH)','Flexible Connector for Pump (FCP)'];
@@ -583,6 +588,12 @@ console.log(data);
        // this.projectName=childData.projectName;
        // document.getElementById('openValidationModal')?.click();
         this.projectsChild=childData.children;
+        this.projectCode=childData.projectCode;
+        this.projectName=childData.projectName;
+        this.generatedCode=childData.generatedCode;
+        this.contractor=childData.contractor;
+        this.location=childData.location;
+        this.consultant=childData.consultant;
         console.log(this.projectsChild);
        }
     })
@@ -628,17 +639,37 @@ exportToExcel() {
   XLSX.utils.book_append_sheet(workbook, worksheet, 'Projects');
   XLSX.writeFile(workbook, 'ProjectReport.xlsx');
 }
+// printTable() {
+//     const printContent = document.getElementById('tableToPrint');
+//     const WindowPrt = window.open('', '', 'width=900,height=700');
+//     WindowPrt?.document.write('<html><head><title>Print Report</title></head><body>');
+//     WindowPrt?.document.write(printContent?.outerHTML || '');
+//     WindowPrt?.document.write('</body></html>');
+//     WindowPrt?.document.close();
+//     WindowPrt?.focus();
+//     WindowPrt?.print();
+//     WindowPrt?.close();
+//   }
+  
+
 printTable() {
-    const printContent = document.getElementById('tableToPrint');
-    const WindowPrt = window.open('', '', 'width=900,height=700');
-    WindowPrt?.document.write('<html><head><title>Print Report</title></head><body>');
-    WindowPrt?.document.write(printContent?.outerHTML || '');
-    WindowPrt?.document.write('</body></html>');
-    WindowPrt?.document.close();
-    WindowPrt?.focus();
-    WindowPrt?.print();
-    WindowPrt?.close();
-  }
+  const printContent = document.getElementById('tableToPrint');
+  const WindowPrt = window.open('', '', 'width=900,height=700');
+  WindowPrt?.document.write('<html><head><title>Project Summary</title></head><body>');
+  WindowPrt?.document.write('<h3>Unique Code: ' + this.generatedCode + '</h3>');
+  WindowPrt?.document.write('<h3>Project Code: ' + this.projectCode + '</h3>');
+  WindowPrt?.document.write('<h3>Project Name: ' + this.projectName + '</h3>');
+  WindowPrt?.document.write('<h3>Contractor: ' + this.contractor + '</h3>');
+  WindowPrt?.document.write('<h3>Consultant: ' + this.consultant + '</h3>');
+  WindowPrt?.document.write('<h3>Location: ' + this.location + '</h3>');
+  WindowPrt?.document.write(printContent?.outerHTML || '');
+  WindowPrt?.document.write('</body></html>');
+  WindowPrt?.document.close();
+  WindowPrt?.focus();
+  WindowPrt?.print();
+  WindowPrt?.close();
+}
+
 }
 
 

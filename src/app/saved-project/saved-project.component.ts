@@ -36,6 +36,9 @@ export class SavedProjectComponent {
   projectCode:string='';
   projectName:string='';
   generatedCode:string='';
+  contractor:string='';
+  location:string='';
+  consultant:string='';
   searchValues = {
     projectCode: '',
     portalGneratedCode:'',
@@ -136,6 +139,9 @@ export class SavedProjectComponent {
         this.projectCode=childData.projectCode;
         this.projectName=childData.projectName;
         this.generatedCode=childData.generatedCode;
+        this.contractor=childData.contractor;
+        this.location=childData.location;
+        this.consultant=childData.consultant;
         document.getElementById('openValidationModal')?.click();
         this.projectsChild=childData.children;
        }
@@ -152,11 +158,13 @@ export class SavedProjectComponent {
 printModalData() {
   const printContent = document.getElementById('modalContentToPrint');
   const WindowPrt = window.open('', '', 'width=900,height=700');
-  WindowPrt?.document.write('<html><head><title>Print Project Details</title></head><body>');
-  WindowPrt?.document.write('<h3>Project Code: ' + this.generatedCode + '</h3>');
+  WindowPrt?.document.write('<html><head><title>Project Summary</title></head><body>');
+  WindowPrt?.document.write('<h3>Unique Code: ' + this.generatedCode + '</h3>');
   WindowPrt?.document.write('<h3>Project Code: ' + this.projectCode + '</h3>');
   WindowPrt?.document.write('<h3>Project Name: ' + this.projectName + '</h3>');
-
+  WindowPrt?.document.write('<h3>Contractor: ' + this.contractor + '</h3>');
+  WindowPrt?.document.write('<h3>Consultant: ' + this.consultant + '</h3>');
+  WindowPrt?.document.write('<h3>Location: ' + this.location + '</h3>');
   WindowPrt?.document.write(printContent?.outerHTML || '');
   WindowPrt?.document.write('</body></html>');
   WindowPrt?.document.close();

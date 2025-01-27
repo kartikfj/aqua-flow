@@ -1,8 +1,6 @@
 {
     "/AquaFlowController": {
-  
-    "target": "https://portal.fjtco.com:8444/fjhr",
+    "target": "http://localhost:8080/FJPORTAL_DEV",
     "secure:": false
     }
 }
-

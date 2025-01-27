@@ -133,6 +133,13 @@
 
             <br />
             ProjectName: {{ projectName }}
+            <br />
+            Contrator: {{ contractor }}
+            <br />
+            <br />
+            Consultant: {{ contractor }}
+            <br />
+            Location: {{ location }}
           </h5>
           <button
             type="button"
@@ -150,8 +157,8 @@
                 <thead>
                   <tr>
                     <th>S.No</th>
-                    <th>Pump Series</th>
-                    <th>Pump Model</th>
+                    <th>Product Code</th>
+                    <th>Qty</th>
                     <th>Total Cost</th>
                     <!-- <th>Flow</th>
                           <th>Head</th>
@@ -164,8 +171,15 @@
                 <tbody>
                   <tr *ngFor="let child of projectsChild; let i = index">
                     <td>{{ i + 1 }}</td>
-                    <td>{{ child.pumpSeries }}</td>
-                    <td>{{ child.pumpModel }}</td>
+
+                    <td>
+                      {{ child.application }}/{{ child.configuration }}/{{
+                        child.pumpModel
+                      }}/{{ child.strainer }}/{{ child.controlPanelType }}/{{
+                        child.controlPanelRelay
+                      }}
+                    </td>
+                    <td>{{ child.quantity }}</td>
                     <td>{{ child.TOTALCOST | number : "1.0-2" }}</td>
 
                     <!-- <td>{{ child.flow }}</td>
