@@ -7,6 +7,15 @@ phases:
     commands:
       - echo "Installing dependencies..."
       - npm install --legacy-peer-deps  # Install dependencies with Angular version compatibility
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 18  # Use a compatible Node.js version
+    commands:
+      - echo "Installing dependencies..."
+      - npm install --legacy-peer-deps  # Install dependencies with Angular version compatibility
 
   build:
     commands:
@@ -18,16 +27,18 @@ phases:
       - ls -lh dist/aqua-select/
       - echo "Listing all files to confirm location..."
       - ls -lh  # List all files in the root build directory to help identify the exact path
-    
- post_build:
-   commands:
-     - echo "Verifying zip file before upload..."
-     - ls -lh /codebuild/output/  # List files in the output directory to confirm location
-     - echo "Uploading zip file to S3..."
-     - aws s3 cp /codebuild/output/*/angular-build.zip s3://aquaflow195/ --recursive  # Use wildcard to upload zip file
 
- artifacts:
-   files:
-       - angular-build.zip
-   base-directory: /codebuild/output/*/  # Use wildcard to detect the directory dynamically
-   discard-paths: yes
+  post_build:
+    commands:
+      - echo "Verifying zip file before upload..."
+      - ls -lh angular-build.zip  # List files to confirm zip exists
+      - echo "Listing files in the output directory..."
+      - ls -lh /codebuild/output/  # List files in the output directory to confirm location
+      - echo "Uploading zip file to S3..."
+      - aws s3 cp /codebuild/output/*/angular-build.zip s3://aquaflow195/ --recursive  # Use wildcard to upload zip file
+
+artifacts:
+  files:
+    - angular-build.zip
+  base-directory: /codebuild/output/*/  # Use wildcard to detect the directory dynamically
+  discard-paths: yes
