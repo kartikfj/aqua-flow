@@ -35,8 +35,7 @@ phases:
       - echo "Listing files in the output directory..."
       - ls -lh /codebuild/output/  # List files in the output directory to confirm location
       - echo "Uploading zip file to S3..."
-      - aws s3 cp /codebuild/output/*/angular-build.zip s3://aquaflow195/ --recursive  # Use wildcard to upload zip file
-
+      - aws s3 cp angular-build.zip s3://aquaflow195/
 artifacts:
   files:
     - angular-build.zip
