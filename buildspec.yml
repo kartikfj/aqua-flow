@@ -39,7 +39,7 @@ phases:
       - echo "Listing files in the output directory..."
       - ls -lh /codebuild/output/  # Confirm the output directory structure
       - echo "Uploading zip file to S3..."
-      - aws s3 cp angular-build.zip s3://aquaflow195/  # Corrected upload command without --recursive
+      - aws s3 cp angular-build.zip s3://aquaflow195/ --debug # Corrected upload command without --recursive
 
 artifacts:
     files:
