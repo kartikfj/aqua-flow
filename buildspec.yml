@@ -7,15 +7,6 @@ phases:
     commands:
       - echo "Installing dependencies..."
       - npm install --legacy-peer-deps  # Install dependencies with Angular version compatibility
-version: 0.2
-
-phases:
-  install:
-    runtime-versions:
-      nodejs: 18  # Use a compatible Node.js version
-    commands:
-      - echo "Installing dependencies..."
-      - npm install --legacy-peer-deps  # Install dependencies with Angular version compatibility
 
   build:
     commands:
