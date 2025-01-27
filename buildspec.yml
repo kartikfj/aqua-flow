@@ -4,8 +4,6 @@ phases:
       nodejs: 18  # Use a compatible Node.js version
     commands:
       - echo "Installing dependencies..."
-      - npm install -g npm@latest   # Upgrade npm to the latest version
-      - npm install js-yaml@latest --save  # Fix js-yaml issue
       - npm install --legacy-peer-deps  # Install dependencies with Angular version compatibility
 
   build:
@@ -16,5 +14,5 @@ phases:
 artifacts:
   files:
     - '**/*'  # Include all necessary files
-  base-directory: dist  # Change this if your Angular app outputs to a different folder
+  base-directory: dist/aqua-select
   discard-paths: no
