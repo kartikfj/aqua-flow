@@ -3,27 +3,25 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      nodejs: 18 # Or a specific version like 16
+      nodejs: 18 # Or a more recent LTS version if available
     commands:
+      - echo "Installing dependencies..."
       - npm install --legacy-peer-deps
-      - npm install -g @angular/cli # Install Angular CLI globally
-      - npm ci # Install project dependencies from package-lock.json (recommended) or npm install
-  pre_build:
+      # Remove --legacy-peer-deps if possible. Address peer dependency warnings instead.
+      # If you must use it, understand the implications.
+  build:
     commands:
-      - echo "Starting build on `date`"
-      - ng version
-      - ng build --prod --output-path=dist/my-app # Build the Angular app in production mode. Change my-app to your app name.
-  post_build:
+      - echo "Building Angular application..."
+      - npm run build --prod # Build for production
+  post_build: # Add a post_build phase for zipping
     commands:
-      - echo "Build completed on `date`"
       - echo "Zipping the build output..."
-      - zip -r my-app.zip dist/my-app # Create a zip archive of the dist folder.
-      - echo "Pushing the zip file to S3..."
-      - aws s3 cp my-app.zip s3://aquaflow195 # Copy the zip file to your S3 bucket. Replace with your bucket and path.
+      - zip -r my-app.zip dist # Creates a zip of the dist folder
 artifacts:
   files:
-    - my-app.zip # Include the zip file in the CodeBuild artifacts (optional, but useful for debugging)
-  discard-paths: yes # Don't include the full directory structure in the artifacts
+    - my-app.zip # Zip file is the artifact
+  discard-paths: yes # Correct setting: Discard directory structure in artifact
+#cache is good practice
 cache:
   paths:
-    - node_modules/**/* # Cache node_modules to speed up subsequent builds
+    - node_modules/**/*
