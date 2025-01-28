@@ -17,7 +17,7 @@ phases:
       - echo "Listing files in the build directory..."
       - ls -lh dist/
       - echo "Listing all files to confirm location..."
-      - ls -lh  # List all files in the root build directory to help identify the exact path
+      - ls -lh  # List all files in the root build directory to help identifyy the exact path
 
   pre_build:
     commands:
