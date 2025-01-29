@@ -13,6 +13,9 @@ export interface Project {
   projectId: number;
   flow: string;
   head: string;
+  priceMultipler:number;
+  assemblerMultipler:number;
+  manualCost:number;
   TOTALCOST:number;
   pumpSeries: string;
   pumpModel: string;
@@ -30,6 +33,7 @@ export interface Project {
   pressureVesselRating: string;
   material: string;
   materialQty: number;
+  needControl:string;
   controlPanelType: string;
   controlPanelPower: string;
   controlPanelRelay: string;
@@ -46,6 +50,7 @@ export interface Project {
     contractor: string;
     consultant: string;
     location: string;
+    revision:number;
     parentsysid: 0,
     quantity: 0,
     floatswitchQty: 0,

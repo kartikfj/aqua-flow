@@ -77,6 +77,15 @@ export class AquagetService {
     return this.http.get(`${this.apiUrl}?action=getSavedProjectDetails&&project=${projectId}`);
     console.log
   }
+  getMaxRivision(projectCode:string,generatedCode:string):Observable<number>{
+    return this.http.get<number>(`${this.apiUrl}?action=getMaxRevision&projectCode=${projectCode}&generatedCode=${generatedCode}`);
+  }
+  getAllRivision(projectCode:string,generatedCode:string):Observable<number[]>{
+    return this.http.get<number[]>(`${this.apiUrl}?action=getAllRevision&projectCode=${projectCode}&generatedCode=${generatedCode}`);
+  }
+  getRivisionById(projectCode:string,generatedCode:string,rivision:number):Observable<any>{
+    return this.http.get(`${this.apiUrl}?action=getRevisionById&projectCode=${projectCode}&generatedCode=${generatedCode}&rivisionCode=${rivision}`);
+  }
   getUserId(): string | null {
     const userData = localStorage.getItem('userId');
   

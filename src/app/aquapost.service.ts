@@ -27,7 +27,18 @@ export class AquapostService {
     }
     
   }
-
+  saveRevision(projectData: any): Observable<any> {
+    console.log('save');
+    const empId=this.aquaget.getUserId();
+    if (empId) {
+      const apiUrl = `/AquaFlowController?action=saveRevision&empId=${empId}`;
+      return this.http.post(apiUrl, projectData);
+    } else {
+      console.error('Error: Employee ID is missing.');
+      return throwError(() => new Error('Employee ID is required to create a project.'));
+    }
+    
+  }
   /**
    * Save package details associated with a project.
    * @param packageData Object containing package details.

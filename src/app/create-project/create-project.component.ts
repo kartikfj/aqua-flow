@@ -5,8 +5,8 @@ import { HttpClient } from '@angular/common/http';
 import { AquapostService } from '../aquapost.service';
 import { AquagetService } from '../aquaget.service';
 import { Project, ProjectChild, ProjectData, ProjectSerch } from '../model/Project';
-import { ActivatedRoute } from '@angular/router';
-import { Observable } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Observable, of, switchMap } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { selectAllChildProjects, selectAllProjects } from '../state/selector';
 import * as ProjectActions from '../state/action';
@@ -32,13 +32,17 @@ export class CreateProjectComponent {
   location:string='';
   consultant:string='';
   pumpSeriesOptions:string[] = [];
+  rivison:number[]=[];
   selectedPumpSeries: string = '';
   selectedModelSeries: string = '';
   selectedPressureRating:string='';
   selectedPressureVessle:string='';
   selectedPressureBrand:string='';
   selectedType:string='';
+  selectedControl:string='';
+ 
   disableSelectedPressure:boolean=true;
+  isManualCostEnabled:boolean=false;
   pumpSizeOptions:string[]=[];
   pumpModelOption:string[]=[];
   applicationOptions = ['BOOSTER_ABP', 'TRANSFER_ATP', 'CIRCULATION_ACP','PRESSURIZATION_APU'];
@@ -47,6 +51,8 @@ export class CreateProjectComponent {
   flexibleOptions = ['No Flexible Connector', 'Flexible Connector on Header (FCH)','Flexible Connector for Pump (FCP)'];
   floatOptions = ['Yes', 'No'];
   pressureVessel=['Yes','No'];
+  controllPanel=['Yes','No'];
+
   brand=['Reflex','Feflex'];
   capacity=['60L','50L','40L'];
   pressureRating=['PN 10','PN 9','PN 8'];
@@ -69,7 +75,7 @@ export class CreateProjectComponent {
   isDropdownOpen = false;
   isDropdownOpenName = false;
   isDropdownOpenConstructor = false;
-  constructor(private store: Store,private fb: FormBuilder, private http: HttpClient,private aquaPost:AquapostService,private aquaGet:AquagetService,private route: ActivatedRoute) {
+  constructor(private store: Store,private fb: FormBuilder, private http: HttpClient,private aquaPost:AquapostService,private aquaGet:AquagetService,private route: ActivatedRoute,private router: Router) {
     this.projects$ = this.store.select(selectAllChildProjects);
   }
   projects:Project[]=[];
@@ -137,6 +143,9 @@ if(this.projectId){
     this.packageForm = this.fb.group({
       flow: ['', [Validators.required,Validators.min(1), Validators.max(100), Validators.pattern('^[0-9]*\\.?[0-9]+$')]], // Min 1, Max 5000, Numbers only
       head: ['', [Validators.required,Validators.min(1), Validators.max(100), Validators.pattern('^[0-9]*\\.?[0-9]+$')]], // Min 1, Max 500, Numbers only
+      priceMultipler:[0.1, [Validators.required,Validators.min(0.1), Validators.max(1), Validators.pattern('^[0-9]*\\.?[0-9]+$')]], // Min 1, Max 500, Numbers only
+      assemblerMultipler:[0.2, [Validators.required,Validators.min(0.2), Validators.max(1), Validators.pattern('^[0-9]*\\.?[0-9]+$')]], // Min 1, Max 500, Numbers only
+      manualCost:[{ value: 0, disabled: true }, [Validators.required,Validators.min(1), Validators.max(100000), Validators.pattern('^[0-9]*\\.?[0-9]+$')]], // Min 1, Max 500, Numbers only
       pumpSeries: ['', Validators.required], // Required field
       pumpModel: ['', Validators.required], // Required field
       pumpSize: ['', Validators.required], // Required field
@@ -162,14 +171,15 @@ if(this.projectId){
     //});
 
    // this.controllPanelForm=this.fb.group({
-    controlPanelType:['', [Validators.required]],
-    controlPanelPower:['', [Validators.required]],
-    controlPanelRelay:['', [Validators.required]],
-    controlPanelADDC:['', [Validators.required]],
-    controlPanelTH:['', [Validators.required]],
-    controlPanelPTC:['', [Validators.required]],
-    controlPanelAV:['', [Validators.required]],
-    controlPanelBYP:['', [Validators.required]],
+    needControl: ['', [Validators.required]],
+    controlPanelType:['', {value:'', disabled:true},[Validators.required]],
+    controlPanelPower:['', {value:'', disabled:true},[Validators.required]],
+    controlPanelRelay:['', {value:'', disabled:true},[Validators.required]],
+    controlPanelADDC:['', {value:'', disabled:true},[Validators.required]],
+    controlPanelTH:['', {value:'', disabled:true},[Validators.required]],
+    controlPanelPTC:['', {value:'', disabled:true},[Validators.required]],
+    controlPanelAV:['', {value:'', disabled:true},[Validators.required]],
+    controlPanelBYP:['', {value:'', disabled:true},[Validators.required]],
     });
   }
 
@@ -396,6 +406,72 @@ if(this.projectId){
       // Logic to finish the process
       console.log('Finished!');
     }
+    async AddRevisionProject() {
+      console.log("data");
+    
+      this.aquaGet.getMaxRivision(this.projectSavedData.projectCode, this.projectSavedData.generatedCode)
+        .pipe(
+          switchMap((response: any) => {
+            const rivision = response.revision || 0; // Ensure rivision is always assigned
+            this.projectSavedData.revision = rivision;
+            console.log('Revision:', rivision);
+    
+            if (rivision > 0) {
+              console.log("Came in the revision form");
+              return this.aquaPost.saveRevision(this.projectSavedData);
+            } else {
+              console.warn("Skipping save, revision is 0.");
+              return of(null); // Return an observable with null to avoid errors
+            }
+          })
+        )
+        .subscribe(
+          (response: any) => {
+            if (response) {
+              console.log("Save response:", response);
+              this.projectId = response.updateStatus;
+              this.disabledButton = true;
+    
+              // Fetch saved project
+              this.aquaGet.getSavedProjectById(this.projectId).subscribe(data => {
+                this.projectSavedData = data;
+                console.log("Updated Project Data:", this.projectSavedData);
+                this.navigateToAddChild(this.projectId)
+              });
+    
+              alert(`Project Saved Successfully! ID: ${this.projectId}`);
+            }
+          },
+          (error: any) => {
+            console.error("Error saving project:", error);
+            document.getElementById('openValidationModal1')?.click();
+          }
+        );
+    }
+    navigateToAddChild(projectId: number) {
+      this.router.navigate(['/add-child', projectId]);
+    } 
+  OldRevisionProject(){
+   console.log("data came")
+   this.aquaGet.getAllRivision(this.projectSavedData.projectCode, this.projectSavedData.generatedCode).subscribe((response:any)=>{
+    console.log(response);
+    this.rivison=response.revision;
+    
+   })
+  }
+  getRivisionById(id:number){
+    console.log(id);
+    this.projectSavedData.revision = id;
+    this.aquaGet.getRivisionById(this.projectSavedData.projectCode,this.projectSavedData.generatedCode,id).subscribe((response:any)=>{
+      console.log(response);
+      this.projectId=response.projectId;
+      this.navigateToAddChild(this.projectId);
+      this.projectsChild=[];
+      this.getSavedProjectById()
+    })
+    
+
+  }
   goNext() {
     if (this.currentState === 'project') {
       this.currentState = 'package';
@@ -514,6 +590,39 @@ if(this.projectId){
       this.packageForm.controls['pressureVesselRating'].disable();  // Enable
       this.packageForm.controls['material'].disable(); // Disable
       this.packageForm.controls['materialQty'].disable(); // Disable
+    }
+  }
+  onSelectedControlPanel(event:any){
+    console.log("data came");
+    this.selectedControl=event.target.value;
+    if(this.selectedControl=='Yes'){
+      this.packageForm.controls['controlPanelType'].enable();
+      this.packageForm.controls['controlPanelPower'].enable();
+      this.packageForm.controls['controlPanelRelay'].enable();
+      this.packageForm.controls['controlPanelADDC'].enable();
+      this.packageForm.controls['controlPanelTH'].enable();
+      this.packageForm.controls['controlPanelPTC'].enable();
+      this.packageForm.controls['controlPanelAV'].enable();
+      this.packageForm.controls['controlPanelBYP'].enable();
+    }
+    else{
+      this.packageForm.controls['controlPanelType'].disable();
+      this.packageForm.controls['controlPanelPower'].disable();
+      this.packageForm.controls['controlPanelRelay'].disable();
+      this.packageForm.controls['controlPanelADDC'].disable();
+      this.packageForm.controls['controlPanelTH'].disable();
+      this.packageForm.controls['controlPanelPTC'].disable();
+      this.packageForm.controls['controlPanelAV'].disable();
+      this.packageForm.controls['controlPanelBYP'].disable();
+    }
+  }
+  onToggleManualCost(event: Event) {
+    this.isManualCostEnabled = (event.target as HTMLInputElement).checked;
+    if (this.isManualCostEnabled) {
+      this.packageForm.controls['manualCost'].enable();
+    } else {
+      this.packageForm.controls['manualCost'].disable();
+      this.packageForm.controls['manualCost'].setValue(''); // Optional: Reset value when disabled
     }
   }
   onSelectedPressureBrand(event:any){

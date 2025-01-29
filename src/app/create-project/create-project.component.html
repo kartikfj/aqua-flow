@@ -1,8 +1,10 @@
-<div>
+<div class="relative-container">
   <div *ngIf="projectSavedData" class="container mt-4">
     <!-- Top Heading for Generated Code -->
     <h2 class="text-start text-primary fw-bold">
-      Generated Code: {{ projectSavedData.generatedCode }}
+      Generated Code: {{ projectSavedData.generatedCode }}/R{{
+        projectSavedData.revision
+      }}
     </h2>
 
     <button
@@ -14,21 +16,55 @@
     </button>
 
     <!-- Styled Table -->
-    <div class="table-responsive">
-      <table class="table table-bordered table-hover shadow-lg mt-3">
-        <thead class="table-dark text-white">
-          <tr>
-            <th>Project Code</th>
-            <th>Project Name</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>{{ projectSavedData.projectCode }}</td>
-            <td>{{ projectSavedData.projectName }}</td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="relative-container">
+      <div class="responsive-table">
+        <table class="table table-bordered table-hover shadow-lg mt-3">
+          <thead class="table-dark text-white">
+            <tr>
+              <th>Project Code</th>
+              <th>Project Name</th>
+              <th>Revision</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{{ projectSavedData.projectCode }}</td>
+              <td>{{ projectSavedData.projectName }}</td>
+              <td>
+                <button (click)="AddRevisionProject()" class="btn btn-primary">
+                  Add-NewRevision
+                </button>
+
+                <!-- Dropdown Group -->
+                <div class="btn-group dropup">
+                  <!-- Add "dropup" class here -->
+                  <button
+                    type="button"
+                    class="btn btn-info dropdown-toggle"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                    (click)="OldRevisionProject()"
+                  >
+                    Edit-OldRevision <i class="bi bi-chevron-down"></i>
+                  </button>
+
+                  <!-- Dropdown Menu -->
+                  <ul class="dropdown-menu custom-dropdown">
+                    <li *ngFor="let riv of rivison">
+                      <button
+                        class="dropdown-item"
+                        (click)="getRivisionById(riv)"
+                      >
+                        {{ projectSavedData.generatedCode }}/R{{ riv }}
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </div>
@@ -470,7 +506,126 @@
             >
           </div>
         </div>
-
+        <div class="col-md-3">
+          <label for="flow">priceMultipler:</label>
+          <input
+            id="flow"
+            formControlName="priceMultipler"
+            type="number"
+            class="form-control"
+            placeholder="Enter priceMultipler"
+          />
+          <div
+            *ngIf="
+              packageForm.controls['priceMultipler'].invalid &&
+              packageForm.controls['priceMultipler'].touched
+            "
+          >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['priceMultipler'].errors?.['required']"
+              >priceMultipler is required.</small
+            >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['priceMultipler'].errors?.['min']"
+              >priceMultipler must be at least 0.1.</small
+            >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['priceMultipler'].errors?.['max']"
+              >priceMultipler cannot exceed 1.</small
+            >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['priceMultipler'].errors?.['pattern']"
+            >
+              priceMultipler must be a valid number.
+            </small>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <label for="flow">assemblerMultipler:</label>
+          <input
+            id="flow"
+            formControlName="assemblerMultipler"
+            type="number"
+            class="form-control"
+            placeholder="Enter assemblerMultipler"
+          />
+          <div
+            *ngIf="
+              packageForm.controls['assemblerMultipler'].invalid &&
+              packageForm.controls['assemblerMultipler'].touched
+            "
+          >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['assemblerMultipler'].errors?.['required']"
+              >assemblerMultipler is required.</small
+            >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['assemblerMultipler'].errors?.['min']"
+              >assemblerMultipler must be at least 0.2-1.</small
+            >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['assemblerMultipler'].errors?.['max']"
+              >assemblerMultipler cannot exceed 1.</small
+            >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['assemblerMultipler'].errors?.['pattern']"
+            >
+              assemblerMultipler must be a valid number.
+            </small>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <label for="flow">manualCost:</label>
+          <input
+            id="flow"
+            formControlName="manualCost"
+            type="number"
+            class="form-control"
+            placeholder="Enter manualCost"
+            [disabled]="!isManualCostEnabled"
+          />
+          <input
+            type="checkbox"
+            class="ms-2"
+            (change)="onToggleManualCost($event)"
+          />
+          <div
+            *ngIf="
+              packageForm.controls['manualCost'].invalid &&
+              packageForm.controls['manualCost'].touched
+            "
+          >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['manualCost'].errors?.['required']"
+              >Flow is required.</small
+            >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['manualCost'].errors?.['min']"
+              >Flow must be at least 1.</small
+            >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['manualCost'].errors?.['max']"
+              >Flow cannot exceed 50.</small
+            >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['manualCost'].errors?.['pattern']"
+            >
+              manualCost must be a valid number.
+            </small>
+          </div>
+        </div>
         <div class="col-md-3">
           <label for="application">Application:</label>
           <div class="input-group">
@@ -854,7 +1009,32 @@
       <h2>Control Panel</h2>
       <!-- <form [formGroup]="controllPanelForm"> -->
       <div class="row">
-        <div class="col-md-3">
+        <div class="col-md-4">
+          <label for="needControl">Need controlPanel!:</label>
+          <select
+            id="needControl"
+            formControlName="needControl"
+            class="form-select"
+            (change)="onSelectedControlPanel($event)"
+          >
+            <option *ngFor="let strainer of controllPanel" [value]="strainer">
+              {{ strainer }}
+            </option>
+          </select>
+          <div
+            *ngIf="
+              packageForm.controls['needControl'].invalid &&
+              packageForm.controls['needControl'].touched
+            "
+          >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['needControl'].errors?.['required']"
+              >Pressure Vessel is required.</small
+            >
+          </div>
+        </div>
+        <div class="col-md-4">
           <label for="controlPanelType">Type:</label>
           <select
             id="controlPanelType"
@@ -879,7 +1059,7 @@
             >
           </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-4">
           <label for="controlPanelPower">Power:</label>
           <select
             id="controlPanelPower"
@@ -903,7 +1083,7 @@
             >
           </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-4">
           <label for="controlPanelRelay">Phase monitoring relay (UVR):</label>
           <div id="controlPanelRelay" class="form-check">
             <input
@@ -939,7 +1119,7 @@
           </div>
         </div>
 
-        <div class="col-md-3">
+        <div class="col-md-4">
           <label for="controlPanelADDC"
             >Panel Abu Dhabi/Alian project (ADDC):</label
           >
@@ -975,7 +1155,7 @@
           </div>
         </div>
 
-        <div class="col-md-3">
+        <div class="col-md-4">
           <label for="controlPanelTH">Anti-condensation Heater (TH):</label>
           <div id="controlPanelTH" class="form-check">
             <input
@@ -1007,7 +1187,7 @@
           </div>
         </div>
 
-        <div class="col-md-3">
+        <div class="col-md-4">
           <label for="controlPanelPTC">Thermistor Relay (PTC):</label>
           <div id="controlPanelPTC" class="form-check">
             <input
@@ -1041,7 +1221,7 @@
           </div>
         </div>
 
-        <div class="col-md-3">
+        <div class="col-md-4">
           <label for="controlPanelAV">Ammeter & Voltmeter:</label>
           <div id="controlPanelAV" class="form-check">
             <input
@@ -1073,7 +1253,7 @@
           </div>
         </div>
 
-        <div class="col-md-3">
+        <div class="col-md-4">
           <label for="controlPanelBYP">VFD Bypass (BYP):</label>
           <div id="controlPanelBYP" class="form-check">
             <input
