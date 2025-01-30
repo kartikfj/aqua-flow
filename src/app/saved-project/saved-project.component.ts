@@ -33,6 +33,7 @@ export class SavedProjectComponent {
   projects:Project[]=[];
   filteredProjects:Project[]=[];
   projectsChild:ProjectChild[]=[];
+  rivison:number[]=[];
   projectCode:string='';
   projectName:string='';
   generatedCode:string='';

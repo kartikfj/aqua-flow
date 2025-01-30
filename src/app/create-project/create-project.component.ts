@@ -408,7 +408,12 @@ if(this.projectId){
     }
     async AddRevisionProject() {
       console.log("data");
-    
+      console.log(this.projectsChild);
+      if(this.projectsChild.length<1 || this.projectsChild==undefined){
+        console.log("came");
+      document.getElementById('openValidationModal2')?.click();
+      return;  
+    }
       this.aquaGet.getMaxRivision(this.projectSavedData.projectCode, this.projectSavedData.generatedCode)
         .pipe(
           switchMap((response: any) => {
@@ -418,7 +423,9 @@ if(this.projectId){
     
             if (rivision > 0) {
               console.log("Came in the revision form");
+              this.projectsChild=[];
               return this.aquaPost.saveRevision(this.projectSavedData);
+
             } else {
               console.warn("Skipping save, revision is 0.");
               return of(null); // Return an observable with null to avoid errors
@@ -449,6 +456,7 @@ if(this.projectId){
         );
     }
     navigateToAddChild(projectId: number) {
+
       this.router.navigate(['/add-child', projectId]);
     } 
   OldRevisionProject(){

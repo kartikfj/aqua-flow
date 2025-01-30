@@ -5,6 +5,7 @@ export interface Project {
     contractor: string;
     consultant: string;
     location: string;
+    revision:number;
     generatedCode:string;
     children: ProjectChild[]; // Array of child data
   }

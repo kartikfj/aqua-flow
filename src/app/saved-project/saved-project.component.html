@@ -74,7 +74,7 @@
         <tr *ngFor="let project of filteredProjects; let i = index">
           <td>{{ i + 1 }}</td>
           <td>{{ project.projectCode }}</td>
-          <td>{{ project.generatedCode }}</td>
+          <td>{{ project.generatedCode }}/R{{ project.revision }}</td>
           <td>{{ project.projectName }}</td>
           <td>{{ project.location }}</td>
           <td>{{ project.contractor }}</td>
@@ -90,7 +90,7 @@
               class="btn btn-secondary ml-2"
               (click)="toggleChildData(i); childDataShow(project.id)"
             >
-              {{ expandedRowIndex === i ? "Show Details" : "Show Details" }}
+              {{ expandedRowIndex === i ? "Details" : "Details" }}
             </button>
           </td>
         </tr>

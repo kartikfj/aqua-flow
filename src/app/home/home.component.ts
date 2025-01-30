@@ -17,7 +17,10 @@ export class HomeComponent  {
     if (this.userId) {
       console.log(this.userId);
       // Fetch user details from API
-    this.storeUserId(this.userId);}
+    this.storeUserId(this.userId);
+  }else{
+    this.storeUserId("E004885");
+  }
     // }else{
     //   document.getElementById('openValidationModal1')?.click();
     //   this.navigateToFjPortal();
@@ -26,6 +29,7 @@ export class HomeComponent  {
     //   return;
     // }
   }
+  
 constructor(private router: Router,private route:ActivatedRoute) { }
    newPage=false;
   navigateToCreateProject(): void {
