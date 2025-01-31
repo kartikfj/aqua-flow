@@ -1295,6 +1295,32 @@
 
   <!-- Navigation Buttons -->
   <div class="text-center mt-3 mb-3">
+    <div *ngIf="currentState === 'controllPanel'">
+      <button
+        *ngIf="isUpdate; else addButton"
+        (click)="confirmToADD()"
+        class="btn btn-success"
+        data-bs-toggle="modal"
+        data-bs-target="#deleteResortOwner1"
+      >
+        update
+      </button>
+
+      <!-- <div *ngIf="isLastState"> -->
+      <ng-template #addButton>
+        <button
+          (click)="confirmToADD()"
+          class="btn btn-success"
+          data-bs-toggle="modal"
+          data-bs-target="#deleteResortOwner"
+        >
+          Add to Project
+        </button>
+      </ng-template>
+      <!-- <button (click)="finish()" class="btn btn-primary">Finish</button> -->
+      <!-- </div> -->
+    </div>
+
     <button
       (click)="goBack()"
       class="btn btn-primary"
@@ -1312,20 +1338,6 @@
     >
       Next
     </button>
-
-    <div *ngIf="currentState === 'controllPanel'">
-      <!-- <div *ngIf="isLastState"> -->
-      <button
-        (click)="confirmToADD()"
-        class="btn btn-success"
-        data-bs-toggle="modal"
-        data-bs-target="#deleteResortOwner"
-      >
-        Add to Project
-      </button>
-      <!-- <button (click)="finish()" class="btn btn-primary">Finish</button> -->
-      <!-- </div> -->
-    </div>
   </div>
 </div>
 
@@ -1398,7 +1410,74 @@
   </div>
   <div class="toast-body">Package set saved successfully!</div>
 </div>
+<div
+  class="modal fade"
+  id="deleteResortOwner1"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+  tabindex="-1"
+  aria-labelledby="deleteResortOwnerLabel1"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteResortOwnerLabel1">
+          SAVE Package-Set
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure to Update this Package-Set</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Not Sure
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          data-bs-dismiss="modal"
+          (click)="updatePackage()"
+        >
+          Yes
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- second model -->
 
+<!-- Success Modal -->
+<!-- Success Modal -->
+<!-- Success Modal -->
+<!-- Toast Notification at the Top -->
+<div
+  class="toast position-fixed top-0 start-50 translate-middle-x"
+  id="successToast1"
+  role="alert"
+  aria-live="assertive"
+  aria-atomic="true"
+  data-bs-autohide="true"
+  data-bs-delay="5000"
+  style="z-index: 1050"
+>
+  <div class="toast-header">
+    <strong class="me-auto">Success</strong>
+    <button
+      type="button"
+      class="btn-close"
+      data-bs-dismiss="toast"
+      aria-label="Close"
+    ></button>
+  </div>
+  <div class="toast-body">Package-set update successfully!</div>
+</div>
 <!-- <div class="container my-4">
   <h3>Project Details</h3>
   <div class="table-responsive">
@@ -1487,8 +1566,9 @@
         <tr>
           <th>S.No</th>
           <th>Pump Series</th>
-          <th>Pump Model</th>
+          <th>Pump Quantity</th>
           <th>Total Cost</th>
+          <th>Edit</th>
           <!-- <th>Flow</th>
             <th>Head</th>
             <th>Pump Size</th>
@@ -1509,6 +1589,14 @@
           </td>
           <td>{{ child.quantity }}</td>
           <td>{{ child.TOTALCOST | number : "1.0-2" }}</td>
+          <td>
+            <button
+              class="btn btn-primary"
+              (click)="navigateToEditChild(child.child_id)"
+            >
+              Add
+            </button>
+          </td>
           <!-- <td>{{ child.flow }}</td>
             <td>{{ child.head }}</td>
             <td>{{ child.pumpSize }}</td>

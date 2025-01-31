@@ -63,11 +63,13 @@ export class CreateProjectComponent {
   projects$: Observable<ProjectChild[]>;
   //projectId: string | null = null; // Stores the project ID from the backend
   projectId!: number;
+  childId!:number;
   project:ProjectData[]=[];
   projectsChild:ProjectChild[]=[];
 
   isLastState = true;
   disabledButton=false;
+  isUpdate=false;
   currentStep = 1;
   totalSteps = 5;
   currentState: 'project' | 'package' | 'addons' | 'pressureVessel' | 'controllPanel' = 'project';
@@ -80,6 +82,8 @@ export class CreateProjectComponent {
   }
   projects:Project[]=[];
   projectSavedData!:ProjectData;
+
+  projectSavedchild!:ProjectChild;
   //projects : any[]=[];
  // Will store the filtered and limited list of projects
  filteredProjects: ProjectSerch[] = [];
@@ -385,6 +389,66 @@ if(this.projectId){
     //   }
     // );
   }
+  updatePackage() {
+    // this.projectId=33;
+      if (!this.projectId) {
+        alert('Please create a project first!');
+        return;
+      }
+      if (this.packageForm.invalid) {
+        this.packageForm.markAllAsTouched(); // Mark all fields as touched to show validation messages
+      
+        document.getElementById('openValidationModal')?.click();
+       
+        return;
+      }
+  
+      const packageData = {
+        ...this.packageForm.value,
+        parentSysId: this.childId,
+      };
+      console.log(packageData);
+      this.store.dispatch(ProjectActions.saveProjectChildData({ packageData }));
+                console.log("testing");
+      
+     // this.aquaPost.savePackage(packageData).subscribe(
+        //(response)=>{
+          alert('package set saved successffully');
+          this.getAllProjectById();
+          this.packageForm.reset();
+  
+          this.currentState="package";
+          this.currentStep = 1;
+          console.log(this.packageForm);
+      //  },
+      //  (error)=>{
+         // window.alert('Package set saved successfully. Click OK to continue.');
+         this.isModalOpen = true; // Set modal open state to true
+         this.showToast1();
+         // Automatically show the Success Modal
+         const successModalElement = document.getElementById('successModal1');
+         if (successModalElement) {
+           successModalElement.classList.add('show');
+           successModalElement.style.display = 'block';
+         }
+          this.packageForm.reset();
+          this.currentStep=2;
+          this.currentState="package";
+          console.log(this.packageForm);
+          this.currentStep = 1;
+         // alert('Error saving package set. Please Try again.')
+      //  }
+    //  )
+      // this.http.post('/api/packages', packageData).subscribe(
+      //   () => {
+      //     alert('Package set saved successfully!');
+      //   },
+      //   (error) => {
+      //     alert('Error saving package set. Please try again.');
+      //     console.error(error);
+      //   }
+      // );
+    }
 
   saveAddons() {
     if (!this.projectId) {
@@ -419,11 +483,14 @@ if(this.projectId){
           switchMap((response: any) => {
             const rivision = response.revision || 0; // Ensure rivision is always assigned
             this.projectSavedData.revision = rivision;
+          
             console.log('Revision:', rivision);
     
             if (rivision > 0) {
               console.log("Came in the revision form");
               this.projectsChild=[];
+              this.projectSavedData.parentsysid=this.projectId;
+              console.log(this.projectId);
               return this.aquaPost.saveRevision(this.projectSavedData);
 
             } else {
@@ -459,6 +526,62 @@ if(this.projectId){
 
       this.router.navigate(['/add-child', projectId]);
     } 
+
+    navigateToEditChild(child_id:number){
+      this.isUpdate=true;
+      this.childId=child_id;
+      console.log(child_id);
+      this.aquaGet.getSavedChildById(child_id).subscribe(data => {
+        this.projectSavedchild=data;
+        this.pumpModelOption.push(data.pumpModel);
+        this.pumpSizeOptions.push(data.pump_size);
+        this.power.push(data.controlPanelPower);
+        this.pressureRating.push(data.pressureVesselRating);
+        this.capacity.push(data.pressureVesselCapacity)
+       // this.childDataShow(this.projectId);
+       // console.log(this.projects);
+       this.packageForm.patchValue({
+        flow: data.flow,
+        head: data.head,
+        priceMultipler: data.priceMultipler,
+        assemblerMultipler: data.assemblerMultipler,
+        manualCost: data.manualCost,
+        pumpSeries: data.pump_series,
+        pumpModel: data.pumpModel,
+
+        pumpSize: data.pump_size,
+        application: data.application, // Assuming this value is static
+        configuration: data.configuration,
+        quantity: data.quantity,
+        
+        // Addons
+        strainer: data.strainer,
+        flexibleConnector: data.flexConnector,
+        floatSwitch: data.floatswitch,
+        floatSwitchQty: data.floatswitchQty,
+  
+        // Pressure Vessel
+        pressureVessel: data.pressureVessel,
+        pressureVesselBrand: data.pressureVesselBrand,
+        pressureVesselCapacity: data.pressureVesselCapacity,
+        pressureVesselRating: data.pressureVesselRating,
+        material: data.materail,  // Typo fixed
+        materialQty: data.materailQty,
+  
+        // Control Panel
+        needControl: data.needControl,
+        controlPanelType: data.controlPanelType,  // Set dynamically if needed
+        controlPanelPower: data.controlPanelPower,
+        controlPanelRelay: data.controlPanelMonitorRelay,
+        controlPanelADDC: data.controlPanelADDC,
+        controlPanelTH: data.controlPanelTH,
+        controlPanelPTC: data.controlPanelPTC,
+        controlPanelAV: data.controlPanelAV,
+        controlPanelBYP: data.controlPanelBYP,
+      });
+      console.log(this.projectSavedchild);
+    })
+  }
   OldRevisionProject(){
    console.log("data came")
    this.aquaGet.getAllRivision(this.projectSavedData.projectCode, this.projectSavedData.generatedCode).subscribe((response:any)=>{
@@ -532,6 +655,13 @@ if(this.projectId){
   }
   showToast() {
     const toastElement = document.getElementById('successToast');
+    if (toastElement) {
+      // Use the built-in 'show' method via Bootstrap classes
+      toastElement.classList.add('show');
+    }
+  }
+  showToast1() {
+    const toastElement = document.getElementById('successToast1');
     if (toastElement) {
       // Use the built-in 'show' method via Bootstrap classes
       toastElement.classList.add('show');

@@ -86,6 +86,10 @@ export class AquagetService {
   getRivisionById(projectCode:string,generatedCode:string,rivision:number):Observable<any>{
     return this.http.get(`${this.apiUrl}?action=getRevisionById&projectCode=${projectCode}&generatedCode=${generatedCode}&rivisionCode=${rivision}`);
   }
+  getSavedChildById(childId:number):Observable<any>{
+    return this.http.get(`${this.apiUrl}?action=getSavedChildDetails&&child=${childId}`);
+   
+  }
   getUserId(): string | null {
     const userData = localStorage.getItem('userId');
   

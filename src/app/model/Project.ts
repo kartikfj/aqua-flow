@@ -12,6 +12,7 @@ export interface Project {
   
   export interface ProjectChild {
   projectId: number;
+  child_id:number;
   flow: string;
   head: string;
   priceMultipler:number;
@@ -52,7 +53,7 @@ export interface Project {
     consultant: string;
     location: string;
     revision:number;
-    parentsysid: 0,
+    parentsysid: number,
     quantity: 0,
     floatswitchQty: 0,
     materailQty: 0,
