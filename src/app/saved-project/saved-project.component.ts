@@ -188,7 +188,7 @@ exportToExcel() {
   this.projects.forEach(project => {
     exportData.push({
       "Project Code": project.projectCode,
-      "Generated Code": project.generatedCode,
+      "Generated Code": project.generatedCode+'/R'+project.revision,
       "Project Name": project.projectName,
       "Contractor": project.contractor,
       "Consultant": project.consultant,
@@ -204,13 +204,14 @@ exportToExcel() {
         "Location": '',
         "Flow": child.flow,
         "Head": child.head,
+        "Quantity": child.quantity,
         "TotalCost":child.TOTALCOST,
         "Pump Series": child.pumpSeries,
         "Pump Model": child.pumpModel,
         "Pump Size": child.pumpSize,
         "Application": child.application,
         "Configuration": child.configuration,
-        "Quantity": child.quantity,
+        
         "Strainer": child.strainer
       });
     });

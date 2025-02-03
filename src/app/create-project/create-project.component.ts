@@ -855,7 +855,7 @@ exportToExcel() {
   this.projects.forEach(project => {
     exportData.push({
       "Project Code": project.projectCode,
-      "Generated Code": this.projectSavedData.generatedCode,
+      "Generated Code": this.projectSavedData.generatedCode+'R/'+this.projectSavedData.revision,
       "Project Name": project.projectName,
       "Contractor": project.contractor,
       "Consultant": project.consultant,
