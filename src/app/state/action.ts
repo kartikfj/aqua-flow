@@ -35,3 +35,8 @@ export const saveProjectChildDataSuccess = createAction('[Project] Save Project 
 export const saveProjectChildDataFailure = createAction('[Project] Save Project Failure',props<{error:any}>());
 
 
+export const updateProjectChildData = createAction('[Project Save Project',props<{packageData:ProjectChild}>());
+export const updateProjectChildDataSuccess = createAction('[Project] Save Project Success',props<{projectChild:ProjectChild}>());
+export const updateProjectChildDataFailure = createAction('[Project] Save Project Failure',props<{error:any}>());
+
+

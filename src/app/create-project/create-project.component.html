@@ -1,8 +1,10 @@
-<div>
+<div class="relative-container">
   <div *ngIf="projectSavedData" class="container mt-4">
     <!-- Top Heading for Generated Code -->
     <h2 class="text-start text-primary fw-bold">
-      Generated Code: {{ projectSavedData.generatedCode }}
+      Generated Code: {{ projectSavedData.generatedCode }}/R{{
+        projectSavedData.revision
+      }}
     </h2>
 
     <button
@@ -14,21 +16,55 @@
     </button>
 
     <!-- Styled Table -->
-    <div class="table-responsive">
-      <table class="table table-bordered table-hover shadow-lg mt-3">
-        <thead class="table-dark text-white">
-          <tr>
-            <th>Project Code</th>
-            <th>Project Name</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>{{ projectSavedData.projectCode }}</td>
-            <td>{{ projectSavedData.projectName }}</td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="relative-container">
+      <div class="responsive-table">
+        <table class="table table-bordered table-hover shadow-lg mt-3">
+          <thead class="table-dark text-white">
+            <tr>
+              <th>Project Code</th>
+              <th>Project Name</th>
+              <th>Revision</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{{ projectSavedData.projectCode }}</td>
+              <td>{{ projectSavedData.projectName }}</td>
+              <td>
+                <button (click)="AddRevisionProject()" class="btn btn-primary">
+                  Add-NewRevision
+                </button>
+
+                <!-- Dropdown Group -->
+                <div class="btn-group dropup">
+                  <!-- Add "dropup" class here -->
+                  <button
+                    type="button"
+                    class="btn btn-info dropdown-toggle"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                    (click)="OldRevisionProject()"
+                  >
+                    Edit-OldRevision <i class="bi bi-chevron-down"></i>
+                  </button>
+
+                  <!-- Dropdown Menu -->
+                  <ul class="dropdown-menu custom-dropdown">
+                    <li *ngFor="let riv of rivison">
+                      <button
+                        class="dropdown-item"
+                        (click)="getRivisionById(riv)"
+                      >
+                        {{ projectSavedData.generatedCode }}/R{{ riv }}
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </div>
@@ -470,7 +506,126 @@
             >
           </div>
         </div>
-
+        <div class="col-md-3">
+          <label for="flow">priceMultipler:</label>
+          <input
+            id="flow"
+            formControlName="priceMultipler"
+            type="number"
+            class="form-control"
+            placeholder="Enter priceMultipler"
+          />
+          <div
+            *ngIf="
+              packageForm.controls['priceMultipler'].invalid &&
+              packageForm.controls['priceMultipler'].touched
+            "
+          >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['priceMultipler'].errors?.['required']"
+              >priceMultipler is required.</small
+            >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['priceMultipler'].errors?.['min']"
+              >priceMultipler must be at least 0.1.</small
+            >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['priceMultipler'].errors?.['max']"
+              >priceMultipler cannot exceed 1.</small
+            >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['priceMultipler'].errors?.['pattern']"
+            >
+              priceMultipler must be a valid number.
+            </small>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <label for="flow">assemblerMultipler:</label>
+          <input
+            id="flow"
+            formControlName="assemblerMultipler"
+            type="number"
+            class="form-control"
+            placeholder="Enter assemblerMultipler"
+          />
+          <div
+            *ngIf="
+              packageForm.controls['assemblerMultipler'].invalid &&
+              packageForm.controls['assemblerMultipler'].touched
+            "
+          >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['assemblerMultipler'].errors?.['required']"
+              >assemblerMultipler is required.</small
+            >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['assemblerMultipler'].errors?.['min']"
+              >assemblerMultipler must be at least 0.2-1.</small
+            >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['assemblerMultipler'].errors?.['max']"
+              >assemblerMultipler cannot exceed 1.</small
+            >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['assemblerMultipler'].errors?.['pattern']"
+            >
+              assemblerMultipler must be a valid number.
+            </small>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <label for="flow">manualCost:</label>
+          <input
+            id="flow"
+            formControlName="manualCost"
+            type="number"
+            class="form-control"
+            placeholder="Enter manualCost"
+            [disabled]="!isManualCostEnabled"
+          />
+          <input
+            type="checkbox"
+            class="ms-2"
+            (change)="onToggleManualCost($event)"
+          />
+          <div
+            *ngIf="
+              packageForm.controls['manualCost'].invalid &&
+              packageForm.controls['manualCost'].touched
+            "
+          >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['manualCost'].errors?.['required']"
+              >Flow is required.</small
+            >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['manualCost'].errors?.['min']"
+              >Flow must be at least 1.</small
+            >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['manualCost'].errors?.['max']"
+              >Flow cannot exceed 50.</small
+            >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['manualCost'].errors?.['pattern']"
+            >
+              manualCost must be a valid number.
+            </small>
+          </div>
+        </div>
         <div class="col-md-3">
           <label for="application">Application:</label>
           <div class="input-group">
@@ -854,7 +1009,32 @@
       <h2>Control Panel</h2>
       <!-- <form [formGroup]="controllPanelForm"> -->
       <div class="row">
-        <div class="col-md-3">
+        <div class="col-md-4">
+          <label for="needControl">Need controlPanel!:</label>
+          <select
+            id="needControl"
+            formControlName="needControl"
+            class="form-select"
+            (change)="onSelectedControlPanel($event)"
+          >
+            <option *ngFor="let strainer of controllPanel" [value]="strainer">
+              {{ strainer }}
+            </option>
+          </select>
+          <div
+            *ngIf="
+              packageForm.controls['needControl'].invalid &&
+              packageForm.controls['needControl'].touched
+            "
+          >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['needControl'].errors?.['required']"
+              >Pressure Vessel is required.</small
+            >
+          </div>
+        </div>
+        <div class="col-md-4">
           <label for="controlPanelType">Type:</label>
           <select
             id="controlPanelType"
@@ -879,7 +1059,7 @@
             >
           </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-4">
           <label for="controlPanelPower">Power:</label>
           <select
             id="controlPanelPower"
@@ -903,7 +1083,7 @@
             >
           </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-4">
           <label for="controlPanelRelay">Phase monitoring relay (UVR):</label>
           <div id="controlPanelRelay" class="form-check">
             <input
@@ -939,7 +1119,7 @@
           </div>
         </div>
 
-        <div class="col-md-3">
+        <div class="col-md-4">
           <label for="controlPanelADDC"
             >Panel Abu Dhabi/Alian project (ADDC):</label
           >
@@ -975,7 +1155,7 @@
           </div>
         </div>
 
-        <div class="col-md-3">
+        <div class="col-md-4">
           <label for="controlPanelTH">Anti-condensation Heater (TH):</label>
           <div id="controlPanelTH" class="form-check">
             <input
@@ -1007,7 +1187,7 @@
           </div>
         </div>
 
-        <div class="col-md-3">
+        <div class="col-md-4">
           <label for="controlPanelPTC">Thermistor Relay (PTC):</label>
           <div id="controlPanelPTC" class="form-check">
             <input
@@ -1041,7 +1221,7 @@
           </div>
         </div>
 
-        <div class="col-md-3">
+        <div class="col-md-4">
           <label for="controlPanelAV">Ammeter & Voltmeter:</label>
           <div id="controlPanelAV" class="form-check">
             <input
@@ -1073,7 +1253,7 @@
           </div>
         </div>
 
-        <div class="col-md-3">
+        <div class="col-md-4">
           <label for="controlPanelBYP">VFD Bypass (BYP):</label>
           <div id="controlPanelBYP" class="form-check">
             <input
@@ -1115,6 +1295,32 @@
 
   <!-- Navigation Buttons -->
   <div class="text-center mt-3 mb-3">
+    <div *ngIf="currentState === 'controllPanel'">
+      <button
+        *ngIf="isUpdate; else addButton"
+        (click)="confirmToADD()"
+        class="btn btn-success"
+        data-bs-toggle="modal"
+        data-bs-target="#deleteResortOwner1"
+      >
+        update
+      </button>
+
+      <!-- <div *ngIf="isLastState"> -->
+      <ng-template #addButton>
+        <button
+          (click)="confirmToADD()"
+          class="btn btn-success"
+          data-bs-toggle="modal"
+          data-bs-target="#deleteResortOwner"
+        >
+          Add to Project
+        </button>
+      </ng-template>
+      <!-- <button (click)="finish()" class="btn btn-primary">Finish</button> -->
+      <!-- </div> -->
+    </div>
+
     <button
       (click)="goBack()"
       class="btn btn-primary"
@@ -1132,20 +1338,6 @@
     >
       Next
     </button>
-
-    <div *ngIf="currentState === 'controllPanel'">
-      <!-- <div *ngIf="isLastState"> -->
-      <button
-        (click)="confirmToADD()"
-        class="btn btn-success"
-        data-bs-toggle="modal"
-        data-bs-target="#deleteResortOwner"
-      >
-        Add to Project
-      </button>
-      <!-- <button (click)="finish()" class="btn btn-primary">Finish</button> -->
-      <!-- </div> -->
-    </div>
   </div>
 </div>
 
@@ -1218,7 +1410,74 @@
   </div>
   <div class="toast-body">Package set saved successfully!</div>
 </div>
+<div
+  class="modal fade"
+  id="deleteResortOwner1"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+  tabindex="-1"
+  aria-labelledby="deleteResortOwnerLabel1"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteResortOwnerLabel1">
+          SAVE Package-Set
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure to Update this Package-Set</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Not Sure
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          data-bs-dismiss="modal"
+          (click)="updatePackage()"
+        >
+          Yes
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- second model -->
 
+<!-- Success Modal -->
+<!-- Success Modal -->
+<!-- Success Modal -->
+<!-- Toast Notification at the Top -->
+<div
+  class="toast position-fixed top-0 start-50 translate-middle-x"
+  id="successToast1"
+  role="alert"
+  aria-live="assertive"
+  aria-atomic="true"
+  data-bs-autohide="true"
+  data-bs-delay="5000"
+  style="z-index: 1050"
+>
+  <div class="toast-header">
+    <strong class="me-auto">Success</strong>
+    <button
+      type="button"
+      class="btn-close"
+      data-bs-dismiss="toast"
+      aria-label="Close"
+    ></button>
+  </div>
+  <div class="toast-body">Package-set update successfully!</div>
+</div>
 <!-- <div class="container my-4">
   <h3>Project Details</h3>
   <div class="table-responsive">
@@ -1307,8 +1566,9 @@
         <tr>
           <th>S.No</th>
           <th>Pump Series</th>
-          <th>Pump Model</th>
-          <th>Total Cost</th>
+          <th>QTY</th>
+          <th class="text-end">Total Cost</th>
+          <th></th>
           <!-- <th>Flow</th>
             <th>Head</th>
             <th>Pump Size</th>
@@ -1320,9 +1580,23 @@
       <tbody>
         <tr *ngFor="let child of projectsChild; let i = index">
           <td>{{ i + 1 }}</td>
-          <td>{{ child.pumpSeries }}</td>
-          <td>{{ child.pumpModel }}</td>
-          <td>{{ child.TOTALCOST | number : "1.0-2" }}</td>
+          <td>
+            {{ child.application }}/{{ child.configuration }}/{{
+              child.pumpModel
+            }}/{{ child.strainer }}/{{ child.controlPanelType }}/{{
+              child.controlPanelRelay
+            }}
+          </td>
+          <td>{{ child.quantity }}</td>
+          <td class="text-end">{{ child.TOTALCOST | number : "1.0-2" }}</td>
+          <td>
+            <button
+              class="btn btn-primary"
+              (click)="navigateToEditChild(child.child_id)"
+            >
+              Edit
+            </button>
+          </td>
           <!-- <td>{{ child.flow }}</td>
             <td>{{ child.head }}</td>
             <td>{{ child.pumpSize }}</td>
@@ -1410,6 +1684,47 @@
         <p class="text-danger">
           First Login In The Portal Then You able to perform operations! or may
           be some technical issue.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
+          OK
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<button
+  id="openValidationModal2"
+  type="button"
+  class="d-none"
+  data-bs-toggle="modal"
+  data-bs-target="#validationModal2"
+></button>
+<div
+  class="modal fade"
+  id="validationModal2"
+  tabindex="-1"
+  aria-labelledby="validationModalLabel2"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title text-danger" id="validationModalLabel2">
+          Error
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <p class="text-danger">
+          Already Empty Revision is Present , Please fill detail there!
         </p>
       </div>
       <div class="modal-footer">

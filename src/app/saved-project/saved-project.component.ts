@@ -33,9 +33,14 @@ export class SavedProjectComponent {
   projects:Project[]=[];
   filteredProjects:Project[]=[];
   projectsChild:ProjectChild[]=[];
+  rivison:number[]=[];
   projectCode:string='';
   projectName:string='';
   generatedCode:string='';
+  riv:number=0;
+  contractor:string='';
+  location:string='';
+  consultant:string='';
   searchValues = {
     projectCode: '',
     portalGneratedCode:'',
@@ -136,6 +141,10 @@ export class SavedProjectComponent {
         this.projectCode=childData.projectCode;
         this.projectName=childData.projectName;
         this.generatedCode=childData.generatedCode;
+        this.riv=childData.revision;
+        this.contractor=childData.contractor;
+        this.location=childData.location;
+        this.consultant=childData.consultant;
         document.getElementById('openValidationModal')?.click();
         this.projectsChild=childData.children;
        }
@@ -144,26 +153,33 @@ export class SavedProjectComponent {
   
 }
 
-    
-
-
-
-
 printModalData() {
   const printContent = document.getElementById('modalContentToPrint');
-  const WindowPrt = window.open('', '', 'width=900,height=700');
-  WindowPrt?.document.write('<html><head><title>Print Project Details</title></head><body>');
-  WindowPrt?.document.write('<h3>Project Code: ' + this.generatedCode + '</h3>');
-  WindowPrt?.document.write('<h3>Project Code: ' + this.projectCode + '</h3>');
-  WindowPrt?.document.write('<h3>Project Name: ' + this.projectName + '</h3>');
 
+  // Remove the "Print" and "Close" buttons before printing
+  const buttons = document.querySelectorAll('.btn') as NodeListOf<HTMLElement>;;
+  buttons.forEach(button => button.style.display = 'none');  // Hide buttons
+
+  // Open the print window and write the content
+  const WindowPrt = window.open('', '', 'width=900,height=700');
+  WindowPrt?.document.write('<html><head><title>Project Summary</title>');
+  WindowPrt?.document.write('<style>table {width: 100%; border-collapse: collapse;} th, td {border: 1px solid black; padding: 8px; text-align: center;} th {background-color: #f2f2f2;}</style>'); // Added table styling for lines
+  WindowPrt?.document.write('</head><body>');
   WindowPrt?.document.write(printContent?.outerHTML || '');
   WindowPrt?.document.write('</body></html>');
   WindowPrt?.document.close();
   WindowPrt?.focus();
+  
+  // Print the content
   WindowPrt?.print();
+  
+  // Close the window after printing
   WindowPrt?.close();
+
+  // Re-show the buttons after printing
+  buttons.forEach(button => button.style.display = 'inline-block');
 }
+
 
 
 exportToExcel() {
@@ -172,7 +188,7 @@ exportToExcel() {
   this.projects.forEach(project => {
     exportData.push({
       "Project Code": project.projectCode,
-      "Generated Code": project.generatedCode,
+      "Generated Code": project.generatedCode+'/R'+project.revision,
       "Project Name": project.projectName,
       "Contractor": project.contractor,
       "Consultant": project.consultant,
@@ -188,13 +204,14 @@ exportToExcel() {
         "Location": '',
         "Flow": child.flow,
         "Head": child.head,
+        "Quantity": child.quantity,
         "TotalCost":child.TOTALCOST,
         "Pump Series": child.pumpSeries,
         "Pump Model": child.pumpModel,
         "Pump Size": child.pumpSize,
         "Application": child.application,
         "Configuration": child.configuration,
-        "Quantity": child.quantity,
+        
         "Strainer": child.strainer
       });
     });

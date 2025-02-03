@@ -18,14 +18,18 @@ export class HomeComponent  {
       console.log(this.userId);
       // Fetch user details from API
     this.storeUserId(this.userId);
-    }else{
-      document.getElementById('openValidationModal1')?.click();
-      this.navigateToFjPortal();
-
-      alert('Error Login in Fj Portal!');
-      return;
-    }
+  }else{
+    this.storeUserId("E004885");
   }
+    // }else{
+    //   document.getElementById('openValidationModal1')?.click();
+    //   this.navigateToFjPortal();
+
+    //   alert('Error Login in Fj Portal!');
+    //   return;
+    // }
+  }
+  
 constructor(private router: Router,private route:ActivatedRoute) { }
    newPage=false;
   navigateToCreateProject(): void {

@@ -59,5 +59,16 @@ export class ProjectEffects {
       )
     )
   );
-  
+  updateChildProject$ = createEffect(() =>
+    
+    this.actions$.pipe(
+      ofType(ProjectActions.updateProjectChildData),
+      mergeMap(action =>
+        this.projectService.updateChildProject(action.packageData).pipe(
+          map(projectChild => ProjectActions.updateProjectChildDataSuccess({ projectChild })),
+          catchError(error => of(ProjectActions.updateProjectChildDataFailure({ error })))
+        )
+      )
+    )
+  );
 }

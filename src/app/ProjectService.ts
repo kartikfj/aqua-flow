@@ -35,5 +35,16 @@ export class ProjectService {
           return throwError(() => new Error('Employee ID is required to create a project.'));
         } 
   }
+  updateChildProject(projectChild: ProjectChild): Observable<ProjectChild> {
+    const empId=this.aquaGet.getUserId();
+       if (empId) {
+        // const apiUrl = `/AquaFlowController?action=saveProject&empId=${empId}`;
+         return this.http.post<ProjectChild>(`${this.apiUrl}?action=updateProduct&empId=${empId}`,projectChild);
+        
+       } else {
+         console.error('Error: Employee ID is missing.');
+         return throwError(() => new Error('Employee ID is required to create a project.'));
+       } 
+ }
   
 }

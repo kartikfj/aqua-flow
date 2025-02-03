@@ -5,8 +5,8 @@ import { HttpClient } from '@angular/common/http';
 import { AquapostService } from '../aquapost.service';
 import { AquagetService } from '../aquaget.service';
 import { Project, ProjectChild, ProjectData, ProjectSerch } from '../model/Project';
-import { ActivatedRoute } from '@angular/router';
-import { Observable } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Observable, of, switchMap } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { selectAllChildProjects, selectAllProjects } from '../state/selector';
 import * as ProjectActions from '../state/action';
@@ -25,23 +25,34 @@ export class CreateProjectComponent {
   // addonsForm!: FormGroup;
   // pressureVessleForm!: FormGroup;
   // controllPanelForm!: FormGroup;
-
+  projectCode:string='';
+  projectName:string='';
+  generatedCode:string='';
+  contractor:string='';
+  location:string='';
+  consultant:string='';
   pumpSeriesOptions:string[] = [];
+  rivison:number[]=[];
   selectedPumpSeries: string = '';
   selectedModelSeries: string = '';
   selectedPressureRating:string='';
   selectedPressureVessle:string='';
   selectedPressureBrand:string='';
   selectedType:string='';
+  selectedControl:string='';
+ 
   disableSelectedPressure:boolean=true;
+  isManualCostEnabled:boolean=false;
   pumpSizeOptions:string[]=[];
   pumpModelOption:string[]=[];
-  applicationOptions = ['BOOSTER', 'TRANSFER', 'CIRCULATION','PRESSURIZATION'];
+  applicationOptions = ['BOOSTER_ABP', 'TRANSFER_ATP', 'CIRCULATION_ACP','PRESSURIZATION_APU'];
   configurationOptions = ['DUPLEX', 'TRIPLEX'];
   strainerOptions = ['No Strainer', 'Strainer for Header','Strainer for Pump'];
   flexibleOptions = ['No Flexible Connector', 'Flexible Connector on Header (FCH)','Flexible Connector for Pump (FCP)'];
   floatOptions = ['Yes', 'No'];
   pressureVessel=['Yes','No'];
+  controllPanel=['Yes','No'];
+
   brand=['Reflex','Feflex'];
   capacity=['60L','50L','40L'];
   pressureRating=['PN 10','PN 9','PN 8'];
@@ -52,11 +63,13 @@ export class CreateProjectComponent {
   projects$: Observable<ProjectChild[]>;
   //projectId: string | null = null; // Stores the project ID from the backend
   projectId!: number;
+  childId!:number;
   project:ProjectData[]=[];
   projectsChild:ProjectChild[]=[];
 
   isLastState = true;
   disabledButton=false;
+  isUpdate=false;
   currentStep = 1;
   totalSteps = 5;
   currentState: 'project' | 'package' | 'addons' | 'pressureVessel' | 'controllPanel' = 'project';
@@ -64,11 +77,13 @@ export class CreateProjectComponent {
   isDropdownOpen = false;
   isDropdownOpenName = false;
   isDropdownOpenConstructor = false;
-  constructor(private store: Store,private fb: FormBuilder, private http: HttpClient,private aquaPost:AquapostService,private aquaGet:AquagetService,private route: ActivatedRoute) {
+  constructor(private store: Store,private fb: FormBuilder, private http: HttpClient,private aquaPost:AquapostService,private aquaGet:AquagetService,private route: ActivatedRoute,private router: Router) {
     this.projects$ = this.store.select(selectAllChildProjects);
   }
   projects:Project[]=[];
   projectSavedData!:ProjectData;
+
+  projectSavedchild!:ProjectChild;
   //projects : any[]=[];
  // Will store the filtered and limited list of projects
  filteredProjects: ProjectSerch[] = [];
@@ -132,6 +147,9 @@ if(this.projectId){
     this.packageForm = this.fb.group({
       flow: ['', [Validators.required,Validators.min(1), Validators.max(100), Validators.pattern('^[0-9]*\\.?[0-9]+$')]], // Min 1, Max 5000, Numbers only
       head: ['', [Validators.required,Validators.min(1), Validators.max(100), Validators.pattern('^[0-9]*\\.?[0-9]+$')]], // Min 1, Max 500, Numbers only
+      priceMultipler:[0.1, [Validators.required,Validators.min(0.1), Validators.max(1), Validators.pattern('^[0-9]*\\.?[0-9]+$')]], // Min 1, Max 500, Numbers only
+      assemblerMultipler:[0.2, [Validators.required,Validators.min(0.2), Validators.max(1), Validators.pattern('^[0-9]*\\.?[0-9]+$')]], // Min 1, Max 500, Numbers only
+      manualCost:[{ value: 0, disabled: true }, [Validators.required,Validators.min(1), Validators.max(100000), Validators.pattern('^[0-9]*\\.?[0-9]+$')]], // Min 1, Max 500, Numbers only
       pumpSeries: ['', Validators.required], // Required field
       pumpModel: ['', Validators.required], // Required field
       pumpSize: ['', Validators.required], // Required field
@@ -157,14 +175,15 @@ if(this.projectId){
     //});
 
    // this.controllPanelForm=this.fb.group({
-    controlPanelType:['', [Validators.required]],
-    controlPanelPower:['', [Validators.required]],
-    controlPanelRelay:['', [Validators.required]],
-    controlPanelADDC:['', [Validators.required]],
-    controlPanelTH:['', [Validators.required]],
-    controlPanelPTC:['', [Validators.required]],
-    controlPanelAV:['', [Validators.required]],
-    controlPanelBYP:['', [Validators.required]],
+    needControl: ['', [Validators.required]],
+    controlPanelType:['', {value:'', disabled:true},[Validators.required]],
+    controlPanelPower:['', {value:'', disabled:true},[Validators.required]],
+    controlPanelRelay:['', {value:'', disabled:true},[Validators.required]],
+    controlPanelADDC:['', {value:'', disabled:true},[Validators.required]],
+    controlPanelTH:['', {value:'', disabled:true},[Validators.required]],
+    controlPanelPTC:['', {value:'', disabled:true},[Validators.required]],
+    controlPanelAV:['', {value:'', disabled:true},[Validators.required]],
+    controlPanelBYP:['', {value:'', disabled:true},[Validators.required]],
     });
   }
 
@@ -370,6 +389,66 @@ if(this.projectId){
     //   }
     // );
   }
+  updatePackage() {
+    // this.projectId=33;
+      if (!this.projectId) {
+        alert('Please create a project first!');
+        return;
+      }
+      if (this.packageForm.invalid) {
+        this.packageForm.markAllAsTouched(); // Mark all fields as touched to show validation messages
+      
+        document.getElementById('openValidationModal')?.click();
+       
+        return;
+      }
+  
+      const packageData = {
+        ...this.packageForm.value,
+        parentSysId: this.childId,
+      };
+      console.log(packageData);
+      this.store.dispatch(ProjectActions.saveProjectChildData({ packageData }));
+                console.log("testing");
+      
+     // this.aquaPost.savePackage(packageData).subscribe(
+        //(response)=>{
+          alert('package set saved successffully');
+          this.getAllProjectById();
+          this.packageForm.reset();
+  
+          this.currentState="package";
+          this.currentStep = 1;
+          console.log(this.packageForm);
+      //  },
+      //  (error)=>{
+         // window.alert('Package set saved successfully. Click OK to continue.');
+         this.isModalOpen = true; // Set modal open state to true
+         this.showToast1();
+         // Automatically show the Success Modal
+         const successModalElement = document.getElementById('successModal1');
+         if (successModalElement) {
+           successModalElement.classList.add('show');
+           successModalElement.style.display = 'block';
+         }
+          this.packageForm.reset();
+          this.currentStep=2;
+          this.currentState="package";
+          console.log(this.packageForm);
+          this.currentStep = 1;
+         // alert('Error saving package set. Please Try again.')
+      //  }
+    //  )
+      // this.http.post('/api/packages', packageData).subscribe(
+      //   () => {
+      //     alert('Package set saved successfully!');
+      //   },
+      //   (error) => {
+      //     alert('Error saving package set. Please try again.');
+      //     console.error(error);
+      //   }
+      // );
+    }
 
   saveAddons() {
     if (!this.projectId) {
@@ -391,6 +470,139 @@ if(this.projectId){
       // Logic to finish the process
       console.log('Finished!');
     }
+    async AddRevisionProject() {
+      console.log("data");
+      console.log(this.projectsChild);
+      if(this.projectsChild.length<1 || this.projectsChild==undefined){
+        console.log("came");
+      document.getElementById('openValidationModal2')?.click();
+      return;  
+    }
+      this.aquaGet.getMaxRivision(this.projectSavedData.projectCode, this.projectSavedData.generatedCode)
+        .pipe(
+          switchMap((response: any) => {
+            const rivision = response.revision || 0; // Ensure rivision is always assigned
+            this.projectSavedData.revision = rivision;
+          
+            console.log('Revision:', rivision);
+    
+            if (rivision > 0) {
+              console.log("Came in the revision form");
+              this.projectsChild=[];
+              this.projectSavedData.parentsysid=this.projectId;
+              console.log(this.projectId);
+              return this.aquaPost.saveRevision(this.projectSavedData);
+
+            } else {
+              console.warn("Skipping save, revision is 0.");
+              return of(null); // Return an observable with null to avoid errors
+            }
+          })
+        )
+        .subscribe(
+          (response: any) => {
+            if (response) {
+              console.log("Save response:", response);
+              this.projectId = response.updateStatus;
+              this.disabledButton = true;
+    
+              // Fetch saved project
+              this.aquaGet.getSavedProjectById(this.projectId).subscribe(data => {
+                this.projectSavedData = data;
+                console.log("Updated Project Data:", this.projectSavedData);
+                this.navigateToAddChild(this.projectId)
+              });
+    
+              alert(`Project Saved Successfully! ID: ${this.projectId}`);
+            }
+          },
+          (error: any) => {
+            console.error("Error saving project:", error);
+            document.getElementById('openValidationModal1')?.click();
+          }
+        );
+    }
+    navigateToAddChild(projectId: number) {
+
+      this.router.navigate(['/add-child', projectId]);
+    } 
+
+    navigateToEditChild(child_id:number){
+      this.isUpdate=true;
+      this.childId=child_id;
+      console.log(child_id);
+      this.aquaGet.getSavedChildById(child_id).subscribe(data => {
+        this.projectSavedchild=data;
+        this.pumpModelOption.push(data.pumpModel);
+        this.pumpSizeOptions.push(data.pump_size);
+        this.power.push(data.controlPanelPower);
+        this.pressureRating.push(data.pressureVesselRating);
+        this.capacity.push(data.pressureVesselCapacity)
+       // this.childDataShow(this.projectId);
+       // console.log(this.projects);
+       this.packageForm.patchValue({
+        flow: data.flow,
+        head: data.head,
+        priceMultipler: data.priceMultipler,
+        assemblerMultipler: data.assemblerMultipler,
+        manualCost: data.manualCost,
+        pumpSeries: data.pump_series,
+        pumpModel: data.pumpModel,
+
+        pumpSize: data.pump_size,
+        application: data.application, // Assuming this value is static
+        configuration: data.configuration,
+        quantity: data.quantity,
+        
+        // Addons
+        strainer: data.strainer,
+        flexibleConnector: data.flexConnector,
+        floatSwitch: data.floatswitch,
+        floatSwitchQty: data.floatswitchQty,
+  
+        // Pressure Vessel
+        pressureVessel: data.pressureVessel,
+        pressureVesselBrand: data.pressureVesselBrand,
+        pressureVesselCapacity: data.pressureVesselCapacity,
+        pressureVesselRating: data.pressureVesselRating,
+        material: data.materail,  // Typo fixed
+        materialQty: data.materailQty,
+  
+        // Control Panel
+        needControl: data.needControl,
+        controlPanelType: data.controlPanelType,  // Set dynamically if needed
+        controlPanelPower: data.controlPanelPower,
+        controlPanelRelay: data.controlPanelMonitorRelay,
+        controlPanelADDC: data.controlPanelADDC,
+        controlPanelTH: data.controlPanelTH,
+        controlPanelPTC: data.controlPanelPTC,
+        controlPanelAV: data.controlPanelAV,
+        controlPanelBYP: data.controlPanelBYP,
+      });
+      console.log(this.projectSavedchild);
+    })
+  }
+  OldRevisionProject(){
+   console.log("data came")
+   this.aquaGet.getAllRivision(this.projectSavedData.projectCode, this.projectSavedData.generatedCode).subscribe((response:any)=>{
+    console.log(response);
+    this.rivison=response.revision;
+    
+   })
+  }
+  getRivisionById(id:number){
+    console.log(id);
+    this.projectSavedData.revision = id;
+    this.aquaGet.getRivisionById(this.projectSavedData.projectCode,this.projectSavedData.generatedCode,id).subscribe((response:any)=>{
+      console.log(response);
+      this.projectId=response.projectId;
+      this.navigateToAddChild(this.projectId);
+      this.projectsChild=[];
+      this.getSavedProjectById()
+    })
+    
+
+  }
   goNext() {
     if (this.currentState === 'project') {
       this.currentState = 'package';
@@ -443,6 +655,13 @@ if(this.projectId){
   }
   showToast() {
     const toastElement = document.getElementById('successToast');
+    if (toastElement) {
+      // Use the built-in 'show' method via Bootstrap classes
+      toastElement.classList.add('show');
+    }
+  }
+  showToast1() {
+    const toastElement = document.getElementById('successToast1');
     if (toastElement) {
       // Use the built-in 'show' method via Bootstrap classes
       toastElement.classList.add('show');
@@ -509,6 +728,39 @@ if(this.projectId){
       this.packageForm.controls['pressureVesselRating'].disable();  // Enable
       this.packageForm.controls['material'].disable(); // Disable
       this.packageForm.controls['materialQty'].disable(); // Disable
+    }
+  }
+  onSelectedControlPanel(event:any){
+    console.log("data came");
+    this.selectedControl=event.target.value;
+    if(this.selectedControl=='Yes'){
+      this.packageForm.controls['controlPanelType'].enable();
+      this.packageForm.controls['controlPanelPower'].enable();
+      this.packageForm.controls['controlPanelRelay'].enable();
+      this.packageForm.controls['controlPanelADDC'].enable();
+      this.packageForm.controls['controlPanelTH'].enable();
+      this.packageForm.controls['controlPanelPTC'].enable();
+      this.packageForm.controls['controlPanelAV'].enable();
+      this.packageForm.controls['controlPanelBYP'].enable();
+    }
+    else{
+      this.packageForm.controls['controlPanelType'].disable();
+      this.packageForm.controls['controlPanelPower'].disable();
+      this.packageForm.controls['controlPanelRelay'].disable();
+      this.packageForm.controls['controlPanelADDC'].disable();
+      this.packageForm.controls['controlPanelTH'].disable();
+      this.packageForm.controls['controlPanelPTC'].disable();
+      this.packageForm.controls['controlPanelAV'].disable();
+      this.packageForm.controls['controlPanelBYP'].disable();
+    }
+  }
+  onToggleManualCost(event: Event) {
+    this.isManualCostEnabled = (event.target as HTMLInputElement).checked;
+    if (this.isManualCostEnabled) {
+      this.packageForm.controls['manualCost'].enable();
+    } else {
+      this.packageForm.controls['manualCost'].disable();
+      this.packageForm.controls['manualCost'].setValue(''); // Optional: Reset value when disabled
     }
   }
   onSelectedPressureBrand(event:any){
@@ -583,6 +835,12 @@ console.log(data);
        // this.projectName=childData.projectName;
        // document.getElementById('openValidationModal')?.click();
         this.projectsChild=childData.children;
+        this.projectCode=childData.projectCode;
+        this.projectName=childData.projectName;
+        this.generatedCode=childData.generatedCode;
+        this.contractor=childData.contractor;
+        this.location=childData.location;
+        this.consultant=childData.consultant;
         console.log(this.projectsChild);
        }
     })
@@ -597,7 +855,7 @@ exportToExcel() {
   this.projects.forEach(project => {
     exportData.push({
       "Project Code": project.projectCode,
-      "Generated Code": this.projectSavedData.generatedCode,
+      "Generated Code": this.projectSavedData.generatedCode+'R/'+this.projectSavedData.revision,
       "Project Name": project.projectName,
       "Contractor": project.contractor,
       "Consultant": project.consultant,
@@ -613,13 +871,16 @@ exportToExcel() {
         "Location": '',
         "Flow": child.flow,
         "Head": child.head,
+        "Quantity": child.quantity,
+        "TotalCost":child.TOTALCOST,
         "Pump Series": child.pumpSeries,
         "Pump Model": child.pumpModel,
         "Pump Size": child.pumpSize,
         "Application": child.application,
         "Configuration": child.configuration,
-        "Quantity": child.quantity,
-        "Strainer": child.strainer
+       
+        "Strainer": child.strainer,
+        
       });
     });
   });
@@ -628,17 +889,41 @@ exportToExcel() {
   XLSX.utils.book_append_sheet(workbook, worksheet, 'Projects');
   XLSX.writeFile(workbook, 'ProjectReport.xlsx');
 }
+// printTable() {
+//     const printContent = document.getElementById('tableToPrint');
+//     const WindowPrt = window.open('', '', 'width=900,height=700');
+//     WindowPrt?.document.write('<html><head><title>Print Report</title></head><body>');
+//     WindowPrt?.document.write(printContent?.outerHTML || '');
+//     WindowPrt?.document.write('</body></html>');
+//     WindowPrt?.document.close();
+//     WindowPrt?.focus();
+//     WindowPrt?.print();
+//     WindowPrt?.close();
+//   }
+  
+
 printTable() {
-    const printContent = document.getElementById('tableToPrint');
-    const WindowPrt = window.open('', '', 'width=900,height=700');
-    WindowPrt?.document.write('<html><head><title>Print Report</title></head><body>');
-    WindowPrt?.document.write(printContent?.outerHTML || '');
-    WindowPrt?.document.write('</body></html>');
-    WindowPrt?.document.close();
-    WindowPrt?.focus();
-    WindowPrt?.print();
-    WindowPrt?.close();
-  }
+  const printContent = document.getElementById('tableToPrint') ;
+  const buttons = document.querySelectorAll('.btn') as NodeListOf<HTMLElement>;
+  buttons.forEach(button => button.style.display = 'none');
+  const WindowPrt = window.open('', '', 'width=900,height=700');
+  WindowPrt?.document.write('<style>table {width: 100%; border-collapse: collapse;} th, td {border: 1px solid black; padding: 8px; text-align: center;} th {background-color: #f2f2f2;}</style>'); // Added table styling for lines
+  WindowPrt?.document.write('<html><head><title>Project Summary</title></head><body>');
+  WindowPrt?.document.write('<h4>Unique Code: ' +  this.projectSavedData.generatedCode +'/R'+this.projectSavedData.revision + '</h3>');
+  WindowPrt?.document.write('<h4>Project Code: ' + this.projectCode + '</h4>');
+  WindowPrt?.document.write('<h4>Project Name: ' + this.projectName + '</h4>');
+  WindowPrt?.document.write('<h4>Contractor: ' + this.contractor + '</h4>');
+  WindowPrt?.document.write('<h4>Consultant: ' + this.consultant + '</h4>');
+  WindowPrt?.document.write('<h4>Location: ' + this.location + '</h4>');
+  WindowPrt?.document.write(printContent?.outerHTML || '');
+  WindowPrt?.document.write('</body></html>');
+  WindowPrt?.document.close();
+  WindowPrt?.focus();
+  WindowPrt?.print();
+  WindowPrt?.close();
+  buttons.forEach(button => button.style.display = 'inline-block');
+}
+
 }
 
 

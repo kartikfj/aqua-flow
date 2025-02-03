@@ -5,14 +5,19 @@ export interface Project {
     contractor: string;
     consultant: string;
     location: string;
+    revision:number;
     generatedCode:string;
     children: ProjectChild[]; // Array of child data
   }
   
   export interface ProjectChild {
   projectId: number;
+  child_id:number;
   flow: string;
   head: string;
+  priceMultipler:number;
+  assemblerMultipler:number;
+  manualCost:number;
   TOTALCOST:number;
   pumpSeries: string;
   pumpModel: string;
@@ -30,6 +35,7 @@ export interface Project {
   pressureVesselRating: string;
   material: string;
   materialQty: number;
+  needControl:string;
   controlPanelType: string;
   controlPanelPower: string;
   controlPanelRelay: string;
@@ -46,7 +52,8 @@ export interface Project {
     contractor: string;
     consultant: string;
     location: string;
-    parentsysid: 0,
+    revision:number;
+    parentsysid: number,
     quantity: 0,
     floatswitchQty: 0,
     materailQty: 0,

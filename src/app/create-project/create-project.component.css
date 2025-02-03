@@ -83,7 +83,72 @@
   .btn {
     margin-right: 10px;
   }
-  
+ /* Ensure dropdown moves freely outside the table */
+.custom-dropdown {
+  position: absolute !important; /* Override Bootstrap constraints */
+  z-index: 1050 !important; /* Keep it above the table */
+  max-height: 200px; /* Enable scrollbar */
+  overflow-y: auto; /* Scroll for large items */
+  min-width: 220px; /* Keep dropdown width consistent */
+  background: white; /* Ensure visibility */
+  border: 1px solid #ddd; /* Light border */
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Soft shadow */
+}
 
+/* Override Bootstrap dropdown to ensure it renders correctly */
+.dropdown-menu {
+  position: absolute !important;
+  will-change: transform;
+  transform: translate(0, 10px) !important;
+}
 
+/* Scrollbar inside dropdown */
+.custom-dropdown::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-dropdown::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 3px;
+}
+
+.custom-dropdown::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.custom-dropdown {
+  z-index: 1000; /* Ensure the dropdown is above other elements */
+  position: absolute; /* Ensure it's positioned correctly */
+}
+.custom-dropdown {
+  z-index: 1; /* or a higher value if needed */
+}
+
+.dropdown-menu {
+  position: absolute; /* ensure absolute positioning */
+}
+.relative-container {
+  position: relative;
+}
+.responsive-table {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+}
+
+.responsive-table table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.responsive-table th,
+.responsive-table td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: left;
+}
+
+.responsive-table th {
+  background-color: #f0f0f0;
+}
 }

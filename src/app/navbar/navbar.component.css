@@ -1,0 +1,17 @@
+.navbar {
+    padding: 10px 15px;
+  }
+  
+  .btn-outline-light {
+    border-radius: 8px;
+    padding: 8px 15px;
+    font-weight: bold;
+    transition: all 0.3s ease-in-out;
+  }
+  
+  .btn-outline-light:hover {
+    background-color: #ffc107;
+    color:cornflowerblue;
+    border-color: #ffc107;
+  }
+  
