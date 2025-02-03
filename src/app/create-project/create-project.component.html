@@ -1566,9 +1566,9 @@
         <tr>
           <th>S.No</th>
           <th>Pump Series</th>
-          <th>Pump Quantity</th>
-          <th>Total Cost</th>
-          <th>Edit</th>
+          <th>QTY</th>
+          <th class="text-end">Total Cost</th>
+          <th></th>
           <!-- <th>Flow</th>
             <th>Head</th>
             <th>Pump Size</th>
@@ -1588,13 +1588,13 @@
             }}
           </td>
           <td>{{ child.quantity }}</td>
-          <td>{{ child.TOTALCOST | number : "1.0-2" }}</td>
+          <td class="text-end">{{ child.TOTALCOST | number : "1.0-2" }}</td>
           <td>
             <button
               class="btn btn-primary"
               (click)="navigateToEditChild(child.child_id)"
             >
-              Add
+              Edit
             </button>
           </td>
           <!-- <td>{{ child.flow }}</td>

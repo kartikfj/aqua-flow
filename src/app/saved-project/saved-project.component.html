@@ -1,5 +1,5 @@
 <div class="container mt-4">
-  <h2 class="text-center mb-4">Saved Projects</h2>
+  <h2 class="text-uppercase text-center mb-4">Saved Projects</h2>
 
   <!-- Search Input -->
 
@@ -87,7 +87,7 @@
               Add
             </button>
             <button
-              class="btn btn-secondary ml-2"
+              class="btn btn-info ml-2"
               (click)="toggleChildData(i); childDataShow(project.id)"
             >
               {{ expandedRowIndex === i ? "Details" : "Details" }}
@@ -115,32 +115,10 @@
     aria-hidden="true"
     data-bs-focus="false"
   >
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
       <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title text-danger" id="validationModalLabel">
-            <button
-              (click)="printModalData()"
-              class="btn btn-primary btn-sm float-right"
-            >
-              Print
-            </button>
-            <br />
-            GeneratedCode:{{ generatedCode }}
-            <br />
-
-            ProjectCode:{{ projectCode }}
-
-            <br />
-            ProjectName: {{ projectName }}
-            <br />
-            Contrator: {{ contractor }}
-            <br />
-            <br />
-            Consultant: {{ contractor }}
-            <br />
-            Location: {{ location }}
-          </h5>
+        <div class="modal-header bg-light">
+          <h5 class="modal-title fw-bold text-primary">Project Information</h5>
           <button
             type="button"
             class="btn-close"
@@ -149,49 +127,86 @@
             data-bs-focus="false"
           ></button>
         </div>
+
         <div id="modalContentToPrint" class="modal-body">
+          <div class="row">
+            <div class="col-md-6">
+              <p>
+                <strong class="text-dark">Generated Code:</strong>
+                <span class="text-muted">{{ generatedCode }}/R{{ riv }}</span>
+              </p>
+              <p>
+                <strong class="text-dark">Project Code:</strong>
+                <span class="text-muted">{{ projectCode }}</span>
+              </p>
+              <p>
+                <strong class="text-dark">Project Name:</strong>
+                <span class="text-muted">{{ projectName }}</span>
+              </p>
+            </div>
+            <div class="col-md-6">
+              <p>
+                <strong class="text-dark">Contractor:</strong>
+                <span class="text-muted">{{ contractor }}</span>
+              </p>
+              <p>
+                <strong class="text-dark">Consultant:</strong>
+                <span class="text-muted">{{ consultant }}</span>
+              </p>
+              <p>
+                <strong class="text-dark">Location:</strong>
+                <span class="text-muted">{{ location }}</span>
+              </p>
+            </div>
+          </div>
+
+          <hr />
+
           <div *ngIf="expandedRowIndex === expandNumber">
             <div *ngIf="projectsChild.length">
-              <h5>Project Details:</h5>
-              <table class="table table-sm table-bordered">
-                <thead>
+              <h5 class="text-secondary">Project Details</h5>
+              <table class="table table-bordered table-hover text-center">
+                <thead class="table-dark">
                   <tr>
-                    <th>S.No</th>
+                    <th>#</th>
                     <th>Product Code</th>
                     <th>Qty</th>
                     <th>Total Cost</th>
-                    <!-- <th>Flow</th>
-                          <th>Head</th>
-                          <th>Pump Size</th>
-                          <th>Application</th>
-                          <th>Configuration</th>
-                          <th>Quantity</th> -->
                   </tr>
                 </thead>
                 <tbody>
                   <tr *ngFor="let child of projectsChild; let i = index">
                     <td>{{ i + 1 }}</td>
-
-                    <td>
-                      {{ child.application }}/{{ child.configuration }}/{{
-                        child.pumpModel
-                      }}/{{ child.strainer }}/{{ child.controlPanelType }}/{{
-                        child.controlPanelRelay
-                      }}
+                    <td class="text-start">
+                      {{ child.application }} / {{ child.configuration }} /
+                      {{ child.pumpModel }} / {{ child.strainer }} /
+                      {{ child.controlPanelType }} /
+                      {{ child.controlPanelRelay }}
                     </td>
-                    <td>{{ child.quantity }}</td>
-                    <td>{{ child.TOTALCOST | number : "1.0-2" }}</td>
-
-                    <!-- <td>{{ child.flow }}</td>
-                          <td>{{ child.head }}</td>
-                          <td>{{ child.pumpSize }}</td>
-                          <td>{{ child.application }}</td>
-                          <td>{{ child.configuration }}</td>
-                          <td>{{ child.quantity }}</td> -->
+                    <td class="fw-bold">{{ child.quantity }}</td>
+                    <td class="text-end text-success fw-bold">
+                      {{ child.TOTALCOST | number : "1.0-2" }}
+                    </td>
+                    <!-- Right-aligned -->
                   </tr>
                 </tbody>
               </table>
             </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              (click)="printModalData()"
+              class="btn btn-outline-primary btn-sm"
+            >
+              <i class="bi bi-printer"></i> Print
+            </button>
+            <button
+              type="button"
+              class="btn btn-secondary btn-sm"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
           </div>
           <div *ngIf="!projectsChild.length">
             <p>No data available for this project.</p>

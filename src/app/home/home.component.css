@@ -1,20 +1,63 @@
-h1{
-    text-align: center;
-    justify-content: space-around;
-    color: blue;
+
+h1 {
+  text-align: center;
+  justify-content: space-around;
+  color: blue;
 }
+
 .logo {
-    text-align: center;
-    margin-bottom: 20px;
-  }
+  text-align: center;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.logo-image {
+  max-width: 200px;
+  height: auto;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+}
+
+.logo-image-second {
+  max-width: 180px;
+  height: auto;
+  position: absolute;
+  top: 20px;
+  left: 55%;
+  transform: translateX(-50%);
+  z-index: 1;
+  opacity: 0.7;
+}
+
+.homePage {
+  text-align: left;
+}
+
+.fjPage {
+  text-align: right;
+}
+/* body {
+
+  background-image: url('/assets/aqua-select1.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 100vh;
+  width: 100vw;
+  margin: 0;
+  padding: 0;
+
+
   
-  .logo-image {
-    max-width: 200px; /* Adjust the width as needed */
-    height: auto;
-  }
-  .homePage{
-    text-align: left;
-  }
-  .fjPage{
-    text-align: right;
-  }
+} */
+.carousel-img {
+  margin-top: 150px;
+  width: 850px; /* Adjust size */
+  height: 500px;
+  margin: auto;
+  display: block;
+  margin-bottom: 50px;
+}

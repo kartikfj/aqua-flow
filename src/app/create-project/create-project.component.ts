@@ -871,13 +871,16 @@ exportToExcel() {
         "Location": '',
         "Flow": child.flow,
         "Head": child.head,
+        "Quantity": child.quantity,
+        "TotalCost":child.TOTALCOST,
         "Pump Series": child.pumpSeries,
         "Pump Model": child.pumpModel,
         "Pump Size": child.pumpSize,
         "Application": child.application,
         "Configuration": child.configuration,
-        "Quantity": child.quantity,
-        "Strainer": child.strainer
+       
+        "Strainer": child.strainer,
+        
       });
     });
   });
@@ -900,21 +903,25 @@ exportToExcel() {
   
 
 printTable() {
-  const printContent = document.getElementById('tableToPrint');
+  const printContent = document.getElementById('tableToPrint') ;
+  const buttons = document.querySelectorAll('.btn') as NodeListOf<HTMLElement>;
+  buttons.forEach(button => button.style.display = 'none');
   const WindowPrt = window.open('', '', 'width=900,height=700');
+  WindowPrt?.document.write('<style>table {width: 100%; border-collapse: collapse;} th, td {border: 1px solid black; padding: 8px; text-align: center;} th {background-color: #f2f2f2;}</style>'); // Added table styling for lines
   WindowPrt?.document.write('<html><head><title>Project Summary</title></head><body>');
-  WindowPrt?.document.write('<h3>Unique Code: ' + this.generatedCode + '</h3>');
-  WindowPrt?.document.write('<h3>Project Code: ' + this.projectCode + '</h3>');
-  WindowPrt?.document.write('<h3>Project Name: ' + this.projectName + '</h3>');
-  WindowPrt?.document.write('<h3>Contractor: ' + this.contractor + '</h3>');
-  WindowPrt?.document.write('<h3>Consultant: ' + this.consultant + '</h3>');
-  WindowPrt?.document.write('<h3>Location: ' + this.location + '</h3>');
+  WindowPrt?.document.write('<h4>Unique Code: ' +  this.projectSavedData.generatedCode +'/R'+this.projectSavedData.revision + '</h3>');
+  WindowPrt?.document.write('<h4>Project Code: ' + this.projectCode + '</h4>');
+  WindowPrt?.document.write('<h4>Project Name: ' + this.projectName + '</h4>');
+  WindowPrt?.document.write('<h4>Contractor: ' + this.contractor + '</h4>');
+  WindowPrt?.document.write('<h4>Consultant: ' + this.consultant + '</h4>');
+  WindowPrt?.document.write('<h4>Location: ' + this.location + '</h4>');
   WindowPrt?.document.write(printContent?.outerHTML || '');
   WindowPrt?.document.write('</body></html>');
   WindowPrt?.document.close();
   WindowPrt?.focus();
   WindowPrt?.print();
   WindowPrt?.close();
+  buttons.forEach(button => button.style.display = 'inline-block');
 }
 
 }
