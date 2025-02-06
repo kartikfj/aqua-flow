@@ -147,8 +147,8 @@ if(this.projectId){
     this.packageForm = this.fb.group({
       flow: ['', [Validators.required,Validators.min(1), Validators.max(100), Validators.pattern('^[0-9]*\\.?[0-9]+$')]], // Min 1, Max 5000, Numbers only
       head: ['', [Validators.required,Validators.min(1), Validators.max(100), Validators.pattern('^[0-9]*\\.?[0-9]+$')]], // Min 1, Max 500, Numbers only
-      priceMultipler:[0.1, [Validators.required,Validators.min(0.1), Validators.max(1), Validators.pattern('^[0-9]*\\.?[0-9]+$')]], // Min 1, Max 500, Numbers only
-      assemblerMultipler:[0.2, [Validators.required,Validators.min(0.2), Validators.max(1), Validators.pattern('^[0-9]*\\.?[0-9]+$')]], // Min 1, Max 500, Numbers only
+      priceMultipler:[1, [Validators.required,Validators.min(0.1), Validators.max(1), Validators.pattern('^[0-9]*\\.?[0-9]+$')]], // Min 1, Max 500, Numbers only
+      assemblerMultipler:[1, [Validators.required,Validators.min(0.2), Validators.max(1), Validators.pattern('^[0-9]*\\.?[0-9]+$')]], // Min 1, Max 500, Numbers only
       manualCost:[{ value: 0, disabled: true }, [Validators.required,Validators.min(1), Validators.max(100000), Validators.pattern('^[0-9]*\\.?[0-9]+$')]], // Min 1, Max 500, Numbers only
       pumpSeries: ['', Validators.required], // Required field
       pumpModel: ['', Validators.required], // Required field
@@ -855,7 +855,7 @@ exportToExcel() {
   this.projects.forEach(project => {
     exportData.push({
       "Project Code": project.projectCode,
-      "Generated Code": this.projectSavedData.generatedCode+'R/'+this.projectSavedData.revision,
+      "Generated Code": this.projectSavedData.generatedCode+'/R'+this.projectSavedData.revision,
       "Project Name": project.projectName,
       "Contractor": project.contractor,
       "Consultant": project.consultant,
@@ -901,26 +901,52 @@ exportToExcel() {
 //     WindowPrt?.close();
 //   }
   
-
 printTable() {
-  const printContent = document.getElementById('tableToPrint') ;
+  const printContent = document.getElementById('tableToPrint');
   const buttons = document.querySelectorAll('.btn') as NodeListOf<HTMLElement>;
   buttons.forEach(button => button.style.display = 'none');
+
+  const currentDate = new Date().toLocaleDateString(); // Get the current date
+
   const WindowPrt = window.open('', '', 'width=900,height=700');
-  WindowPrt?.document.write('<style>table {width: 100%; border-collapse: collapse;} th, td {border: 1px solid black; padding: 8px; text-align: center;} th {background-color: #f2f2f2;}</style>'); // Added table styling for lines
-  WindowPrt?.document.write('<html><head><title>Project Summary</title></head><body>');
-  WindowPrt?.document.write('<h4>Unique Code: ' +  this.projectSavedData.generatedCode +'/R'+this.projectSavedData.revision + '</h3>');
-  WindowPrt?.document.write('<h4>Project Code: ' + this.projectCode + '</h4>');
-  WindowPrt?.document.write('<h4>Project Name: ' + this.projectName + '</h4>');
-  WindowPrt?.document.write('<h4>Contractor: ' + this.contractor + '</h4>');
-  WindowPrt?.document.write('<h4>Consultant: ' + this.consultant + '</h4>');
-  WindowPrt?.document.write('<h4>Location: ' + this.location + '</h4>');
-  WindowPrt?.document.write(printContent?.outerHTML || '');
-  WindowPrt?.document.write('</body></html>');
+
+  WindowPrt?.document.write(`
+    <html>
+      <head>
+        <title>-</title>
+       <style>
+          body { font-family: Arial, sans-serif; margin: 20px; }
+          .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+          .title { font-size: 40px; font-weight: bold; text-transform: uppercase; text-align: center; width: 100%; }
+          .date { font-size: 24px; font-weight: bold; text-align: right; }
+          table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+          th, td { border: 1px solid black; padding: 10px; text-align: center; font-size: 16px; }
+          th { background-color: #f2f2f2; font-size: 18px; }
+          td:nth-child(n+2) { text-align: right; } /* Align numbers to the right */
+          h4 { font-size: 20px; margin: 10px 0; font-weight: bold; }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <div class="title">PROJECT SUMMARY</div>
+          <div class="date">Date: ${currentDate}</div>
+        </div>
+        <h4><b>Unique Code:</b> ${this.projectSavedData.generatedCode}/R${this.projectSavedData.revision}</h4>
+        <h4><b>Project Code:</b> ${this.projectCode}</h4>
+        <h4><b>Project Name:</b> ${this.projectName}</h4>
+        <h4><b>Contractor:</b> ${this.contractor}</h4>
+        <h4><b>Consultant:</b> ${this.consultant}</h4>
+        <h4><b>Location:</b> ${this.location}</h4>
+        ${printContent?.outerHTML || ''}
+      </body>
+    </html>
+  `);
+
   WindowPrt?.document.close();
   WindowPrt?.focus();
   WindowPrt?.print();
   WindowPrt?.close();
+
   buttons.forEach(button => button.style.display = 'inline-block');
 }
 

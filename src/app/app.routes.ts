@@ -3,6 +3,7 @@ import { CreateProjectComponent } from './create-project/create-project.componen
 import { SavedProjectComponent } from './saved-project/saved-project.component';
 import { HomeComponent } from './home/home.component';
 import { HelpsComponent } from './helps/helps.component';
+import { ErrorPageComponent } from './error-page/error-page.component';
 
 
 
@@ -16,4 +17,6 @@ export const routes: Routes = [
     { path:'helps',component:HelpsComponent},
     { path:'home/:empId',component:HomeComponent},
     { path: '', redirectTo: '/home', pathMatch: 'full' },
+    { path: 'error', component: ErrorPageComponent },
+    { path: '**', redirectTo: '/error' }
   ];

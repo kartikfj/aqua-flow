@@ -1,10 +1,10 @@
 <div class="container mt-4">
-  <h2 class="text-uppercase text-center mb-4">Saved Projects</h2>
+  <!-- <h2 class="text-uppercase text-center mb-4">Saved Projects</h2> -->
 
   <!-- Search Input -->
 
   <button class="btn btn-success mb-2" (click)="exportToExcel()">
-    Export to Excel
+    <i class="bi bi-file-earmark-excel"></i>Excel
   </button>
 
   <!-- Parent Table -->
@@ -84,13 +84,14 @@
               class="btn btn-primary"
               (click)="navigateToAddChild(project.id)"
             >
-              Add
+              <i class="bi bi-plus"></i> Add
             </button>
             <button
               class="btn btn-info ml-2"
               (click)="toggleChildData(i); childDataShow(project.id)"
             >
-              {{ expandedRowIndex === i ? "Details" : "Details" }}
+              <i class="bi bi-card-list"></i
+              >{{ expandedRowIndex === i ? "Details" : "Details" }}
             </button>
           </td>
         </tr>
@@ -168,8 +169,8 @@
               <table class="table table-bordered table-hover text-center">
                 <thead class="table-dark">
                   <tr>
-                    <th>#</th>
-                    <th>Product Code</th>
+                    <th>S.No</th>
+                    <th style="text-align: left">Product Code</th>
                     <th>Qty</th>
                     <th>Total Cost</th>
                   </tr>
@@ -177,13 +178,13 @@
                 <tbody>
                   <tr *ngFor="let child of projectsChild; let i = index">
                     <td>{{ i + 1 }}</td>
-                    <td class="text-start">
+                    <td class="text-start" style="text-align: left">
                       {{ child.application }} / {{ child.configuration }} /
                       {{ child.pumpModel }} / {{ child.strainer }} /
                       {{ child.controlPanelType }} /
                       {{ child.controlPanelRelay }}
                     </td>
-                    <td class="fw-bold">{{ child.quantity }}</td>
+                    <td class="text-end fw-bold">{{ child.quantity }}</td>
                     <td class="text-end text-success fw-bold">
                       {{ child.TOTALCOST | number : "1.0-2" }}
                     </td>

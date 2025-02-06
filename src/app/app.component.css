@@ -1,3 +1,31 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@700&family=Pacifico&display=swap');
+
+.aqua-heading {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  font-size: 3rem; /* Adjust size */
+  text-transform: uppercase;
+  text-align: center;
+  letter-spacing: 3px;
+  color: #007bff;
+  background: linear-gradient(45deg, #007bff, #ff5733);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 3px 3px 8px rgba(0, 0, 0, 0.2);
+  margin: 10px 0;
+  animation: glow 2s infinite alternate;
+}
+
+/* Subtle Glow Animation */
+@keyframes glow {
+  0% {
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+  }
+  100% {
+    text-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+  }
+}
+
 h1{
     text-align: center;
     justify-content: space-around;
@@ -5,12 +33,13 @@ h1{
 }
 .logo {
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 2px;
   }
   
   .logo-image {
-    max-width: 200px; /* Adjust the width as needed */
+    max-width: 100px; /* Adjust the width as needed */
     height: auto;
+    border-radius: 20px;
   }
   .homePage{
     text-align: left;
@@ -18,17 +47,8 @@ h1{
   .fjPage{
     text-align: right;
   }
-  body {
-
-    background-image: url('/assets/aqua-select1.jpg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    height: 100vh;
-    width: 100vw;
-    margin: 0;
-    padding: 0;
-  
-  
-    
-  }
+ .app-container{
+    margin-top: -10px;
+    flex: 1; /* Pushes the footer down if there is less content */
+    min-height: 80vh;
+ }
