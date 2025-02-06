@@ -153,34 +153,83 @@ export class SavedProjectComponent {
   
 }
 
+// printModalData() {
+//   const printContent = document.getElementById('modalContentToPrint');
+
+//   // Remove the "Print" and "Close" buttons before printing
+//   const buttons = document.querySelectorAll('.btn') as NodeListOf<HTMLElement>;;
+//   buttons.forEach(button => button.style.display = 'none');  // Hide buttons
+
+//   // Open the print window and write the content
+//   const WindowPrt = window.open('', '', 'width=900,height=700');
+//   WindowPrt?.document.write('<html><head><title>Project Summary</title>');
+//   WindowPrt?.document.write('<style>table {width: 100%; border-collapse: collapse;} th, td {border: 1px solid black; padding: 8px; text-align: center;} th {background-color: #f2f2f2;}</style>'); // Added table styling for lines
+//   WindowPrt?.document.write('</head><body>');
+//   WindowPrt?.document.write(printContent?.outerHTML || '');
+//   WindowPrt?.document.write('</body></html>');
+//   WindowPrt?.document.close();
+//   WindowPrt?.focus();
+  
+//   // Print the content
+//   WindowPrt?.print();
+  
+//   // Close the window after printing
+//   WindowPrt?.close();
+
+//   // Re-show the buttons after printing
+//   buttons.forEach(button => button.style.display = 'inline-block');
+// }
+
+
 printModalData() {
   const printContent = document.getElementById('modalContentToPrint');
 
-  // Remove the "Print" and "Close" buttons before printing
-  const buttons = document.querySelectorAll('.btn') as NodeListOf<HTMLElement>;;
-  buttons.forEach(button => button.style.display = 'none');  // Hide buttons
+  // Hide all buttons before printing
+  const buttons = document.querySelectorAll('.btn') as NodeListOf<HTMLElement>;
+  buttons.forEach(button => button.style.display = 'none');
 
-  // Open the print window and write the content
+  // Get the current date
+  const currentDate = new Date().toLocaleDateString();
+
+  // Open a new print window
   const WindowPrt = window.open('', '', 'width=900,height=700');
-  WindowPrt?.document.write('<html><head><title>Project Summary</title>');
-  WindowPrt?.document.write('<style>table {width: 100%; border-collapse: collapse;} th, td {border: 1px solid black; padding: 8px; text-align: center;} th {background-color: #f2f2f2;}</style>'); // Added table styling for lines
-  WindowPrt?.document.write('</head><body>');
-  WindowPrt?.document.write(printContent?.outerHTML || '');
-  WindowPrt?.document.write('</body></html>');
+
+  WindowPrt?.document.write(`
+    <html>
+      <head>
+        <title>-</title>
+        <style>
+          body { font-family: Arial, sans-serif; margin: 20px; }
+          .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+          .title { font-size: 40px; font-weight: bold; text-transform: uppercase; text-align: center; width: 100%; }
+          .date { font-size: 24px; font-weight: bold; text-align: right; }
+          table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+          th, td { border: 1px solid black; padding: 10px; text-align: center; font-size: 16px; }
+          th { background-color: #f2f2f2; font-size: 18px; }
+          td:nth-child(n+2) { text-align: right; } /* Align numbers to the right */
+          h4 { font-size: 20px; margin: 10px 0; font-weight: bold; }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <div class="title">PROJECT SUMMARY</div>
+          <div class="date">Date: ${currentDate}</div>
+        </div>
+        ${printContent?.outerHTML || ''}
+      </body>
+    </html>
+  `);
+
   WindowPrt?.document.close();
   WindowPrt?.focus();
   
-  // Print the content
+  // Print and close the window
   WindowPrt?.print();
-  
-  // Close the window after printing
   WindowPrt?.close();
 
-  // Re-show the buttons after printing
+  // Show the buttons again after printing
   buttons.forEach(button => button.style.display = 'inline-block');
 }
-
-
 
 exportToExcel() {
   let exportData: any[] = [];

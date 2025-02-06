@@ -4,11 +4,12 @@ import { CreateProjectComponent } from './create-project/create-project.componen
 import { SavedProjectComponent } from './saved-project/saved-project.component';
 import { NgIf } from '@angular/common';
 import { NavbarComponent } from './navbar/navbar.component';
+import { FooterComponent } from "./footer/footer.component";
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [NavbarComponent,RouterOutlet,CreateProjectComponent,SavedProjectComponent,NgIf],
+  imports: [NavbarComponent, RouterOutlet, CreateProjectComponent, SavedProjectComponent, NgIf, FooterComponent,FooterComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
