@@ -12,6 +12,9 @@ import { selectAllChildProjects, selectAllProjects } from '../state/selector';
 import * as ProjectActions from '../state/action';
 import * as XLSX from 'xlsx';
 import { CommonModule } from '@angular/common';
+import logoData from './logo.json'; // Import JSON file
+
+
 @Component({
   selector: 'app-create-project',
   standalone: true,
@@ -57,8 +60,9 @@ export class CreateProjectComponent {
   capacity=['60L','50L','40L'];
   pressureRating=['PN 10','PN 9','PN 8'];
   material=['Butyl'];
-  type=['VFD'];
+  type=['VFD','DOL'];
   power=[1,2];
+  grandTotal:number=0;
 
   projects$: Observable<ProjectChild[]>;
   //projectId: string | null = null; // Stores the project ID from the backend
@@ -67,6 +71,7 @@ export class CreateProjectComponent {
   project:ProjectData[]=[];
   projectsChild:ProjectChild[]=[];
 
+  logoUrl: string = '';
   isLastState = true;
   disabledButton=false;
   isUpdate=false;
@@ -110,6 +115,7 @@ closeDropdownWithDelay(): void {
 
 // Handles project selection
 ngAfterOnInit(){
+  this.logoUrl = logoData.logo;
   this.getAllProjectById()
   this.getSavedProjectById();
 if(this.projectId){
@@ -118,7 +124,9 @@ if(this.projectId){
 }
 }
   ngOnInit(): void {
+    this.logoUrl = logoData.logo;
     this.getAllProjectContractor();
+    this.calculateGrandTotal();
     // Initialize all forms
     this.route.params.subscribe((params)=>{
       this.projectId =+params['projectId'];
@@ -149,7 +157,7 @@ if(this.projectId){
       head: ['', [Validators.required,Validators.min(1), Validators.max(100), Validators.pattern('^[0-9]*\\.?[0-9]+$')]], // Min 1, Max 500, Numbers only
       priceMultipler:[1, [Validators.required,Validators.min(0.1), Validators.max(1), Validators.pattern('^[0-9]*\\.?[0-9]+$')]], // Min 1, Max 500, Numbers only
       assemblerMultipler:[1, [Validators.required,Validators.min(0.2), Validators.max(1), Validators.pattern('^[0-9]*\\.?[0-9]+$')]], // Min 1, Max 500, Numbers only
-      manualCost:[{ value: 0, disabled: true }, [Validators.required,Validators.min(1), Validators.max(100000), Validators.pattern('^[0-9]*\\.?[0-9]+$')]], // Min 1, Max 500, Numbers only
+      manualCost:[{ value: 0, disabled: true }, [Validators.required,Validators.min(1), Validators.max(1000000), Validators.pattern('^[0-9]*\\.?[0-9]+$')]], // Min 1, Max 500, Numbers only
       pumpSeries: ['', Validators.required], // Required field
       pumpModel: ['', Validators.required], // Required field
       pumpSize: ['', Validators.required], // Required field
@@ -831,6 +839,7 @@ console.log(data);
     if(projectId!=null){
     this.projects.filter(childData=>{
        if(childData.id==projectId){
+      
        // this.projectCode=childData.projectCode;
        // this.projectName=childData.projectName;
        // document.getElementById('openValidationModal')?.click();
@@ -841,10 +850,14 @@ console.log(data);
         this.contractor=childData.contractor;
         this.location=childData.location;
         this.consultant=childData.consultant;
+        this.calculateGrandTotal();
         console.log(this.projectsChild);
        }
     })
   }
+}
+calculateGrandTotal() {
+  this.grandTotal = this.projectsChild.reduce((sum, child) => sum + (child.TOTALCOST || 0), 0);
 }
 
 
@@ -905,19 +918,23 @@ printTable() {
   const printContent = document.getElementById('tableToPrint');
   const buttons = document.querySelectorAll('.btn') as NodeListOf<HTMLElement>;
   buttons.forEach(button => button.style.display = 'none');
+  const logoUrl = this.logoUrl;
 
   const currentDate = new Date().toLocaleDateString(); // Get the current date
 
   const WindowPrt = window.open('', '', 'width=900,height=700');
 
+ 
   WindowPrt?.document.write(`
     <html>
       <head>
         <title>-</title>
-       <style>
-          body { font-family: Arial, sans-serif; margin: 20px; }
+        <style>
+           body { font-family: Arial, sans-serif; margin: 20px; }
           .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-          .title { font-size: 40px; font-weight: bold; text-transform: uppercase; text-align: center; width: 100%; }
+          .logo { flex: 0 0 140px; } /* Logo fixed size */
+          .logo img { max-width: 140px; height: auto; } 
+          .title { font-size: 30px; font-weight: bold; wrap:word-break; text-align: center; width: 100%; }
           .date { font-size: 24px; font-weight: bold; text-align: right; }
           table { width: 100%; border-collapse: collapse; margin-top: 20px; }
           th, td { border: 1px solid black; padding: 10px; text-align: center; font-size: 16px; }
@@ -928,15 +945,38 @@ printTable() {
       </head>
       <body>
         <div class="header">
-          <div class="title">PROJECT SUMMARY</div>
-          <div class="date">Date: ${currentDate}</div>
+          <div class="logo">
+           <img src="${logoUrl}" alt="Aqua-select Logo" onerror="this.onerror=null; this.src='https://via.placeholder.com/150?text=No+Image'" />
+
+          </div>
+          <div class="title" style="color:#103d63";>Selection Summary</div>
+          <div class="date" style="color:#103d63">Date: ${currentDate}</div>
         </div>
-        <h4><b>Unique Code:</b> ${this.projectSavedData.generatedCode}/R${this.projectSavedData.revision}</h4>
-        <h4><b>Project Code:</b> ${this.projectCode}</h4>
-        <h4><b>Project Name:</b> ${this.projectName}</h4>
-        <h4><b>Contractor:</b> ${this.contractor}</h4>
-        <h4><b>Consultant:</b> ${this.consultant}</h4>
-        <h4><b>Location:</b> ${this.location}</h4>
+      
+        <strong class="text-dark">Generated Code:</strong>
+        <span class="text-muted">${this.projectSavedData.generatedCode}/R${this.projectSavedData.revision}</span>
+        <br>
+        <br>
+        <strong class="text-dark">Project Code:</strong>
+        <span class="text-muted">${this.projectCode}</span>
+        <br>
+        <br>
+        <strong class="text-dark">Project Name:</strong>
+        <span class="text-muted"> ${this.projectName}</span>
+        <br>
+        <br>
+        <strong class="text-dark">Contractor:</strong>
+        <span class="text-muted">${this.contractor}</span>
+        <br>
+        <br>
+        <strong class="text-dark">Consultant:</strong>
+        <span class="text-muted"> ${this.consultant}</span>
+        <br>
+        <br>
+        <strong class="text-dark">Location:</strong>
+        <span class="text-muted">${this.location}</span>
+        <br>
+        <br>
         ${printContent?.outerHTML || ''}
       </body>
     </html>
