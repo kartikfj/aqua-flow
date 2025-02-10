@@ -9,6 +9,8 @@ import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AquagetService } from '../aquaget.service';
 import * as XLSX from 'xlsx';
+import logoData from '../create-project/logo.json'; // Import JSON file
+
 @Component({
   selector: 'app-saved-project',
   standalone: true,
@@ -27,6 +29,7 @@ export class SavedProjectComponent {
     //  // this.fetchProjectDetails();
     //  this.getPumSeries();
     // })
+    this.logoUrl = logoData.logo;
     this.getAllProject();
 //this.getProjectModelData();
   }
@@ -38,6 +41,9 @@ export class SavedProjectComponent {
   projectName:string='';
   generatedCode:string='';
   riv:number=0;
+  grandTotal:number=0;
+
+  logoUrl: string = '';
   contractor:string='';
   location:string='';
   consultant:string='';
@@ -147,10 +153,14 @@ export class SavedProjectComponent {
         this.consultant=childData.consultant;
         document.getElementById('openValidationModal')?.click();
         this.projectsChild=childData.children;
+        this.calculateGrandTotal();
        }
     })
   }
   
+}
+calculateGrandTotal() {
+  this.grandTotal = this.projectsChild.reduce((sum, child) => sum + (child.TOTALCOST || 0), 0);
 }
 
 // printModalData() {
@@ -190,6 +200,11 @@ printModalData() {
 
   // Get the current date
   const currentDate = new Date().toLocaleDateString();
+  const logoUrl = this.logoUrl;
+  const logoImage = new Image();
+  logoImage.src = logoUrl;
+
+  logoImage.onload = () => {
 
   // Open a new print window
   const WindowPrt = window.open('', '', 'width=900,height=700');
@@ -201,7 +216,9 @@ printModalData() {
         <style>
           body { font-family: Arial, sans-serif; margin: 20px; }
           .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-          .title { font-size: 40px; font-weight: bold; text-transform: uppercase; text-align: center; width: 100%; }
+          .logo { flex: 0 0 140px; } /* Logo fixed size */
+          .logo img { max-width: 140px; height: auto; } 
+          .title { font-size: 30px; font-weight: bold; wrap:word-break; text-align: center; width: 100%; }
           .date { font-size: 24px; font-weight: bold; text-align: right; }
           table { width: 100%; border-collapse: collapse; margin-top: 20px; }
           th, td { border: 1px solid black; padding: 10px; text-align: center; font-size: 16px; }
@@ -212,8 +229,12 @@ printModalData() {
       </head>
       <body>
         <div class="header">
-          <div class="title">PROJECT SUMMARY</div>
-          <div class="date">Date: ${currentDate}</div>
+         <div class="logo">
+           <img src="${logoUrl}" alt="Aqua-select Logo" onerror="this.onerror=null; this.src='https://via.placeholder.com/150?text=No+Image'" />
+
+          </div>
+          <div class="title" style="color:#103d63";>Selection Summary</div>
+          <div class="date" style="color:#103d63";>Date: ${currentDate}</div>
         </div>
         ${printContent?.outerHTML || ''}
       </body>
@@ -229,6 +250,7 @@ printModalData() {
 
   // Show the buttons again after printing
   buttons.forEach(button => button.style.display = 'inline-block');
+  }
 }
 
 exportToExcel() {
@@ -242,6 +264,7 @@ exportToExcel() {
       "Contractor": project.contractor,
       "Consultant": project.consultant,
       "Location": project.location,
+      
     });
     project.children.forEach(child => {
       exportData.push({

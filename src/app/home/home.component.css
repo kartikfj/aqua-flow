@@ -1,44 +1,73 @@
 
-h1 {
+.app-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   text-align: center;
-  justify-content: space-around;
-  color: blue;
 }
 
+
+.aqua-heading {
+  font-family: 'DINPROBOLD', sans-serif;
+  font-weight: 250;
+  font-size: 2.5rem; /* Increase size */
+
+  text-align: center;
+  letter-spacing: 3px;
+  color: #103d63;
+  background: linear-gradient(45deg, #103d63, #103d63);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 3px 3px 8px rgba(0, 0, 0, 0.2);
+  margin: 10px 0;
+  animation: glow 2s infinite alternate;
+}
+
+/* Subtle Glow Animation */
+@keyframes glow {
+  0% {
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+  }
+  100% {
+    text-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+  }
+}
+
+.button-container {
+  display: flex;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.btn {
+  font-size: 1rem;
+  padding: 5px 10px;
+  border-radius: 8px;
+}
+
+
+h1{
+    text-align: center;
+    justify-content: space-around;
+    color: blue;
+}
 .logo {
-  text-align: center;
-  margin-bottom: 10px;
-  position: relative;
-}
-
-.logo-image {
-  max-width: 150px;
-  height: auto;
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 2;
-}
-
-.logo-image-second {
-  max-width: 150px;
-  height: auto;
-  position: absolute;
-  top: 10px;
-  left: 55%;
-  transform: translateX(-50%);
-  z-index: 1;
-  opacity: 0.7;
-}
-
-.homePage {
-  text-align: left;
-}
-
-.fjPage {
-  text-align: right;
-}
+    text-align: center;
+    margin-bottom: 2px;
+  }
+  
+  .logo-image {
+    max-width: 350px; /* Adjust the width as needed */
+    height: auto;
+    border-radius: 20px;
+  }
+  .homePage{
+    text-align: left;
+  }
+  .fjPage{
+    text-align: right;
+  }
 /* body {
 
   background-image: url('/assets/aqua-select1.jpg');

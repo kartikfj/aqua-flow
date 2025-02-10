@@ -339,7 +339,7 @@
       <h2>Package Set</h2>
       <div class="row">
         <div class="col-md-3">
-          <label for="flow">Flow (l/s):</label>
+          <label for="flow">Flow rate(l/s):</label>
           <input
             id="flow"
             formControlName="flow"
@@ -507,13 +507,13 @@
           </div>
         </div>
         <div class="col-md-3">
-          <label for="flow">priceMultipler:</label>
+          <label for="flow">PPM:</label>
           <input
             id="flow"
             formControlName="priceMultipler"
             type="number"
             class="form-control"
-            placeholder="Enter priceMultipler"
+            placeholder="Enter priceMultiplier"
           />
           <div
             *ngIf="
@@ -524,66 +524,28 @@
             <small
               class="text-danger"
               *ngIf="packageForm.controls['priceMultipler'].errors?.['required']"
-              >priceMultipler is required.</small
+              >priceMultiplier is required.</small
             >
             <small
               class="text-danger"
               *ngIf="packageForm.controls['priceMultipler'].errors?.['min']"
-              >priceMultipler must be at least 0.1.</small
+              >priceMultiplier must be at least 0.1.</small
             >
             <small
               class="text-danger"
               *ngIf="packageForm.controls['priceMultipler'].errors?.['max']"
-              >priceMultipler cannot exceed 1.</small
+              >priceMultiplier cannot exceed 1.</small
             >
             <small
               class="text-danger"
               *ngIf="packageForm.controls['priceMultipler'].errors?.['pattern']"
             >
-              priceMultipler must be a valid number.
+              priceMultiplier must be a valid number.
             </small>
           </div>
         </div>
         <div class="col-md-3">
-          <label for="flow">assemblerMultipler:</label>
-          <input
-            id="flow"
-            formControlName="assemblerMultipler"
-            type="number"
-            class="form-control"
-            placeholder="Enter assemblerMultipler"
-          />
-          <div
-            *ngIf="
-              packageForm.controls['assemblerMultipler'].invalid &&
-              packageForm.controls['assemblerMultipler'].touched
-            "
-          >
-            <small
-              class="text-danger"
-              *ngIf="packageForm.controls['assemblerMultipler'].errors?.['required']"
-              >assemblerMultipler is required.</small
-            >
-            <small
-              class="text-danger"
-              *ngIf="packageForm.controls['assemblerMultipler'].errors?.['min']"
-              >assemblerMultipler must be at least 0.2-1.</small
-            >
-            <small
-              class="text-danger"
-              *ngIf="packageForm.controls['assemblerMultipler'].errors?.['max']"
-              >assemblerMultipler cannot exceed 1.</small
-            >
-            <small
-              class="text-danger"
-              *ngIf="packageForm.controls['assemblerMultipler'].errors?.['pattern']"
-            >
-              assemblerMultipler must be a valid number.
-            </small>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <label for="flow">manualCost:</label>
+          <label for="flow">Special Pump Price:</label>
           <input
             id="flow"
             formControlName="manualCost"
@@ -626,6 +588,45 @@
             </small>
           </div>
         </div>
+        <div class="col-md-3">
+          <label for="flow">APM:</label>
+          <input
+            id="flow"
+            formControlName="assemblerMultipler"
+            type="number"
+            class="form-control"
+            placeholder="Enter assemblingMultiplier"
+          />
+          <div
+            *ngIf="
+              packageForm.controls['assemblerMultipler'].invalid &&
+              packageForm.controls['assemblerMultipler'].touched
+            "
+          >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['assemblerMultipler'].errors?.['required']"
+              >assemblingMultiplier is required.</small
+            >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['assemblerMultipler'].errors?.['min']"
+              >assemblingMultiplier must be at least 0.2-1.</small
+            >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['assemblerMultipler'].errors?.['max']"
+              >assemblingMultiplier cannot exceed 1.</small
+            >
+            <small
+              class="text-danger"
+              *ngIf="packageForm.controls['assemblerMultipler'].errors?.['pattern']"
+            >
+              assemblingMultiplier must be a valid number.
+            </small>
+          </div>
+        </div>
+
         <div class="col-md-3">
           <label for="application">Application:</label>
           <div class="input-group">
@@ -1568,8 +1569,10 @@
         <tr>
           <th>S.No</th>
           <th class="text-start" style="text-align: left">Product Code</th>
+          <th class="text-start" style="text-align: left">Flow rate (i/s)</th>
+          <th class="text-start" style="text-align: left">Head (m)</th>
           <th>QTY</th>
-          <th class="text-end">Total Cost</th>
+          <th class="text-end">TotalPrice (AED)</th>
           <th></th>
           <!-- <th>Flow</th>
             <th>Head</th>
@@ -1583,11 +1586,35 @@
         <tr *ngFor="let child of projectsChild; let i = index">
           <td>{{ i + 1 }}</td>
           <td style="text-align: left">
-            {{ child.application }}/{{ child.configuration }}/{{
+            <!-- {{ child.application }}/{{ child.configuration }}/{{
               child.pumpModel
             }}/{{ child.strainer }}/{{ child.controlPanelType }}/{{
               child.controlPanelRelay
-            }}
+            }} -->
+            <ng-container *ngIf="child.application">{{
+              child.application
+            }}</ng-container>
+            <ng-container *ngIf="child.configuration">
+              / {{ child.configuration }}</ng-container
+            >
+            <ng-container *ngIf="child.pumpModel">
+              / {{ child.pumpModel }}</ng-container
+            >
+            <ng-container *ngIf="child.strainer">
+              / {{ child.strainer }}</ng-container
+            >
+            <ng-container *ngIf="child.controlPanelType">
+              / {{ child.controlPanelType }}</ng-container
+            >
+            <ng-container *ngIf="child.controlPanelRelay">
+              / {{ child.controlPanelRelay }}</ng-container
+            >
+          </td>
+          <td>
+            {{ child.flow }}
+          </td>
+          <td>
+            {{ child.head }}
           </td>
           <td style="text-align: right">{{ child.quantity }}</td>
           <td class="text-end" style="text-align: right">
@@ -1609,6 +1636,15 @@
             <td>{{ child.quantity }}</td> -->
         </tr>
       </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="5" class="text-end"><strong>Grand Total:</strong></td>
+          <td class="text-end">
+            <strong>{{ grandTotal | number : "1.0-2" }}</strong>
+          </td>
+          <td></td>
+        </tr>
+      </tfoot>
     </table>
   </div>
 </div>

@@ -87,7 +87,7 @@
               <i class="bi bi-plus"></i> Add
             </button>
             <button
-              class="btn btn-info ml-2"
+              class="btn btn-info"
               (click)="toggleChildData(i); childDataShow(project.id)"
             >
               <i class="bi bi-card-list"></i
@@ -171,26 +171,63 @@
                   <tr>
                     <th>S.No</th>
                     <th style="text-align: left">Product Code</th>
+                    <th class="text-start" style="text-align: left">
+                      Flow rate (i/s)
+                    </th>
+                    <th class="text-start" style="text-align: left">
+                      Head (m)
+                    </th>
                     <th>Qty</th>
-                    <th>Total Cost</th>
+                    <th class="text-end">TotalPrice (AED)</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr *ngFor="let child of projectsChild; let i = index">
                     <td>{{ i + 1 }}</td>
-                    <td class="text-start" style="text-align: left">
-                      {{ child.application }} / {{ child.configuration }} /
-                      {{ child.pumpModel }} / {{ child.strainer }} /
-                      {{ child.controlPanelType }} /
-                      {{ child.controlPanelRelay }}
+                    <td class="text-start">
+                      <ng-container *ngIf="child.application">{{
+                        child.application
+                      }}</ng-container>
+                      <ng-container *ngIf="child.configuration">
+                        / {{ child.configuration }}</ng-container
+                      >
+                      <ng-container *ngIf="child.pumpModel">
+                        / {{ child.pumpModel }}</ng-container
+                      >
+                      <ng-container *ngIf="child.strainer">
+                        / {{ child.strainer }}</ng-container
+                      >
+                      <ng-container *ngIf="child.controlPanelType">
+                        / {{ child.controlPanelType }}</ng-container
+                      >
+                      <ng-container *ngIf="child.controlPanelRelay">
+                        / {{ child.controlPanelRelay }}</ng-container
+                      >
+                    </td>
+
+                    <td>
+                      {{ child.flow }}
+                    </td>
+                    <td>
+                      {{ child.head }}
                     </td>
                     <td class="text-end fw-bold">{{ child.quantity }}</td>
-                    <td class="text-end text-success fw-bold">
+                    <td class="text-end fw-bold">
                       {{ child.TOTALCOST | number : "1.0-2" }}
                     </td>
                     <!-- Right-aligned -->
                   </tr>
                 </tbody>
+                <tfoot>
+                  <tr>
+                    <td colspan="5" class="text-end">
+                      <strong>Grand Total:</strong>
+                    </td>
+                    <td class="text-end">
+                      <strong>{{ grandTotal | number : "1.0-2" }}</strong>
+                    </td>
+                  </tr>
+                </tfoot>
               </table>
             </div>
           </div>
