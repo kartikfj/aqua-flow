@@ -201,6 +201,10 @@ printModalData() {
   // Get the current date
   const currentDate = new Date().toLocaleDateString();
   const logoUrl = this.logoUrl;
+  const logoImage = new Image();
+  logoImage.src = logoUrl;
+
+  logoImage.onload = () => {
 
   // Open a new print window
   const WindowPrt = window.open('', '', 'width=900,height=700');
@@ -246,6 +250,7 @@ printModalData() {
 
   // Show the buttons again after printing
   buttons.forEach(button => button.style.display = 'inline-block');
+  }
 }
 
 exportToExcel() {

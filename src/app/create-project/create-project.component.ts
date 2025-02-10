@@ -132,6 +132,7 @@ if(this.projectId){
       this.projectId =+params['projectId'];
      // this.fetchProjectDetails();
      this.getPumSeries();
+     this.getControlType();
      if(this.project){
       this.getAllProjectById();
       this.getSavedProjectById();
@@ -686,6 +687,17 @@ if(this.projectId){
  
 
   }
+  getControlType(){
+    this.aquaGet.getControlType().subscribe(data=>{
+      this.type=data;
+      console.log(this.pumpSeriesOptions);
+    },
+  (error)=>{
+      console.log('fetching data we got error',error);
+  })
+ 
+
+  }
   onSelectedPumpSeries(event: any){
     console.log("data came");
      this.selectedPumpSeries=event.target.value;
@@ -921,6 +933,10 @@ printTable() {
   const logoUrl = this.logoUrl;
 
   const currentDate = new Date().toLocaleDateString(); // Get the current date
+  const logoImage = new Image();
+  logoImage.src = logoUrl;
+
+  logoImage.onload = () => {
 
   const WindowPrt = window.open('', '', 'width=900,height=700');
 
@@ -988,6 +1004,16 @@ printTable() {
   WindowPrt?.close();
 
   buttons.forEach(button => button.style.display = 'inline-block');
+  };
+
+  // if (logoImage.complete) {
+  //   logoImage.onload = null; // Prevent the onload from firing again
+  //   logoImage.src = logoUrl; // Reassign to trigger the logic
+  // }
+  // else{
+  //   logoImage.src = null;
+  // }
+  
 }
 
 }

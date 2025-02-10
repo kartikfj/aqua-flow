@@ -1,6 +1,8 @@
 {
     "/AquaFlowController": {
-    "target": "http://localhost:8080/FJPORTAL_DEV",
-    "secure:": false
+      "target": "https://10.10.0.42:8444/fjhr",
+      "secure": false,
+      "changeOrigin": true,
+      "logLevel": "debug"
     }
-}
+  }

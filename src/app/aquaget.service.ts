@@ -30,6 +30,7 @@ export class AquagetService {
   
     return this.http.get<string[]>(`${this.apiUrl}?def`);
   }
+
   getPumpSize(pumpSeries:string):Observable<string[]>{
     console.log("data 2 come");
     return this.http.get<string[]>(`${this.apiUrl}?action=pumpSize&pumpSeries=${pumpSeries}`);
@@ -69,6 +70,10 @@ export class AquagetService {
   
   getProjectData():Observable<any>{
     return this.http.get(`${this.apiUrl}?action=retrieveProjectAllData`);
+  }
+  getControlType(): Observable<string[]> {
+  
+    return this.http.get<string[]>(`${this.apiUrl}?action=retrieveControlType`);
   }
   getProjectById(projectId:number):Observable<any>{
     return this.http.get(`${this.apiUrl}?action=retrieveProjectById&&projectId=${projectId}`);

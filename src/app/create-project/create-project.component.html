@@ -1586,11 +1586,29 @@
         <tr *ngFor="let child of projectsChild; let i = index">
           <td>{{ i + 1 }}</td>
           <td style="text-align: left">
-            {{ child.application }}/{{ child.configuration }}/{{
+            <!-- {{ child.application }}/{{ child.configuration }}/{{
               child.pumpModel
             }}/{{ child.strainer }}/{{ child.controlPanelType }}/{{
               child.controlPanelRelay
-            }}
+            }} -->
+            <ng-container *ngIf="child.application">{{
+              child.application
+            }}</ng-container>
+            <ng-container *ngIf="child.configuration">
+              / {{ child.configuration }}</ng-container
+            >
+            <ng-container *ngIf="child.pumpModel">
+              / {{ child.pumpModel }}</ng-container
+            >
+            <ng-container *ngIf="child.strainer">
+              / {{ child.strainer }}</ng-container
+            >
+            <ng-container *ngIf="child.controlPanelType">
+              / {{ child.controlPanelType }}</ng-container
+            >
+            <ng-container *ngIf="child.controlPanelRelay">
+              / {{ child.controlPanelRelay }}</ng-container
+            >
           </td>
           <td>
             {{ child.flow }}
