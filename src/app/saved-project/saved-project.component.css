@@ -60,6 +60,26 @@
 @media (max-width: 767px) {
   .table-container {
     overflow-y: auto;
+    overflow-x: auto;
+    font-size: 14px;
   }
   }
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on mobile devices */
+    max-width: 100%;
+     /* Ensure the container doesn't exceed the screen width */
+  }
+  
+  /* Optional: Add some padding or margin for better spacing */
+  .table-responsive {
+    margin-bottom: 1rem;
+  }
+  @media (max-width: 768px) {
+    .table-responsive table {
+      font-size: 14px; /* Reduce font size for smaller screens */
+    }
+  }
+  
+  
 }

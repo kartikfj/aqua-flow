@@ -151,4 +151,12 @@
 .responsive-table th {
   background-color: #f0f0f0;
 }
+.table-responsive {
+  margin-bottom: 1rem;
+}
+@media (max-width: 768px) {
+  .table-responsive table {
+    font-size: 14px; /* Reduce font size for smaller screens */
+  }
+}
 }

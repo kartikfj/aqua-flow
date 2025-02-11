@@ -56,7 +56,7 @@ export class CreateProjectComponent {
   pressureVessel=['Yes','No'];
   controllPanel=['Yes','No'];
 
-  brand=['Reflex','Feflex'];
+  brand=['Reflex','NEMA'];
   capacity=['60L','50L','40L'];
   pressureRating=['PN 10','PN 9','PN 8'];
   material=['Butyl'];
@@ -399,6 +399,7 @@ if(this.projectId){
     // );
   }
   updatePackage() {
+    this.isUpdate=false;
     // this.projectId=33;
       if (!this.projectId) {
         alert('Please create a project first!');
@@ -522,7 +523,7 @@ if(this.projectId){
                 this.navigateToAddChild(this.projectId)
               });
     
-              alert(`Project Saved Successfully! ID: ${this.projectId}`);
+              alert(`Revision Created Successfully! ID: ${this.projectId}`);
             }
           },
           (error: any) => {
