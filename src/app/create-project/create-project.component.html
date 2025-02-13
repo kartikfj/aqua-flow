@@ -570,17 +570,17 @@
             <small
               class="text-danger"
               *ngIf="packageForm.controls['manualCost'].errors?.['required']"
-              >Flow is required.</small
+              >manualCost is required.</small
             >
             <small
               class="text-danger"
               *ngIf="packageForm.controls['manualCost'].errors?.['min']"
-              >Flow must be at least 1.</small
+              >manualCost must be at least 10.</small
             >
             <small
               class="text-danger"
               *ngIf="packageForm.controls['manualCost'].errors?.['max']"
-              >Flow cannot exceed 50.</small
+              >manualCost cannot exceed 2000000.</small
             >
             <small
               class="text-danger"
@@ -1480,6 +1480,28 @@
     ></button>
   </div>
   <div class="toast-body">Package-set update successfully!</div>
+</div>
+
+<div
+  class="toast position-fixed top-0 start-50 translate-middle-x"
+  id="successToast0"
+  role="alert"
+  aria-live="assertive"
+  aria-atomic="true"
+  data-bs-autohide="true"
+  data-bs-delay="5000"
+  style="z-index: 1050"
+>
+  <div class="toast-header">
+    <strong class="me-auto">Success</strong>
+    <button
+      type="button"
+      class="btn-close"
+      data-bs-dismiss="toast"
+      aria-label="Close"
+    ></button>
+  </div>
+  <div class="toast-body">Project-Created successfully!</div>
 </div>
 <!-- <div class="container my-4">
   <h3>Project Details</h3>

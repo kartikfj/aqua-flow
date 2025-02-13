@@ -14,12 +14,12 @@ import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
 import { LoaderComponent } from '../loader/loader.component';
 import { LoaderService } from '../loader.service';
-
+import {NgxPaginationModule} from 'ngx-pagination';
 
 @Component({
   selector: 'app-saved-project',
   standalone: true,
-  imports: [CommonModule,FormsModule,LoaderComponent],
+  imports: [CommonModule,FormsModule,LoaderComponent,NgxPaginationModule],
   templateUrl: './saved-project.component.html',
   styleUrl: './saved-project.component.css'
 })
@@ -48,9 +48,14 @@ export class SavedProjectComponent  {
   projects:Project[]=[];
   filteredProjects:Project[]=[];
   projectsChild:ProjectChild[]=[];
+  paginatedProjects: any[] = [];
+  currentPage = 1;
+  pageSize = 5; // Number of records per page
+  totalPages=0;
   rivison:number[]=[];
   projectCode:string='';
   projectName:string='';
+  
   generatedCode:string='';
   riv:number=0;
   grandTotal:number=0;
@@ -93,6 +98,8 @@ export class SavedProjectComponent  {
   if (Object.values(this.searchValues).every(value => value.trim() === '')) {
     this.filteredProjects = [...this.projects];
   }
+  this.currentPage = 1;
+  this.updatePagination();
   }
   // Sort projects based on column
   sortData(column: keyof Project) {
@@ -112,8 +119,36 @@ export class SavedProjectComponent  {
       if (valueA > valueB) return 1;
       return 0;
     });
+    this.updatePagination();
   }
   
+  // Pagination
+  updatePagination() {
+    this.totalPages = Math.ceil(this.filteredProjects.length / this.pageSize);
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    this.paginatedProjects = this.filteredProjects.slice(startIndex, startIndex + this.pageSize);
+  }
+
+  pageChanged(pageNumber: number) {
+    if (pageNumber >= 1 && pageNumber <= this.totalPages) {
+      this.currentPage = pageNumber;
+      this.updatePagination();
+    }
+  }
+
+  nextPage() {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.updatePagination();
+    }
+  }
+
+  prevPage() {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.updatePagination();
+    }
+  }
   // Toggle child row visibility
   toggleChildData(index: number) {
     console.log(index)
@@ -145,7 +180,9 @@ export class SavedProjectComponent  {
       (data) => {
         this.projects = data;
         this.filterProjects();
+       // this.filteredProjects = [...this.projects]; 
         console.log(this.projects);
+        this.updatePagination();
       },
       (error) => {
         console.error("Error loading projects:", error);
@@ -154,6 +191,7 @@ export class SavedProjectComponent  {
         this.loaderService.hide(); // Hide loader when request is completed
       }
     );
+   
   }
   
   childDataShow(projectId: number):void {

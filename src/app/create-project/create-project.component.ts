@@ -314,6 +314,14 @@ if(this.projectId){
             console.log(this.projectSavedData);
           });
           alert(`Project Saved Successfully!,${this.projectId}`);
+          this.isModalOpen = true; // Set modal open state to true
+          
+         this.showToast0();
+         setTimeout(()=>{
+          this.isModalOpen=false;
+          this.currentState="package";
+          this.currentStep = 1;
+         },2000)
 
         },
         (error: any) => {
@@ -340,66 +348,126 @@ if(this.projectId){
   }
 }
 //parentSysId:String = '1';
-  savePackage() {
-  // this.projectId=33;
-    if (!this.projectId) {
-      alert('Please create a project first!');
-      return;
-    }
-    if (this.packageForm.invalid) {
-      this.packageForm.markAllAsTouched(); // Mark all fields as touched to show validation messages
+  // savePackage() {
+  // // this.projectId=33;
+  //   if (!this.projectId) {
+  //    alert('Please create a project first!');
+  //     return;
+  //   }
+  //   if (this.packageForm.invalid) {
+  //     this.packageForm.markAllAsTouched(); // Mark all fields as touched to show validation messages
     
-      document.getElementById('openValidationModal')?.click();
+  //     document.getElementById('openValidationModal')?.click();
      
-      return;
-    }
+  //     return;
+  //   }
 
-    const packageData = {
-      ...this.packageForm.value,
-      parentSysId: this.projectId,
-    };
-    console.log(packageData);
-    this.store.dispatch(ProjectActions.saveProjectChildData({ packageData }));
-              console.log("testing");
+  //   const packageData = {
+  //     ...this.packageForm.value,
+  //     parentSysId: this.projectId,
+  //   };
+  //   console.log(packageData);
+  //   this.store.dispatch(ProjectActions.saveProjectChildData({ packageData }));
+  //             console.log("testing");
     
-   // this.aquaPost.savePackage(packageData).subscribe(
-      //(response)=>{
-        alert('package set saved successffully');
-        this.getAllProjectById();
-        this.packageForm.reset();
+  //  // this.aquaPost.savePackage(packageData).subscribe(
+  //     //(response)=>{
+  //     //  alert('package set saved successffully');
+  //       this.getAllProjectById();
+  //       this.packageForm.reset();
 
-        this.currentState="package";
-        this.currentStep = 1;
-        console.log(this.packageForm);
-    //  },
-    //  (error)=>{
-       // window.alert('Package set saved successfully. Click OK to continue.');
-       this.isModalOpen = true; // Set modal open state to true
-       this.showToast();
-       // Automatically show the Success Modal
-       const successModalElement = document.getElementById('successModal');
-       if (successModalElement) {
-         successModalElement.classList.add('show');
-         successModalElement.style.display = 'block';
-       }
-        this.packageForm.reset();
-        this.currentStep=2;
-        this.currentState="package";
-        console.log(this.packageForm);
-        this.currentStep = 1;
-       // alert('Error saving package set. Please Try again.')
-    //  }
-  //  )
-    // this.http.post('/api/packages', packageData).subscribe(
-    //   () => {
-    //     alert('Package set saved successfully!');
-    //   },
-    //   (error) => {
-    //     alert('Error saving package set. Please try again.');
-    //     console.error(error);
-    //   }
-    // );
-  }
+  //       this.currentState="package";
+  //       this.currentStep = 1;
+  //       console.log(this.packageForm);
+  //   //  },
+  //   //  (error)=>{
+  //      // window.alert('Package set saved successfully. Click OK to continue.');
+  //      this.isModalOpen = true; // Set modal open state to true
+  //      this.showToast();
+  //      // Automatically show the Success Modal
+  //      const successModalElement = document.getElementById('successModal');
+  //      if (successModalElement) {
+  //        successModalElement.classList.add('show');
+  //        successModalElement.style.display = 'block';
+  //      }
+  //       this.packageForm.reset();
+  //       this.currentStep=2;
+  //       this.currentState="package";
+  //       console.log(this.packageForm);
+  //       this.currentStep = 1;
+  //      // alert('Error saving package set. Please Try again.')
+  //   //  }
+  // //  )
+  //   // this.http.post('/api/packages', packageData).subscribe(
+  //   //   () => {
+  //   //     alert('Package set saved successfully!');
+  //   //   },
+  //   //   (error) => {
+  //   //     alert('Error saving package set. Please try again.');
+  //   //     console.error(error);
+  //   //   }
+  //   // );
+  // }
+  savePackage() {
+    // this.projectId=33;
+      if (!this.projectId) {
+        alert('Please create a project first!');
+        return;
+      }
+      if (this.packageForm.invalid) {
+        this.packageForm.markAllAsTouched(); // Mark all fields as touched to show validation messages
+      
+        document.getElementById('openValidationModal')?.click();
+       
+        return;
+      }
+  
+      const packageData = {
+        ...this.packageForm.value,
+        parentSysId: this.projectId,
+      };
+      console.log(packageData);
+      this.store.dispatch(ProjectActions.saveProjectChildData({ packageData }));
+                console.log("testing");
+      
+     // this.aquaPost.savePackage(packageData).subscribe(
+        //(response)=>{
+          alert('package set saved successffully');
+          this.getAllProjectById();
+          this.packageForm.reset();
+  
+          this.currentState="package";
+          this.currentStep = 1;
+          console.log(this.packageForm);
+      //  },
+      //  (error)=>{
+         // window.alert('Package set saved successfully. Click OK to continue.');
+         this.isModalOpen = true; // Set modal open state to true
+         this.showToast();
+         // Automatically show the Success Modal
+         const successModalElement = document.getElementById('successModal');
+         if (successModalElement) {
+           successModalElement.classList.add('show');
+           successModalElement.style.display = 'block';
+         }
+          this.packageForm.reset();
+          this.currentStep=2;
+          this.currentState="package";
+          console.log(this.packageForm);
+          this.currentStep = 1;
+         // alert('Error saving package set. Please Try again.')
+      //  }
+    //  )
+      // this.http.post('/api/packages', packageData).subscribe(
+      //   () => {
+      //     alert('Package set saved successfully!');
+      //   },
+      //   (error) => {
+      //     alert('Error saving package set. Please try again.');
+      //     console.error(error);
+      //   }
+      // );
+    }
   updatePackage() {
     this.isUpdate=false;
     // this.projectId=33;
@@ -420,7 +488,7 @@ if(this.projectId){
         parentSysId: this.childId,
       };
       console.log(packageData);
-      this.store.dispatch(ProjectActions.saveProjectChildData({ packageData }));
+      this.store.dispatch(ProjectActions.updateProjectChildData({ packageData }));
                 console.log("testing");
       
      // this.aquaPost.savePackage(packageData).subscribe(
@@ -671,6 +739,9 @@ if(this.projectId){
     if (toastElement) {
       // Use the built-in 'show' method via Bootstrap classes
       toastElement.classList.add('show');
+      setTimeout(() => {
+        toastElement.classList.remove('show');  // Hide the toast after 5 seconds
+      }, 3000);  // Delay for 5000ms (5 seconds)
     }
   }
   showToast1() {
@@ -678,7 +749,22 @@ if(this.projectId){
     if (toastElement) {
       // Use the built-in 'show' method via Bootstrap classes
       toastElement.classList.add('show');
+      setTimeout(() => {
+        toastElement.classList.remove('show');  // Hide the toast after 5 seconds
+      }, 3000);  // Delay for 5000ms (5 seconds)
     }
+  }
+  showToast0() {
+    const toastElement = document.getElementById('successToast0');
+    if (toastElement) {
+      // Use the built-in 'show' method via Bootstrap classes
+     
+      toastElement.classList.add('show');
+      setTimeout(() => {
+        toastElement.classList.remove('show');  // Hide the toast after 5 seconds
+      }, 3000);  // Delay for 5000ms (5 seconds)
+    }
+    
   }
   getPumSeries(){
     this.aquaGet.getPumpSeries().subscribe(data=>{
