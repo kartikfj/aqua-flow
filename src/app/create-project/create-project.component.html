@@ -50,6 +50,7 @@
 
                   <!-- Dropdown Menu -->
                   <ul class="dropdown-menu custom-dropdown">
+                    <li>-</li>
                     <li *ngFor="let riv of rivison">
                       <button
                         class="dropdown-item"
@@ -58,6 +59,7 @@
                         {{ projectSavedData.generatedCode }}/R{{ riv }}
                       </button>
                     </li>
+                    <li></li>
                   </ul>
                 </div>
               </td>
@@ -1570,7 +1572,7 @@
         <tr>
           <th>S.No</th>
           <th class="text-start" style="text-align: left">Product Code</th>
-          <th class="text-start" style="text-align: left">Flow rate (i/s)</th>
+          <th class="text-start" style="text-align: left">Flow rate (l/s)</th>
           <th class="text-start" style="text-align: left">Head (m)</th>
           <th>QTY</th>
           <th class="text-end">TotalPrice (AED)</th>
