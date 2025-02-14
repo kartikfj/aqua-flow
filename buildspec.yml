@@ -1,0 +1,39 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 18  # Use a compatible Node.js version
+    commands:
+      - echo "Installing dependencies..."
+      - npm install --legacy-peer-deps  # Install dependencies with Angular version compatibility
+
+  build:
+    commands:
+      - echo "Building Angular application..."
+      - npm run build --prod  # Build for production
+      - echo "Zipping the build output..."
+      - zip -r angular-build.zip dist/
+      - echo "Listing files in the build directory..."
+      - ls -lh dist/
+      - echo "Listing all files to confirm location..."
+      - ls -lh  # List all files in the root build directory to help identifyy the exact path
+
+  pre_build:
+    commands:
+      - echo "this is pre_build"
+      
+  post_build:
+    commands:
+      - echo "Verifying zip file before upload..."
+      - ls -lh angular-build.zip  # Ensure the zip file exists
+      - echo "Listing files in the output directory..."
+      - ls -lh /codebuild/output/  # Confirm the output directory structure
+      - echo "Uploading zip file to S3..."
+      - aws s3 cp angular-build.zip s3://aquaflow195/   # Corrected upload command without --recursive
+
+artifacts:
+    files:
+        - '**/*'
+    base-directory: 'dist'
+    discard-paths: yes
