@@ -50,6 +50,7 @@
 
                   <!-- Dropdown Menu -->
                   <ul class="dropdown-menu custom-dropdown">
+                    <li>-</li>
                     <li *ngFor="let riv of rivison">
                       <button
                         class="dropdown-item"
@@ -58,6 +59,7 @@
                         {{ projectSavedData.generatedCode }}/R{{ riv }}
                       </button>
                     </li>
+                    <li></li>
                   </ul>
                 </div>
               </td>
@@ -568,17 +570,17 @@
             <small
               class="text-danger"
               *ngIf="packageForm.controls['manualCost'].errors?.['required']"
-              >Flow is required.</small
+              >manualCost is required.</small
             >
             <small
               class="text-danger"
               *ngIf="packageForm.controls['manualCost'].errors?.['min']"
-              >Flow must be at least 1.</small
+              >manualCost must be at least 10.</small
             >
             <small
               class="text-danger"
               *ngIf="packageForm.controls['manualCost'].errors?.['max']"
-              >Flow cannot exceed 50.</small
+              >manualCost cannot exceed 2000000.</small
             >
             <small
               class="text-danger"
@@ -1479,6 +1481,28 @@
   </div>
   <div class="toast-body">Package-set update successfully!</div>
 </div>
+
+<div
+  class="toast position-fixed top-0 start-50 translate-middle-x"
+  id="successToast0"
+  role="alert"
+  aria-live="assertive"
+  aria-atomic="true"
+  data-bs-autohide="true"
+  data-bs-delay="5000"
+  style="z-index: 1050"
+>
+  <div class="toast-header">
+    <strong class="me-auto">Success</strong>
+    <button
+      type="button"
+      class="btn-close"
+      data-bs-dismiss="toast"
+      aria-label="Close"
+    ></button>
+  </div>
+  <div class="toast-body">Project-Created successfully!</div>
+</div>
 <!-- <div class="container my-4">
   <h3>Project Details</h3>
   <div class="table-responsive">
@@ -1560,6 +1584,7 @@
   <button (click)="printTable()" class="btn btn-primary">
     <i class="bi bi-printer"></i>Print
   </button>
+
   <div class="table-responsive">
     <table
       id="tableToPrint"
@@ -1569,7 +1594,7 @@
         <tr>
           <th>S.No</th>
           <th class="text-start" style="text-align: left">Product Code</th>
-          <th class="text-start" style="text-align: left">Flow rate (i/s)</th>
+          <th class="text-start" style="text-align: left">Flow rate (l/s)</th>
           <th class="text-start" style="text-align: left">Head (m)</th>
           <th>QTY</th>
           <th class="text-end">TotalPrice (AED)</th>

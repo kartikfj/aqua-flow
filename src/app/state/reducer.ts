@@ -55,15 +55,33 @@ export const projectReducer = createReducer(
     
 )
 
-
 export const projectChildReducer = createReducer(
     initialChildState,
-    on(ProjectActions.fetchProject,state=>({...state,loading:true})),
-    on(ProjectActions.saveProjectChildDataSuccess,(state,{projectChild})=>({
+    on(ProjectActions.fetchProjectChildData, state => ({ ...state, loading: true })),
+    on(ProjectActions.fetchProjectChildDataSuccess, (state, { children }) => ({
         ...state,
-        projects:[...state.childProjects,projectChild],
-        loading:false,
+        childProjects: children,
+        loading: false,
     })),
-)
-
+    on(ProjectActions.saveProjectChildDataSuccess, (state, { projectChild }) => ({
+        ...state,
+        childProjects: [...state.childProjects, projectChild], 
+        loading: false,
+    })),
+    on(ProjectActions.updateProjectChildDataSuccess, (state, { projectChild }) => ({
+        ...state,
+        childProjects: [...state.childProjects, projectChild],
+        loading: false,
+    })),
+    on(ProjectActions.saveProjectChildDataFailure, (state, { error }) => ({
+        ...state,
+        loading: false,
+        error,
+    })),
+    on(ProjectActions.updateProjectChildDataFailure, (state, { error }) => ({
+        ...state,
+        loading: false,
+        error,
+    }))
+);
 

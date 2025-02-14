@@ -1,4 +1,5 @@
 <div class="container mt-4">
+  <app-loader></app-loader>
   <!-- <h2 class="text-uppercase text-center mb-4">Saved Projects</h2> -->
 
   <!-- Search Input -->
@@ -71,8 +72,8 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let project of filteredProjects; let i = index">
-          <td>{{ i + 1 }}</td>
+        <tr *ngFor="let project of paginatedProjects; let i = index">
+          <td>{{ (currentPage - 1) * pageSize + i + 1 }}</td>
           <td>{{ project.projectCode }}</td>
           <td>{{ project.generatedCode }}/R{{ project.revision }}</td>
           <td>{{ project.projectName }}</td>
@@ -98,7 +99,31 @@
       </tbody>
     </table>
   </div>
-
+  <!-- Pagination Controls -->
+  <div class="d-flex justify-content-between align-items-center mt-2">
+    <p>
+      Showing {{ (currentPage - 1) * pageSize + 1 }} to
+      {{ (currentPage - 1) * pageSize + paginatedProjects.length }} of
+      {{ filteredProjects.length }} records
+    </p>
+    <div>
+      <button
+        class="btn btn-secondary"
+        (click)="prevPage()"
+        [disabled]="currentPage === 1"
+      >
+        Previous
+      </button>
+      <span class="mx-3">Page {{ currentPage }} of {{ totalPages }}</span>
+      <button
+        class="btn btn-primary"
+        (click)="nextPage()"
+        [disabled]="currentPage === totalPages"
+      >
+        Next
+      </button>
+    </div>
+  </div>
   <!-- Hidden button to trigger modal -->
   <button
     id="openValidationModal"
@@ -114,6 +139,8 @@
     id="validationModal"
     aria-labelledby="validationModalLabel"
     aria-hidden="true"
+    role="dialog"
+    aria-modal="true"
     data-bs-focus="false"
   >
     <div class="modal-dialog modal-lg">
@@ -165,70 +192,71 @@
 
           <div *ngIf="expandedRowIndex === expandNumber">
             <div *ngIf="projectsChild.length">
-              <h5 class="text-secondary">Project Details</h5>
-              <table class="table table-bordered table-hover text-center">
-                <thead class="table-dark">
-                  <tr>
-                    <th>S.No</th>
-                    <th style="text-align: left">Product Code</th>
-                    <th class="text-start" style="text-align: left">
-                      Flow rate (i/s)
-                    </th>
-                    <th class="text-start" style="text-align: left">
-                      Head (m)
-                    </th>
-                    <th>Qty</th>
-                    <th class="text-end">TotalPrice (AED)</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let child of projectsChild; let i = index">
-                    <td>{{ i + 1 }}</td>
-                    <td class="text-start">
-                      <ng-container *ngIf="child.application">{{
-                        child.application
-                      }}</ng-container>
-                      <ng-container *ngIf="child.configuration">
-                        / {{ child.configuration }}</ng-container
-                      >
-                      <ng-container *ngIf="child.pumpModel">
-                        / {{ child.pumpModel }}</ng-container
-                      >
-                      <ng-container *ngIf="child.strainer">
-                        / {{ child.strainer }}</ng-container
-                      >
-                      <ng-container *ngIf="child.controlPanelType">
-                        / {{ child.controlPanelType }}</ng-container
-                      >
-                      <ng-container *ngIf="child.controlPanelRelay">
-                        / {{ child.controlPanelRelay }}</ng-container
-                      >
-                    </td>
+              <div class="table-responsive">
+                <table class="table table-bordered table-hover text-center">
+                  <thead class="table-dark">
+                    <tr>
+                      <th>S.No</th>
+                      <th style="text-align: left">Product Code</th>
+                      <th class="text-start" style="text-align: left">
+                        Flow rate (l/s)
+                      </th>
+                      <th class="text-start" style="text-align: left">
+                        Head (m)
+                      </th>
+                      <th>Qty</th>
+                      <th class="text-end">TotalPrice (AED)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let child of projectsChild; let i = index">
+                      <td>{{ i + 1 }}</td>
+                      <td class="text-start">
+                        <ng-container *ngIf="child.application">{{
+                          child.application
+                        }}</ng-container>
+                        <ng-container *ngIf="child.configuration">
+                          / {{ child.configuration }}</ng-container
+                        >
+                        <ng-container *ngIf="child.pumpModel">
+                          / {{ child.pumpModel }}</ng-container
+                        >
+                        <ng-container *ngIf="child.strainer">
+                          / {{ child.strainer }}</ng-container
+                        >
+                        <ng-container *ngIf="child.controlPanelType">
+                          / {{ child.controlPanelType }}</ng-container
+                        >
+                        <ng-container *ngIf="child.controlPanelRelay">
+                          / {{ child.controlPanelRelay }}</ng-container
+                        >
+                      </td>
 
-                    <td>
-                      {{ child.flow }}
-                    </td>
-                    <td>
-                      {{ child.head }}
-                    </td>
-                    <td class="text-end fw-bold">{{ child.quantity }}</td>
-                    <td class="text-end fw-bold">
-                      {{ child.TOTALCOST | number : "1.0-2" }}
-                    </td>
-                    <!-- Right-aligned -->
-                  </tr>
-                </tbody>
-                <tfoot>
-                  <tr>
-                    <td colspan="5" class="text-end">
-                      <strong>Grand Total:</strong>
-                    </td>
-                    <td class="text-end">
-                      <strong>{{ grandTotal | number : "1.0-2" }}</strong>
-                    </td>
-                  </tr>
-                </tfoot>
-              </table>
+                      <td>
+                        {{ child.flow }}
+                      </td>
+                      <td>
+                        {{ child.head }}
+                      </td>
+                      <td class="text-end fw-bold">{{ child.quantity }}</td>
+                      <td class="text-end fw-bold">
+                        {{ child.TOTALCOST | number : "1.0-2" }}
+                      </td>
+                      <!-- Right-aligned -->
+                    </tr>
+                  </tbody>
+                  <tfoot>
+                    <tr>
+                      <td colspan="5" class="text-end">
+                        <strong>Grand Total:</strong>
+                      </td>
+                      <td class="text-end">
+                        <strong>{{ grandTotal | number : "1.0-2" }}</strong>
+                      </td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
             </div>
           </div>
           <div class="modal-footer">

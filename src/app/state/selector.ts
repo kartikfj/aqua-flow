@@ -10,6 +10,6 @@ export const selectProjectById = (projectId: number) =>
 
 
 
-export const selectProjectChildState = createFeatureSelector<ProjectChildState>('projects');
+export const selectProjectChildState = createFeatureSelector<ProjectChildState>('childProjects');
 
 export const selectAllChildProjects = createSelector(selectProjectChildState, state => state.childProjects);

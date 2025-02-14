@@ -13,7 +13,9 @@ import * as ProjectActions from '../state/action';
 import * as XLSX from 'xlsx';
 import { CommonModule } from '@angular/common';
 import logoData from './logo.json'; // Import JSON file
-
+import { jsPDF } from 'jspdf';
+import html2canvas from 'html2canvas';
+import { LoaderService } from '../loader.service';
 
 @Component({
   selector: 'app-create-project',
@@ -56,7 +58,7 @@ export class CreateProjectComponent {
   pressureVessel=['Yes','No'];
   controllPanel=['Yes','No'];
 
-  brand=['Reflex','Feflex'];
+  brand=['Reflex','NEMA'];
   capacity=['60L','50L','40L'];
   pressureRating=['PN 10','PN 9','PN 8'];
   material=['Butyl'];
@@ -82,7 +84,7 @@ export class CreateProjectComponent {
   isDropdownOpen = false;
   isDropdownOpenName = false;
   isDropdownOpenConstructor = false;
-  constructor(private store: Store,private fb: FormBuilder, private http: HttpClient,private aquaPost:AquapostService,private aquaGet:AquagetService,private route: ActivatedRoute,private router: Router) {
+  constructor(private store: Store,private fb: FormBuilder, private http: HttpClient,private aquaPost:AquapostService,private aquaGet:AquagetService,private route: ActivatedRoute,private router: Router,private loaderService: LoaderService) {
     this.projects$ = this.store.select(selectAllChildProjects);
   }
   projects:Project[]=[];
@@ -164,14 +166,14 @@ if(this.projectId){
       pumpSize: ['', Validators.required], // Required field
       application: ['', Validators.required], // Required field
       configuration: ['', Validators.required], // Required field
-      quantity: [1, [Validators.required, Validators.min(1), Validators.max(10000), Validators.pattern('^[0-9]*$')]], // Min 1, Max 100, Numbers only
+      quantity: [1, [Validators.required, Validators.min(1), Validators.max(100000), Validators.pattern('^[0-9]*$')]], // Min 1, Max 100, Numbers only
     //});
 
     //this.addonsForm = this.fb.group({
       strainer:  ['', [Validators.required]],
       flexibleConnector:  ['', [Validators.required]],
       floatSwitch: ['', [Validators.required]],
-      floatSwitchQty: [1, [Validators.required, Validators.min(1), Validators.max(10000), Validators.pattern('^[0-9]*$')]],
+      floatSwitchQty: [1, [Validators.required, Validators.min(1), Validators.max(100000), Validators.pattern('^[0-9]*$')]],
     //});
 
    // this.pressureVessleForm = this.fb.group({
@@ -180,7 +182,7 @@ if(this.projectId){
       pressureVesselCapacity:[{value:'',disabled:true}, [Validators.required]],
       pressureVesselRating:[{value:'',disabled:true}, [Validators.required]],
       material:[{value:'',disabled:true}, [Validators.required]],
-      materialQty:[{value:1,disabled:true}, [Validators.required, Validators.min(1), Validators.max(10000), Validators.pattern('^[0-9]*$')]],
+      materialQty:[{value:1,disabled:true}, [Validators.required, Validators.min(1), Validators.max(100000), Validators.pattern('^[0-9]*$')]],
     //});
 
    // this.controllPanelForm=this.fb.group({
@@ -312,6 +314,14 @@ if(this.projectId){
             console.log(this.projectSavedData);
           });
           alert(`Project Saved Successfully!,${this.projectId}`);
+          this.isModalOpen = true; // Set modal open state to true
+          
+         this.showToast0();
+         setTimeout(()=>{
+          this.isModalOpen=false;
+          this.currentState="package";
+          this.currentStep = 1;
+         },2000)
 
         },
         (error: any) => {
@@ -338,67 +348,128 @@ if(this.projectId){
   }
 }
 //parentSysId:String = '1';
-  savePackage() {
-  // this.projectId=33;
-    if (!this.projectId) {
-      alert('Please create a project first!');
-      return;
-    }
-    if (this.packageForm.invalid) {
-      this.packageForm.markAllAsTouched(); // Mark all fields as touched to show validation messages
+  // savePackage() {
+  // // this.projectId=33;
+  //   if (!this.projectId) {
+  //    alert('Please create a project first!');
+  //     return;
+  //   }
+  //   if (this.packageForm.invalid) {
+  //     this.packageForm.markAllAsTouched(); // Mark all fields as touched to show validation messages
     
-      document.getElementById('openValidationModal')?.click();
+  //     document.getElementById('openValidationModal')?.click();
      
-      return;
-    }
+  //     return;
+  //   }
 
-    const packageData = {
-      ...this.packageForm.value,
-      parentSysId: this.projectId,
-    };
-    console.log(packageData);
-    this.store.dispatch(ProjectActions.saveProjectChildData({ packageData }));
-              console.log("testing");
+  //   const packageData = {
+  //     ...this.packageForm.value,
+  //     parentSysId: this.projectId,
+  //   };
+  //   console.log(packageData);
+  //   this.store.dispatch(ProjectActions.saveProjectChildData({ packageData }));
+  //             console.log("testing");
     
-   // this.aquaPost.savePackage(packageData).subscribe(
-      //(response)=>{
-        alert('package set saved successffully');
-        this.getAllProjectById();
-        this.packageForm.reset();
+  //  // this.aquaPost.savePackage(packageData).subscribe(
+  //     //(response)=>{
+  //     //  alert('package set saved successffully');
+  //       this.getAllProjectById();
+  //       this.packageForm.reset();
 
-        this.currentState="package";
-        this.currentStep = 1;
-        console.log(this.packageForm);
-    //  },
-    //  (error)=>{
-       // window.alert('Package set saved successfully. Click OK to continue.');
-       this.isModalOpen = true; // Set modal open state to true
-       this.showToast();
-       // Automatically show the Success Modal
-       const successModalElement = document.getElementById('successModal');
-       if (successModalElement) {
-         successModalElement.classList.add('show');
-         successModalElement.style.display = 'block';
-       }
-        this.packageForm.reset();
-        this.currentStep=2;
-        this.currentState="package";
-        console.log(this.packageForm);
-        this.currentStep = 1;
-       // alert('Error saving package set. Please Try again.')
-    //  }
-  //  )
-    // this.http.post('/api/packages', packageData).subscribe(
-    //   () => {
-    //     alert('Package set saved successfully!');
-    //   },
-    //   (error) => {
-    //     alert('Error saving package set. Please try again.');
-    //     console.error(error);
-    //   }
-    // );
-  }
+  //       this.currentState="package";
+  //       this.currentStep = 1;
+  //       console.log(this.packageForm);
+  //   //  },
+  //   //  (error)=>{
+  //      // window.alert('Package set saved successfully. Click OK to continue.');
+  //      this.isModalOpen = true; // Set modal open state to true
+  //      this.showToast();
+  //      // Automatically show the Success Modal
+  //      const successModalElement = document.getElementById('successModal');
+  //      if (successModalElement) {
+  //        successModalElement.classList.add('show');
+  //        successModalElement.style.display = 'block';
+  //      }
+  //       this.packageForm.reset();
+  //       this.currentStep=2;
+  //       this.currentState="package";
+  //       console.log(this.packageForm);
+  //       this.currentStep = 1;
+  //      // alert('Error saving package set. Please Try again.')
+  //   //  }
+  // //  )
+  //   // this.http.post('/api/packages', packageData).subscribe(
+  //   //   () => {
+  //   //     alert('Package set saved successfully!');
+  //   //   },
+  //   //   (error) => {
+  //   //     alert('Error saving package set. Please try again.');
+  //   //     console.error(error);
+  //   //   }
+  //   // );
+  // }
+  savePackage() {
+    // this.projectId=33;
+      if (!this.projectId) {
+        alert('Please create a project first!');
+        return;
+      }
+      if (this.packageForm.invalid) {
+        this.packageForm.markAllAsTouched(); // Mark all fields as touched to show validation messages
+      
+        document.getElementById('openValidationModal')?.click();
+       
+        return;
+      }
+  
+      const packageData = {
+        ...this.packageForm.value,
+        parentSysId: this.projectId,
+      };
+      console.log(packageData);
+      this.store.dispatch(ProjectActions.saveProjectChildData({ packageData }));
+                console.log("testing");
+      
+     // this.aquaPost.savePackage(packageData).subscribe(
+        //(response)=>{
+          alert('package set saved successffully');
+          this.getAllProjectById();
+          this.packageForm.reset();
+  
+          this.currentState="package";
+          this.currentStep = 1;
+          console.log(this.packageForm);
+      //  },
+      //  (error)=>{
+         // window.alert('Package set saved successfully. Click OK to continue.');
+         this.isModalOpen = true; // Set modal open state to true
+         this.showToast();
+         // Automatically show the Success Modal
+         const successModalElement = document.getElementById('successModal');
+         if (successModalElement) {
+           successModalElement.classList.add('show');
+           successModalElement.style.display = 'block';
+         }
+          this.packageForm.reset();
+          this.currentStep=2;
+          this.currentState="package";
+          console.log(this.packageForm);
+          this.currentStep = 1;
+         // alert('Error saving package set. Please Try again.')
+      //  }
+    //  )
+      // this.http.post('/api/packages', packageData).subscribe(
+      //   () => {
+      //     alert('Package set saved successfully!');
+      //   },
+      //   (error) => {
+      //     alert('Error saving package set. Please try again.');
+      //     console.error(error);
+      //   }
+      // );
+    }
   updatePackage() {
+    this.isUpdate=false;
     // this.projectId=33;
       if (!this.projectId) {
         alert('Please create a project first!');
@@ -417,7 +488,7 @@ if(this.projectId){
         parentSysId: this.childId,
       };
       console.log(packageData);
-      this.store.dispatch(ProjectActions.saveProjectChildData({ packageData }));
+      this.store.dispatch(ProjectActions.updateProjectChildData({ packageData }));
                 console.log("testing");
       
      // this.aquaPost.savePackage(packageData).subscribe(
@@ -522,7 +593,7 @@ if(this.projectId){
                 this.navigateToAddChild(this.projectId)
               });
     
-              alert(`Project Saved Successfully! ID: ${this.projectId}`);
+              alert(`Revision Created Successfully! ID: ${this.projectId}`);
             }
           },
           (error: any) => {
@@ -598,6 +669,7 @@ if(this.projectId){
     this.rivison=response.revision;
     
    })
+   this.rivison.push();
   }
   getRivisionById(id:number){
     console.log(id);
@@ -667,6 +739,9 @@ if(this.projectId){
     if (toastElement) {
       // Use the built-in 'show' method via Bootstrap classes
       toastElement.classList.add('show');
+      setTimeout(() => {
+        toastElement.classList.remove('show');  // Hide the toast after 5 seconds
+      }, 3000);  // Delay for 5000ms (5 seconds)
     }
   }
   showToast1() {
@@ -674,7 +749,22 @@ if(this.projectId){
     if (toastElement) {
       // Use the built-in 'show' method via Bootstrap classes
       toastElement.classList.add('show');
+      setTimeout(() => {
+        toastElement.classList.remove('show');  // Hide the toast after 5 seconds
+      }, 3000);  // Delay for 5000ms (5 seconds)
     }
+  }
+  showToast0() {
+    const toastElement = document.getElementById('successToast0');
+    if (toastElement) {
+      // Use the built-in 'show' method via Bootstrap classes
+     
+      toastElement.classList.add('show');
+      setTimeout(() => {
+        toastElement.classList.remove('show');  // Hide the toast after 5 seconds
+      }, 3000);  // Delay for 5000ms (5 seconds)
+    }
+    
   }
   getPumSeries(){
     this.aquaGet.getPumpSeries().subscribe(data=>{
@@ -823,12 +913,21 @@ console.log(data);
     })
   }
   getAllProjectById(){
+    this.loaderService.show(); // Explicitly show the loader (optional, interceptor will handle it)
+ 
     this.aquaGet.getProjectById(this.projectId).subscribe(data=>{
+      
       this.projects=data;
       console.log(this.projects);
       this.childDataShow(this.projectId);
       
 console.log(data);
+    },
+    (error) => {
+      console.error("Error loading projects:", error);
+    },
+    () => {
+      this.loaderService.hide(); // Hide loader when request is completed
     })
   }
   getSavedProjectById(){
@@ -928,16 +1027,27 @@ exportToExcel() {
   
 printTable() {
   const printContent = document.getElementById('tableToPrint');
+  if (!printContent) {
+    console.error('Print content not found!');
+    return;
+  }
   const buttons = document.querySelectorAll('.btn') as NodeListOf<HTMLElement>;
   buttons.forEach(button => button.style.display = 'none');
   const logoUrl = this.logoUrl;
 
-  const currentDate = new Date().toLocaleDateString(); // Get the current date
+  const currentDate = new Date().toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: '2-digit',
+    year: '2-digit'
+  }); // Get the current date
   const logoImage = new Image();
   logoImage.src = logoUrl;
 
   logoImage.onload = () => {
+  // Detect if the user is on a mobile device
+  const isMobile = /iPhone|iPad|Android/i.test(navigator.userAgent);
 
+  if (!isMobile) {
   const WindowPrt = window.open('', '', 'width=900,height=700');
 
  
@@ -1002,7 +1112,100 @@ printTable() {
   WindowPrt?.focus();
   WindowPrt?.print();
   WindowPrt?.close();
-
+  }
+  else {
+    // Mobile - Generate PDF with header, text details, and table
+    const clone = printContent.cloneNode(true) as HTMLElement;
+    clone.style.width = '210mm'; // A4 width
+    clone.style.maxWidth = '210mm';
+    clone.style.fontSize = '10px'; // Adjust text size for mobile
+    clone.style.overflow = 'visible';
+  
+    // Create a wrapper div to hold everything
+    const wrapper = document.createElement('div');
+    wrapper.style.width = '210mm';
+    wrapper.style.maxWidth = '210mm';
+  
+    // Add header with logo and date
+    const header = document.createElement('div');
+    header.style.display = 'flex';
+    header.style.justifyContent = 'space-between';
+    header.style.alignItems = 'center';
+    header.style.marginBottom = '10px';
+    header.style.borderBottom = '1px solid #000';
+    header.style.paddingBottom = '5px';
+    header.style.width = '100%';
+  
+    const logo = document.createElement('img');
+    logo.src = logoUrl;
+    logo.style.maxWidth = '50px';
+    logo.style.height = 'auto';
+    logo.onerror = function () {
+      this.src = 'https://via.placeholder.com/50?text=No+Image';
+    };
+  
+    const title = document.createElement('div');
+    title.style.fontSize = '12px';
+    title.style.fontWeight = 'bold';
+    title.style.textAlign = 'center';
+    title.style.color = '#103d63';
+    title.textContent = 'Selection Summary';
+  
+    const date = document.createElement('div');
+    date.style.fontSize = '10px';
+    date.style.fontWeight = 'bold';
+    date.style.color = '#103d63';
+    date.textContent = `Date: ${currentDate}`;
+  
+    header.appendChild(logo);
+    header.appendChild(title);
+    header.appendChild(date);
+  
+    // Create text details section (before table)
+    const details = document.createElement('div');
+    details.style.fontSize = '10px';
+    details.style.marginBottom = '10px';
+  
+    details.innerHTML = `
+      <p><strong>Generated Code:</strong> ${this.projectSavedData.generatedCode}/R${this.projectSavedData.revision}</p>
+      <p><strong>Project Code:</strong> ${this.projectCode}</p>
+      <p><strong>Project Name:</strong> ${this.projectName}</p>
+      <p><strong>Contractor:</strong> ${this.contractor}</p>
+      <p><strong>Consultant:</strong> ${this.consultant}</p>
+      <p><strong>Location:</strong> ${this.location}</p>
+    `;
+  
+    // Append elements in the correct order
+    wrapper.appendChild(header);
+    wrapper.appendChild(details); // Text first
+    wrapper.appendChild(clone); // Table after text
+  
+    // Adjust table styles
+    const tables = wrapper.querySelectorAll('table');
+    tables.forEach(table => {
+      (table as HTMLElement).style.width = '100%';
+      (table as HTMLElement).style.fontSize = '10px';
+      (table as HTMLElement).style.borderCollapse = 'collapse';
+    });
+  
+    document.body.appendChild(wrapper);
+  
+    html2canvas(wrapper, { scale: 2, useCORS: true }).then(canvas => {
+      document.body.removeChild(wrapper);
+  
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const imgData = canvas.toDataURL('image/png');
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const imgWidth = pageWidth;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+  
+      pdf.addImage(imgData, 'PNG', 0, 10, imgWidth, imgHeight);
+      pdf.save(`SelectionSummary_${currentDate}.pdf`);
+    }).catch(error => console.error('Error generating PDF:', error));
+  }
+  
+  
+ 
   buttons.forEach(button => button.style.display = 'inline-block');
   };
 

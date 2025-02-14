@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { of } from 'rxjs';
-import { catchError, map, mergeMap } from 'rxjs/operators';
+import { catchError, map, mergeMap, switchMap } from 'rxjs/operators';
 import * as ProjectActions from './action';
 import { ProjectService } from '../ProjectService';
 
@@ -13,7 +13,7 @@ export class ProjectEffects {
   fetchProjects$ = createEffect(() =>
     this.actions$.pipe(
       ofType(ProjectActions.fetchProject),
-      mergeMap(() =>
+      switchMap(() =>
         this.projectService.getProjects().pipe(
           map(projects => ProjectActions.fetchProjectSuccess({ projects })),
           catchError(error => of(ProjectActions.fetchProjectFailure({ error })))
@@ -37,7 +37,7 @@ export class ProjectEffects {
   fetchProjectChildData$ = createEffect(() =>
     this.actions$.pipe(
       ofType(ProjectActions.fetchProjectChildData),
-      mergeMap(action =>
+      switchMap(action =>
         this.projectService.getProjectChildData(action.projectId).pipe(
           map(children =>
             ProjectActions.fetchProjectChildDataSuccess({ projectId: action.projectId, children })
@@ -51,7 +51,7 @@ export class ProjectEffects {
     
     this.actions$.pipe(
       ofType(ProjectActions.saveProjectChildData),
-      mergeMap(action =>
+      switchMap(action =>
         this.projectService.saveChildProject(action.packageData).pipe(
           map(projectChild => ProjectActions.saveProjectChildDataSuccess({ projectChild })),
           catchError(error => of(ProjectActions.saveProjectChildDataFailure({ error })))
@@ -63,7 +63,7 @@ export class ProjectEffects {
     
     this.actions$.pipe(
       ofType(ProjectActions.updateProjectChildData),
-      mergeMap(action =>
+      switchMap(action =>
         this.projectService.updateChildProject(action.packageData).pipe(
           map(projectChild => ProjectActions.updateProjectChildDataSuccess({ projectChild })),
           catchError(error => of(ProjectActions.updateProjectChildDataFailure({ error })))
