@@ -1,6 +1,10 @@
 {
     "/AquaFlowController": {
-      "target": "https://portal.fjtco.com:8444/fjhr",
+
+
+      "target": "https://portal.fjtco.com:8444/fjhr/AquaFlowController",
+
+
       "secure": false,
       "changeOrigin": true,
       "logLevel": "debug"
