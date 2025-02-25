@@ -11,23 +11,27 @@ import { ActivatedRoute, Router } from '@angular/router';
 })
 export class HomeComponent  {
   userId: string | null = null;
+  empCode: string | null=null;
   ngOnInit(){
-    this.userId = this.route.snapshot.paramMap.get('empId');
+   this.userId = this.route.snapshot.paramMap.get('empId');
+  //this.userId= sessionStorage.getItem("emp_code");
 
     if (this.userId) {
       console.log(this.userId);
+      this.empCode = atob(this.userId);
+      console.log(this.empCode);
       // Fetch user details from API
-    this.storeUserId(this.userId);
-  }else{
-    this.storeUserId("E004885");
-  }
-    // }else{
-    //   document.getElementById('openValidationModal1')?.click();
-    //   this.navigateToFjPortal();
+    this.storeUserId(this.empCode);
+  // }else{
+  //   this.storeUserId("E004885");
+  // }
+    }else{
+     document.getElementById('openValidationModal1')?.click();
+      this.navigateToFjPortal();
 
-    //   alert('Error Login in Fj Portal!');
-    //   return;
-    // }
+      alert('Error Login in Fj Portal!');
+     return;
+    }
   }
   
 constructor(private router: Router,private route:ActivatedRoute) { }
