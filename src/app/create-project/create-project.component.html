@@ -328,7 +328,7 @@
     <button
       (click)="saveProject()"
       [disabled]="disabledButton"
-      class="btn btn-success mt-3"
+      class="btn btn-secondary"
     >
       Save Project
     </button>
@@ -1334,10 +1334,10 @@
     </button>
 
     <button
+      *ngIf="currentState !== 'controllPanel'"
       (click)="goNext()"
       style="margin-bottom: 20px"
       class="btn btn-info me-1"
-      [disabled]="currentState === 'controllPanel'"
     >
       Next
     </button>
