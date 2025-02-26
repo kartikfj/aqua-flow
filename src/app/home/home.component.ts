@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { AquagetService } from '../aquaget.service';
 
 @Component({
   selector: 'app-home',
@@ -12,8 +13,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 export class HomeComponent  {
   userId: string | null = null;
   empCode: string | null=null;
+
+
   ngOnInit(){
    this.userId = this.route.snapshot.paramMap.get('empId');
+   const empId=this.aquaget.getUserId();
   //this.userId= sessionStorage.getItem("emp_code");
 
     if (this.userId) {
@@ -25,16 +29,19 @@ export class HomeComponent  {
   // }else{
   //   this.storeUserId("E004885");
   // }
-    }else{
-     document.getElementById('openValidationModal1')?.click();
-      this.navigateToFjPortal();
-
-      alert('Error Login in Fj Portal!');
-     return;
     }
+    if (this.empCode || empId) {
+      // If at least one exists, navigate to home
+      this.router.navigate(['/home']);
+    } else {
+      // If neither exists, show validation modal and navigate to Fj Portal
+      document.getElementById('openValidationModal1')?.click();
+      this.navigateToFjPortal();
+      alert('Error Logging in Fj Portal!');
+    } 
   }
   
-constructor(private router: Router,private route:ActivatedRoute) { }
+constructor(private router: Router,private route:ActivatedRoute,private aquaget:AquagetService) { }
    newPage=false;
   navigateToCreateProject(): void {
     this.newPage=true;

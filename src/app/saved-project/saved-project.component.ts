@@ -5,7 +5,7 @@ import { Store } from '@ngrx/store';
 import { selectAllProjects } from '../state/selector';
 import * as ProjectActions from '../state/action';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AquagetService } from '../aquaget.service';
 import * as XLSX from 'xlsx';
@@ -24,9 +24,11 @@ import {NgxPaginationModule} from 'ngx-pagination';
   styleUrl: './saved-project.component.css'
 })
 export class SavedProjectComponent  {
+  userId: string | null = null;
+  empCode: string | null=null;
 
   
-  constructor(private router: Router,private aquaGetService:AquagetService,private loaderService: LoaderService) {}
+  constructor(private router: Router,private aquaGetService:AquagetService,private loaderService: LoaderService,route:ActivatedRoute,private aquaget:AquagetService ) {}
   ngOnInit(): void {
     // Initialize all forms
     // this.route.params.subscribe((params)=>{
@@ -34,10 +36,38 @@ export class SavedProjectComponent  {
     //  // this.fetchProjectDetails();
     //  this.getPumSeries();
     // })
+    //this.userId = this.route.snapshot.paramMap.get('empId');
+    const empId=this.aquaget.getUserId();
+   //this.userId= sessionStorage.getItem("emp_code");
+ 
+     if (this.userId) {
+       console.log(this.userId);
+       this.empCode = atob(this.userId);
+       console.log(this.empCode);
+       // Fetch user details from API
+     //this.storeUserId(this.empCode);
+   // }else{
+   //   this.storeUserId("E004885");
+   // }
+     }
+     if (empId) {
+       // If at least one exists, navigate to home
+       //this.router.navigate(['/home']);
+     } else {
+       // If neither exists, show validation modal and navigate to Fj Portal
+       document.getElementById('openValidationModal1')?.click();
+       this.navigateToFjPortal();
+       alert('Error Logging in Fj Portal!');
+     } 
+   
     this.logoUrl = logoData.logo;
     this.getAllProject();
    // this.testLoader();
 //this.getProjectModelData();
+  }
+  navigateToFjPortal(): void {
+
+    window.location.href = 'https://portal.fjtco.com:8444/fjhr/homepage.jsp';
   }
   testLoader() {
     this.loaderService.show();
